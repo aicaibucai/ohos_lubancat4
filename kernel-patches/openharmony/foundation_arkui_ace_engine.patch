@@ -1,0 +1,144 @@
+# ============================================================
+# 仓库: foundation/arkui/ace_engine
+# 上游: https://gitcode.com/openharmony/arkui_ace_engine
+# 基线: 3e110704b77 2026-08-17 !88178 merge emoji_6.1 into OpenHarmony-6.1-Release
+# ============================================================
+
+diff --git a/adapter/ohos/entrance/ace_container.cpp b/adapter/ohos/entrance/ace_container.cpp
+index faa150c57b0..3748be9e18f 100644
+--- a/adapter/ohos/entrance/ace_container.cpp
++++ b/adapter/ohos/entrance/ace_container.cpp
+@@ -659,6 +659,11 @@ void AceContainer::InitializeFrontend()
+             if (!IsDialogContainer()) {
+                 auto& loader = Framework::JsEngineLoader::GetDeclarative(GetDeclarativeSharedLibrary());
+                 RefPtr<Framework::JsEngine> jsEngine;
++                // [E0 诊断 2026-10-02] 只读埋点：确认 DECLARATIVE_JS 是否走“共享 runtime”引擎（决定 uv loop 是否被跳过）
++                LOGI("[E0-ACE] create declarative engine: instanceId=%{public}d usingSharedRuntime=%{public}d "
++                     "sharedRuntime_=%{public}p isFormRender=%{public}d",
++                    instanceId_, static_cast<int32_t>(GetSettings().usingSharedRuntime ? 1 : 0),
++                    sharedRuntime_, static_cast<int32_t>(isFormRender_ ? 1 : 0));
+                 if (GetSettings().usingSharedRuntime) {
+                     jsEngine = loader.CreateJsEngineUsingSharedRuntime(instanceId_, sharedRuntime_);
+                 } else {
+diff --git a/adapter/ohos/entrance/ui_content_impl.cpp b/adapter/ohos/entrance/ui_content_impl.cpp
+index 778dbf484ab..4f79cc275d9 100644
+--- a/adapter/ohos/entrance/ui_content_impl.cpp
++++ b/adapter/ohos/entrance/ui_content_impl.cpp
+@@ -2315,6 +2315,12 @@ UIContentErrorCode UIContentImpl::CommonInitialize(
+             frontendType = FrontendType::DYNAMIC_HYBRID_STATIC;
+         }
+     }
++    // [E0 诊断 2026-10-02] 只读埋点：确认共享 runtime / 混合模式 / 前端类型的实际取值（不改行为）
++    LOGI("[E0-ACE] frontendType decide: bundle=%{public}s runtime_=%{public}p vmType=%{public}d "
++         "arkTSMode=%{public}s isCJ=%{public}d -> frontendType=%{public}d",
++        context->GetBundleName().c_str(), runtime_, static_cast<int32_t>(vmType_),
++        appInfo->arkTSMode.c_str(), static_cast<int32_t>(isCJFrontend ? 1 : 0),
++        static_cast<int32_t>(frontendType));
+ 
+     auto container = CreateContainer(info, frontendType, useNewPipe);
+     CHECK_NULL_RETURN(container, UIContentErrorCode::NULL_POINTER);
+diff --git a/frameworks/bridge/declarative_frontend/declarative_frontend.cpp b/frameworks/bridge/declarative_frontend/declarative_frontend.cpp
+index 79da57ae53c..78f77ab7048 100644
+--- a/frameworks/bridge/declarative_frontend/declarative_frontend.cpp
++++ b/frameworks/bridge/declarative_frontend/declarative_frontend.cpp
+@@ -207,6 +207,9 @@ bool DeclarativeFrontend::Initialize(FrontendType type, const RefPtr<TaskExecuto
+     }
+     if (jsEngine_) {
+         jsEngine_->UpdateHybridType(hybridType);
++        // [E0 诊断 2026-10-02] 只读埋点：前端类型 -> 混合类型（STATIC_HYBRID_DYNAMIC 会让 runtime_ 取自 g_declarativeRuntime）
++        LOGI("[E0-ACE] DeclarativeFrontend::Initialize: type=%{public}d -> hybridType=%{public}d needPostJsTask=%{public}d",
++            static_cast<int32_t>(type_), static_cast<int32_t>(hybridType), static_cast<int32_t>(needPostJsTask ? 1 : 0));
+     }
+ 
+ #if defined(PREVIEW)
+diff --git a/frameworks/bridge/declarative_frontend/engine/jsi/jsi_declarative_engine.cpp b/frameworks/bridge/declarative_frontend/engine/jsi/jsi_declarative_engine.cpp
+index 7522bb7c62a..1f56bafbe3d 100644
+--- a/frameworks/bridge/declarative_frontend/engine/jsi/jsi_declarative_engine.cpp
++++ b/frameworks/bridge/declarative_frontend/engine/jsi/jsi_declarative_engine.cpp
+@@ -35,6 +35,7 @@
+ #include "bridge/js_frontend/engine/common/js_engine.h"
+ #ifdef WINDOWS_PLATFORM
+ #include <algorithm>
++#include <atomic>
+ #endif
+ #ifdef FORM_SUPPORTED
+ #include "extractor.h"
+@@ -1559,6 +1560,10 @@ void JsiDeclarativeEngine::Destroy()
+ #endif
+         delete nativeEngine_;
+         nativeEngine_ = nullptr;
++        LOGI("[E0-ACE] Destroy: non-shared path (CancelCheckUVLoop + delete engine)");
++    } else {
++        LOGI("[E0-ACE] Destroy: shared path, runtime_=%{public}p nativeEngine_=%{public}p (不 Cancel/不 delete)",
++            runtime_, static_cast<void*>(nativeEngine_));
+     }
+ }
+ 
+@@ -1576,6 +1581,11 @@ bool JsiDeclarativeEngine::Initialize(const RefPtr<FrontendDelegate>& delegate)
+         LOGE("JsiDeclarativeEngine::Initialize, g_declarativeRuntime is null");
+     }
+     auto sharedRuntime = reinterpret_cast<NativeEngine*>(runtime_);
++    // [E0 诊断 2026-10-02] 只读埋点：sharedRuntime 非空 => 上游会跳过 SetPostTask/CheckUVLoop（napi uv loop 无驱动）
++    LOGI("[E0-ACE] JsiDeclarativeEngine::Initialize: instanceId=%{public}d hybridType=%{public}d "
++         "g_declarativeRuntime=%{public}p runtime_=%{public}p sharedRuntime=%{public}d",
++        instanceId_, static_cast<int32_t>(hybridType), g_declarativeRuntime, runtime_,
++        static_cast<int32_t>(sharedRuntime != nullptr ? 1 : 0));
+     std::shared_ptr<ArkJSRuntime> arkRuntime;
+     EcmaVM* vm = nullptr;
+     if (sharedRuntime) {
+@@ -1623,28 +1633,45 @@ bool JsiDeclarativeEngine::Initialize(const RefPtr<FrontendDelegate>& delegate)
+ 
+ void JsiDeclarativeEngine::EngineTask(bool sharedRuntime)
+ {
++    // [E0 诊断 2026-10-02] 只读埋点：确认 sharedRuntime 实际取值与走了哪个分支（不改行为）
++    LOGI("[E0-ACE] EngineTask enter: sharedRuntime=%{public}d nativeEngine_=%{public}p instanceId=%{public}d",
++        static_cast<int32_t>(sharedRuntime ? 1 : 0), static_cast<void*>(nativeEngine_), instanceId_);
+     engineInstance_->SetNativeEngine(nativeEngine_);
+     engineInstance_->InitJsObject();
+     if (!sharedRuntime) {
++        LOGI("[E0-ACE] EngineTask: NON-shared branch -> wire SetPostTask + CheckUVLoop");
+         SetPostTask(nativeEngine_);
+ #if !defined(PREVIEW)
+         nativeEngine_->CheckUVLoop();
+ #endif
+         RegisterWorker();
+         engineInstance_->RegisterFaPlugin();
++    } else {
++        LOGW("[E0-ACE] EngineTask: SHARED branch -> napi uv loop NOT wired (上游行为，本次问题点位)");
+     }
+ }
+ 
+ void JsiDeclarativeEngine::SetPostTask(NativeEngine* nativeEngine)
+ {
++    // [E0 诊断 2026-10-02] 只读埋点
++    LOGI("[E0-ACE] SetPostTask called: nativeEngine=%{public}p instanceId=%{public}d",
++        static_cast<void*>(nativeEngine), instanceId_);
+     auto weakDelegate = WeakPtr(engineInstance_->GetDelegate());
+     auto&& postTask = [weakDelegate, weakEngine = AceType::WeakClaim(this), id = instanceId_](bool needSync) {
++        static std::atomic<int32_t> e0PostTaskCalls{ 0 };
++        int32_t callNo = e0PostTaskCalls.fetch_add(1);
++        if (callNo < 5) {
++            LOGI("[E0-ACE] postTask invoked #%{public}d needSync=%{public}d tid=%{public}d",
++                callNo, static_cast<int32_t>(needSync ? 1 : 0), gettid());
++        }
+         auto delegate = weakDelegate.Upgrade();
+         if (delegate == nullptr) {
+             return;
+         }
+         delegate->PostJsTask(
+             [weakEngine, needSync, id]() {
++                static std::atomic<int32_t> e0LoopCalls{ 0 };
++                int32_t loopNo = e0LoopCalls.fetch_add(1);
+                 auto jsEngine = weakEngine.Upgrade();
+                 if (jsEngine == nullptr) {
+                     return;
+@@ -1654,6 +1681,9 @@ void JsiDeclarativeEngine::SetPostTask(NativeEngine* nativeEngine)
+                     return;
+                 }
+                 ContainerScope scope(id);
++                if (loopNo < 5) {
++                    LOGI("[E0-ACE] pumping napi loop #%{public}d tid=%{public}d", loopNo, gettid());
++                }
+                 nativeEngine->Loop(LOOP_NOWAIT, needSync);
+             },
+             "ArkUISetNativeEngineLoop");

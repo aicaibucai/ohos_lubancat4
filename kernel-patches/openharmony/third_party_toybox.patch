@@ -1,0 +1,34 @@
+# ============================================================
+# 仓库: third_party/toybox
+# 上游: https://gitcode.com/openharmony/third_party_toybox
+# 基线: 927b3ae 2026-03-20 !277 merge cherry-pick-mr-275-1773293387081-auto into OpenHarmony-6.1-Release
+# ============================================================
+
+diff --git a/BUILD.gn b/BUILD.gn
+index ffa8c5d..0dfcda9 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -233,6 +233,7 @@ if (defined(ohos_lite)) {
+       "-Wno-sign-compare",
+       "-Wno-format",
+       "-Wno-unused-result",
++      "-Wno-misleading-indentation",
+       "-Os",
+       "-ffunction-sections",
+       "-fdata-sections",
+@@ -482,6 +483,7 @@ if (defined(ohos_lite)) {
+       "-Wno-sign-compare",
+       "-Wno-format",
+       "-Wno-unused-result",
++      "-Wno-misleading-indentation",
+       "-Os",
+       "-ffunction-sections",
+       "-fdata-sections",
+@@ -720,6 +722,7 @@ if (defined(ohos_lite)) {
+       "-Wno-sign-compare",
+       "-Wno-format",
+       "-Wno-unused-result",
++      "-Wno-misleading-indentation",
+       "-Os",
+       "-ffunction-sections",
+       "-fdata-sections",

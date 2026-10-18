@@ -91,6 +91,29 @@ git config user.email "<your-github-noreply-email>"
 | `forensic-20261008/desktop_unlocked_172418B.jpeg` | 172 KB | 与 `desktop_unlocked.jpeg` 字节完全相同（同尺寸副本） |
 | `forensic-20261008/lockscreen_124111B.jpeg` | 124 KB | 与 `lockscreen.jpeg` 字节完全相同（同尺寸副本） |
 
+### 3.1 源码树改动导出时的排除项
+
+`kernel-patches/` 由 OpenHarmony 源码树（500 个 git 仓库）与内核仓库的
+`git diff` 导出，导出时排除了以下**非移植内容**：
+
+| 排除内容 | 规模 | 理由 |
+|---|---|---|
+| `third_party/node` 二进制 diff | 280149 行 | `deps/brotli` 等上游构建产物变动，占原始 `repo diff` 的 98.8% |
+| `third_party/sane-airscan`、`cups-filters` | 26 文件 | 上游 OH 官方 `OH_AIRSCAN` 适配补丁，`repo sync` 自动应用 |
+| `third_party/{iptables,pcre2,freetype,icu,libjpeg-turbo,wpa_supplicant,bounds_checking_function,libnl}` | 25 文件 | 上游 OH 适配 |
+| `test/xts/acts` | 12 文件 | XTS 测试固件 |
+| `applications/standard/{user_certificate_manager,app_samples,hap}` | 8 文件 | 测试样例、预编译 HAP 二进制（`SystemUI-ScreenLock.hap` 1.6 MB） |
+| `device/soc/rockchip` 的 `resource_tool` | 1 文件 | RK 二进制工具被重新编译，非源码改动 |
+| `arkcompiler/ets_frontend` 的 `package-lock.json` | 3 文件 | `npm install` 的副作用 |
+| `local.properties` | 1 文件 | **含绝对路径** `$OH_SRC/prebuilts/ohos-sdk/linux`，作为敏感信息剔除 |
+| `hvigorw` | 多处 | 仅文件权限位变化，无内容差异 |
+| `*.cmd` / `*.o` / `*.o.d` / `*.a` / `*.order` / `*.gch` | 1900+ 文件 | 内核与 HDF 构建垃圾 |
+| `*.hcb` / `*.rej` / `*.bak` | 多处 | HDF 编译产物、补丁拒绝记录、备份文件 |
+| `arch/arm64/boot/Image.bak` | 40 MB | 内核编译产物备份 |
+| `include/hdf` 符号链接 | 1 项 | 指向 OH 源码树的绝对路径，改为在 `kernel-patches/README.md` 说明手工创建方法 |
+
+导出的 14 个 patch 全部通过 `git apply --check` 验证。
+
 ---
 
 ## 四、已核查无敏感内容的文件
@@ -100,6 +123,7 @@ git config user.email "<your-github-noreply-email>"
 | `Launcher_3745.db` | SQLite 数据库，仅含系统应用名（联系人/图库/信息）与网格配置，**无个人数据** |
 | `screenshots/*.jpeg/png`、`research-pc-2in1/*.jpeg/png` | 2560×1440 桌面/锁屏截图，无隐私内容 |
 | `patches/*.patch` | 纯代码 diff，无路径泄漏 |
+| `kernel-patches/**/*.patch` | 纯代码 diff，已全量扫描：无家目录路径、无 `D:\`、无内网 IP、无邮箱 |
 | `research-pc-2in1/*.txt` | 上游仓库调研记录（gitee API 查询结果），无敏感信息 |
 | `forensic-20261008/diag*.txt` | 运行时取证输出，路径已脱敏 |
 
@@ -185,10 +209,11 @@ REPLACEMENTS = [
 
 | 指标 | 脱敏前 | 脱敏后 |
 |---|---|---|
-| 文件数 | 1910 | 87 |
-| 总体积 | ~47 MB | ~6 MB |
+| 文件数 | 1910 | 102 |
+| 总体积 | ~47 MB | ~5.6 MB |
 | 硬件序列号 | 20 处 | 0 |
 | 家目录路径 | ~50 处 | 0 |
 | Windows 路径 | ~35 处 | 0 |
 | 原始内网 IP | ~20 处 | 0 |
 | 空文件 / 构建垃圾 | 216 个 | 0 |
+| 源码树 git 仓库改动 | 500 个仓库 / ~1900 个噪音文件 | 14 个 patch（全部通过 `git apply --check`） |

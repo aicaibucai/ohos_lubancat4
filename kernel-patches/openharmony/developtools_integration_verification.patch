@@ -1,0 +1,22 @@
+# ============================================================
+# 仓库: developtools/integration_verification
+# 上游: https://gitcode.com/openharmony/developtools_integration_verification
+# 基线: 8116d1b 2026-02-25 !970 merge add_acl into OpenHarmony-6.1-Release
+# ============================================================
+
+diff --git a/tools/deps_guard/rules/chipsetsdk_dep_whitelist.json b/tools/deps_guard/rules/chipsetsdk_dep_whitelist.json
+index 13306b3..4b38126 100644
+--- a/tools/deps_guard/rules/chipsetsdk_dep_whitelist.json
++++ b/tools/deps_guard/rules/chipsetsdk_dep_whitelist.json
+@@ -1,4 +1,11 @@
+ [
++    {
++        "so_file_name": "libmapper_service_1.0.z.so",
++        "so_file_path": "vendor/lib/passthrough/libmapper_service_1.0.z.so",
++        "dep_file_name": "libdisplay_buffer_vdi_impl_default.z.so",
++        "dep_file_path": "vendor/lib64/libdisplay_buffer_vdi_impl_default.z.so",
++        "description": "lib libmapper_service_1.0.z.so with innerapi_tags [passthrough] cannot depend vendor only file libdisplay_buffer_vdi_impl_default.z.so with //drivers/peripheral/display/buffer/vdi_base:display_buffer_vdi_impl_default"
++    },
+     {
+         "so_file_name": "libssl_openssl.z.so",
+         "so_file_path": "system/lib/chipset-sdk/libssl_openssl.z.so",

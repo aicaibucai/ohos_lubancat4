@@ -43,6 +43,7 @@
 | [docs/03-编译排查与内核适配.md](docs/03-编译排查与内核适配.md) | kernel.patch 结构性错配、**内核方案 B**、HDF 内核配方、binder/access_token 移植 | 编译/内核，核心技术文档 |
 | [docs/04-调试与操作手册.md](docs/04-调试与操作手册.md) | 串口/hdc/镜像修改/内核重编/烧录全操作 + softbus 排查指引 | 实际操作时照抄 |
 | [changes-5.0.3/README.md](changes-5.0.3/README.md) | 5.0.3 阶段全部移植补丁归档与恢复方法 | 需要重放 5.0.3 补丁时 |
+| **[kernel-patches/README.md](kernel-patches/README.md)** | **当前 6.1 阶段的内核 + 源码树全部改动，`git apply` 可直接应用** | 要在自己的树上复现移植时 |
 
 辅助文件：
 - `setup-openharmony-kernel.sh` — HDF 内核改造脚本（板级内核 + HDF 一键改造）
@@ -62,6 +63,9 @@
 ```
 openharmony-lubancat/
 ├── docs/                        # 六篇核心文档（01–05、08）
+├── kernel-patches/              # ★ 当前 6.1 阶段的全部源码改动（可 git apply）
+│   ├── openharmony-kernel.patch #   内核：binder/access_token/HDF/DTS/defconfig
+│   └── openharmony/             #   源码树：13 个仓库的改动
 ├── changes-5.0.3/               # 5.0.3 阶段补丁归档
 ├── patches/                     # libuv / napi 异步派发补丁
 ├── patches-2in1-dpi/            # PC/2in1 DPI + WMS 窗口裁剪
@@ -69,6 +73,7 @@ openharmony-lubancat/
 ├── forensic-20261008/           # 运行时取证数据
 ├── logs/                        # 启动日志
 ├── screenshots/                 # 截图
+├── scripts/                     # patch 导出脚本（可复现）
 ├── sanitize.py                  # 本仓库的脱敏脚本（可复现）
 ├── SANITIZED.md                 # 脱敏说明
 ├── LICENSE
@@ -121,6 +126,34 @@ $HDC -t 192.168.x.x:36199 shell
 ```
 
 完整操作见 [docs/04-调试与操作手册.md](docs/04-调试与操作手册.md)。
+
+---
+
+## 五.5、如何在自己的树上复现移植
+
+所有源码改动已导出为可直接 `git apply` 的 patch，集中在
+[kernel-patches/](kernel-patches/README.md)：
+
+```bash
+# 1) 内核（原厂 5.10.209 + HDF + binder/access_token）
+git clone https://github.com/LubanCat/kernel openharmony-kernel
+cd openharmony-kernel
+git apply --check ../kernel-patches/openharmony-kernel.patch
+git apply         ../kernel-patches/openharmony-kernel.patch
+ln -s "$OH_SRC/drivers/hdf_core/framework/include" include/hdf   # 符号链接需手工建
+
+# 2) OpenHarmony 源码树（13 个仓库）
+cd "$OH_SRC"
+for p in <本仓库>/kernel-patches/openharmony/*.patch; do
+  repo=$(grep -m1 '^# 仓库:' "$p" | sed 's/^# 仓库: //')
+  git -C "$repo" apply --check "$p" && git -C "$repo" apply "$p"
+done
+```
+
+所有 patch 均通过 `git apply --check` 验证（14/14），
+每个 patch 头部标注了上游仓库地址与基线 commit。
+完整说明（含按改动性质分批应用、排除清单）见
+[kernel-patches/README.md](kernel-patches/README.md)。
 
 ---
 

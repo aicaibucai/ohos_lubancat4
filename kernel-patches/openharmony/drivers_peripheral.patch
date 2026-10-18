@@ -1,0 +1,634 @@
+# ============================================================
+# 仓库: drivers/peripheral
+# 上游: https://gitcode.com/openharmony/drivers_peripheral
+# 基线: 746542a9a 2026-08-11 !9246 merge OpenHarmony-6.1-Release into OpenHarmony-6.1-Release
+# ============================================================
+
+diff --git a/display/buffer/vdi_base/BUILD.gn b/display/buffer/vdi_base/BUILD.gn
+index c2bdfbb28..797dc7db1 100644
+--- a/display/buffer/vdi_base/BUILD.gn
++++ b/display/buffer/vdi_base/BUILD.gn
+@@ -53,9 +53,15 @@ ohos_shared_library("display_buffer_vdi_impl_default") {
+     "libdrm:libdrm",
+   ]
+ 
+-  install_enable = false
++  # [LubanCat4 bring-up] 原为 false，与 composer 侧同因：composer 的 _default VDI
++  # 依赖 display_buffer_vdi_impl_default，两者必须一起随镜像发布，
++  # 否则加载器回退到 SoC 旧版、RegRefreshCallback 缺失 → vsync 中断 → 黑屏。
++  install_enable = true
+   install_images = [ chipset_base_dir ]
+-  innerapi_tags = [ "chipsetsdk" ]
++  # 注意：不能保留 innerapi_tags = [ "chipsetsdk" ]（原为该项）：
++  #   1) 带该标签会被装到 lib64/chipset-sdk/ 子目录，dlopen 按标准路径找不到；
++  #   2) 安装后会触发 deps_guard 的 chipsetsdk 依赖白名单校验而失败。
++  # 与 device/soc/rockchip 补丁对同类库（libdisplay_buffer_vdi_impl / _vendor）的处理保持一致。
+   subsystem_name = "hdf"
+   part_name = "drivers_peripheral_display"
+ }
+diff --git a/display/composer/vdi_base/BUILD.gn b/display/composer/vdi_base/BUILD.gn
+index 5461fd19f..87f022308 100644
+--- a/display/composer/vdi_base/BUILD.gn
++++ b/display/composer/vdi_base/BUILD.gn
+@@ -65,7 +65,13 @@ ohos_shared_library("display_composer_vdi_impl_default") {
+     "ipc:ipc_single",
+     "libdrm:libdrm",
+   ]
+-  install_enable = false
++  # [LubanCat4 bring-up] 原为 false，导致 libdisplay_composer_vdi_impl_default.z.so
++  # 永远不会被装进 vendor 分区；而 hdi_service 的加载器优先 dlopen 该库
++  # （DISPLAY_COMPOSER_VDI_DEFAULT_LIBRARY，见 idisplay_composer_vdi.h / display_composer_service.cpp），
++  # 找不到就会回退到 SoC 旧版 VDI —— 那份没有 RegRefreshCallback 实现，
++  # 导致 vsync 只发一次、ArkUI 停摆、屏幕全黑（详细记录见移植文档第二十一节）。
++  # 改为 true，使带 RegRefreshCallback 的 _default 库随镜像发布。
++  install_enable = true
+   install_images = [ chipset_base_dir ]
+   subsystem_name = "hdf"
+   part_name = "drivers_peripheral_display"
+diff --git a/display/composer/vdi_base/src/display_composer_vdi_impl.cpp b/display/composer/vdi_base/src/display_composer_vdi_impl.cpp
+index b61a0c7e6..f691ef733 100644
+--- a/display/composer/vdi_base/src/display_composer_vdi_impl.cpp
++++ b/display/composer/vdi_base/src/display_composer_vdi_impl.cpp
+@@ -16,11 +16,30 @@
+ #include "display_composer_vdi_impl.h"
+ #include <hdf_base.h>
+ #include "display_log.h"
++#include "drm_vsync_worker.h"
++#include "hdi_display.h"
+ #include "hdf_log.h"
++#include "idisplay_composer_vdi_v1_1.h"
+ 
+ namespace OHOS {
+ namespace HDI {
+ namespace DISPLAY {
++namespace {
++constexpr uint32_t REFRESH_DISPLAY_ID = 0;
++RefreshCallback gRefreshCb = nullptr;
++void *gRefreshData = nullptr;
++
++void RefreshVBlankTrampoline(unsigned int sequence, uint64_t ns, void *data)
++{
++    (void)sequence;
++    (void)ns;
++    (void)data;
++    if (gRefreshCb != nullptr) {
++        gRefreshCb(REFRESH_DISPLAY_ID, gRefreshData);
++    }
++}
++} // namespace
++
+ DisplayComposerVdiImpl::DisplayComposerVdiImpl()
+ {
+ }
+@@ -75,14 +94,14 @@ int32_t DisplayComposerVdiImpl::SetDisplayMode(uint32_t devId, uint32_t modeId)
+     return HDF_SUCCESS;
+ }
+ 
+-int32_t DisplayComposerVdiImpl::GetDisplayPowerStatus(uint32_t devId, DispPowerStatus& status)
++int32_t DisplayComposerVdiImpl::GetDisplayPowerStatus(uint32_t devId, V1_0::DispPowerStatus& status)
+ {
+     int32_t ec = HdiSession::GetInstance().CallDisplayFunction(devId, &HdiDisplay::GetDisplayPowerStatus, &status);
+     DISPLAY_CHK_RETURN(ec != DISPLAY_SUCCESS, HDF_FAILURE, DISPLAY_LOGE("failed, ec=%{public}d", ec));
+     return HDF_SUCCESS;
+ }
+ 
+-int32_t DisplayComposerVdiImpl::SetDisplayPowerStatus(uint32_t devId, DispPowerStatus status)
++int32_t DisplayComposerVdiImpl::SetDisplayPowerStatus(uint32_t devId, V1_0::DispPowerStatus status)
+ {
+     int32_t ec = HdiSession::GetInstance().CallDisplayFunction(devId, &HdiDisplay::SetDisplayPowerStatus, status);
+     DISPLAY_CHK_RETURN(ec != DISPLAY_SUCCESS, HDF_FAILURE, DISPLAY_LOGE("failed, ec=%{public}d", ec));
+@@ -299,7 +318,7 @@ int32_t DisplayComposerVdiImpl::SetLayerBuffer(uint32_t devId, uint32_t layerId,
+     return HDF_SUCCESS;
+ }
+ 
+-int32_t DisplayComposerVdiImpl::SetLayerCompositionType(uint32_t devId, uint32_t layerId, CompositionType type)
++int32_t DisplayComposerVdiImpl::SetLayerCompositionType(uint32_t devId, uint32_t layerId, V1_0::CompositionType type)
+ {
+     int32_t ec = HdiSession::GetInstance().CallLayerFunction(devId, layerId, &HdiLayer::SetLayerCompositionType, type);
+     DISPLAY_CHK_RETURN(ec != DISPLAY_SUCCESS, HDF_FAILURE, DISPLAY_LOGE("failed, ec=%{public}d", ec));
+@@ -327,14 +346,357 @@ int32_t DisplayComposerVdiImpl::SetLayerColor(uint32_t devId, uint32_t layerId,
+     return HDF_ERR_NOT_SUPPORT;
+ }
+ 
++// ---------------------------------------------------------------------------
++// C-API wrappers required by OH 5.0.2+ "vdi解耦" hdi_service (dlsym of
++// individual functions). Added during LubanCat4 OpenHarmony porting.
++// V1_0 wrappers delegate to the shared implementation; V1_1 optional
++// functions return HDF_ERR_NOT_SUPPORT.
++// ---------------------------------------------------------------------------
++static DisplayComposerVdiImpl &GetComposerVdiImpl()
++{
++    static DisplayComposerVdiImpl impl;
++    return impl;
++}
++
+ extern "C" IDisplayComposerVdi *CreateComposerVdi()
+ {
+-    return new DisplayComposerVdiImpl();
++    return &GetComposerVdiImpl();
++}
++
++extern "C" void DestroyComposerVdi(IDisplayComposerVdi *vdi)
++{
++    (void)vdi;
++}
++
++extern "C" IDisplayComposerVdiV1_1 *CreateComposerVdiV1_1()
++{
++    return nullptr;
++}
++
++extern "C" void DestroyComposerVdiV1_1(IDisplayComposerVdiV1_1 *vdi)
++{
++    (void)vdi;
++}
++
++extern "C" int32_t RegHotPlugCallback(HotPlugCallback cb, void *data)
++{
++    return GetComposerVdiImpl().RegHotPlugCallback(cb, data);
++}
++
++extern "C" int32_t GetDisplayCapability(uint32_t devId, DisplayCapability &info)
++{
++    return GetComposerVdiImpl().GetDisplayCapability(devId, info);
++}
++
++extern "C" int32_t GetDisplaySupportedModes(uint32_t devId, std::vector<DisplayModeInfo> &modes)
++{
++    return GetComposerVdiImpl().GetDisplaySupportedModes(devId, modes);
++}
++
++extern "C" int32_t GetDisplayMode(uint32_t devId, uint32_t &modeId)
++{
++    return GetComposerVdiImpl().GetDisplayMode(devId, modeId);
++}
++
++extern "C" int32_t SetDisplayMode(uint32_t devId, uint32_t modeId)
++{
++    return GetComposerVdiImpl().SetDisplayMode(devId, modeId);
++}
++
++extern "C" int32_t GetDisplayPowerStatus(uint32_t devId, V1_0::DispPowerStatus &status)
++{
++    return GetComposerVdiImpl().GetDisplayPowerStatus(devId, status);
++}
++
++extern "C" int32_t SetDisplayPowerStatus(uint32_t devId, V1_0::DispPowerStatus status)
++{
++    return GetComposerVdiImpl().SetDisplayPowerStatus(devId, status);
++}
++
++extern "C" int32_t GetDisplayBacklight(uint32_t devId, uint32_t &level)
++{
++    return GetComposerVdiImpl().GetDisplayBacklight(devId, level);
++}
++
++extern "C" int32_t SetDisplayBacklight(uint32_t devId, uint32_t level)
++{
++    return GetComposerVdiImpl().SetDisplayBacklight(devId, level);
++}
++
++extern "C" int32_t GetDisplayProperty(uint32_t devId, uint32_t id, uint64_t &value)
++{
++    return GetComposerVdiImpl().GetDisplayProperty(devId, id, value);
++}
++
++extern "C" int32_t GetDisplayCompChange(uint32_t devId, std::vector<uint32_t> &layers,
++    std::vector<int32_t> &types)
++{
++    return GetComposerVdiImpl().GetDisplayCompChange(devId, layers, types);
++}
++
++extern "C" int32_t SetDisplayClientCrop(uint32_t devId, const IRect &rect)
++{
++    return GetComposerVdiImpl().SetDisplayClientCrop(devId, rect);
++}
++
++extern "C" int32_t SetDisplayClientBuffer(uint32_t devId, const BufferHandle &buffer, int32_t fence)
++{
++    return GetComposerVdiImpl().SetDisplayClientBuffer(devId, buffer, fence);
++}
++
++extern "C" int32_t SetDisplayClientDamage(uint32_t devId, std::vector<IRect> &rects)
++{
++    return GetComposerVdiImpl().SetDisplayClientDamage(devId, rects);
++}
++
++extern "C" int32_t SetDisplayVsyncEnabled(uint32_t devId, bool enabled)
++{
++    return GetComposerVdiImpl().SetDisplayVsyncEnabled(devId, enabled);
++}
++
++extern "C" int32_t RegDisplayVBlankCallback(uint32_t devId, VBlankCallback cb, void *data)
++{
++    return GetComposerVdiImpl().RegDisplayVBlankCallback(devId, cb, data);
++}
++
++extern "C" int32_t GetDisplayReleaseFence(uint32_t devId, std::vector<uint32_t> &layers,
++    std::vector<int32_t> &fences)
++{
++    return GetComposerVdiImpl().GetDisplayReleaseFence(devId, layers, fences);
++}
++
++extern "C" int32_t CreateVirtualDisplay(uint32_t width, uint32_t height, int32_t &format, uint32_t &devId)
++{
++    return GetComposerVdiImpl().CreateVirtualDisplay(width, height, format, devId);
++}
++
++extern "C" int32_t DestroyVirtualDisplay(uint32_t devId)
++{
++    return GetComposerVdiImpl().DestroyVirtualDisplay(devId);
++}
++
++extern "C" int32_t SetVirtualDisplayBuffer(uint32_t devId, const BufferHandle &buffer, const int32_t fence)
++{
++    return GetComposerVdiImpl().SetVirtualDisplayBuffer(devId, buffer, fence);
++}
++
++extern "C" int32_t SetDisplayProperty(uint32_t devId, uint32_t id, uint64_t value)
++{
++    return GetComposerVdiImpl().SetDisplayProperty(devId, id, value);
++}
++
++extern "C" int32_t Commit(uint32_t devId, int32_t &fence)
++{
++    return GetComposerVdiImpl().Commit(devId, fence);
++}
++
++extern "C" int32_t CreateLayer(uint32_t devId, const LayerInfo &layerInfo, uint32_t &layerId)
++{
++    return GetComposerVdiImpl().CreateLayer(devId, layerInfo, layerId);
++}
++
++extern "C" int32_t DestroyLayer(uint32_t devId, uint32_t layerId)
++{
++    return GetComposerVdiImpl().DestroyLayer(devId, layerId);
++}
++
++extern "C" int32_t PrepareDisplayLayers(uint32_t devId, bool &needFlushFb)
++{
++    return GetComposerVdiImpl().PrepareDisplayLayers(devId, needFlushFb);
++}
++
++extern "C" int32_t SetLayerAlpha(uint32_t devId, uint32_t layerId, const LayerAlpha &alpha)
++{
++    return GetComposerVdiImpl().SetLayerAlpha(devId, layerId, alpha);
++}
++
++extern "C" int32_t SetLayerRegion(uint32_t devId, uint32_t layerId, const IRect &rect)
++{
++    return GetComposerVdiImpl().SetLayerRegion(devId, layerId, rect);
+ }
+ 
+-extern "C" void DestroyComposerVdi(IDisplayComposerVdi* vdi)
++extern "C" int32_t SetLayerCrop(uint32_t devId, uint32_t layerId, const IRect &rect)
+ {
+-    delete vdi;
++    return GetComposerVdiImpl().SetLayerCrop(devId, layerId, rect);
++}
++
++extern "C" int32_t SetLayerZorder(uint32_t devId, uint32_t layerId, uint32_t zorder)
++{
++    return GetComposerVdiImpl().SetLayerZorder(devId, layerId, zorder);
++}
++
++extern "C" int32_t SetLayerPreMulti(uint32_t devId, uint32_t layerId, bool preMul)
++{
++    return GetComposerVdiImpl().SetLayerPreMulti(devId, layerId, preMul);
++}
++
++extern "C" int32_t SetLayerTransformMode(uint32_t devId, uint32_t layerId, TransformType type)
++{
++    return GetComposerVdiImpl().SetLayerTransformMode(devId, layerId, type);
++}
++
++extern "C" int32_t SetLayerDirtyRegion(uint32_t devId, uint32_t layerId, const std::vector<IRect> &rects)
++{
++    return GetComposerVdiImpl().SetLayerDirtyRegion(devId, layerId, rects);
++}
++
++extern "C" int32_t SetLayerVisibleRegion(uint32_t devId, uint32_t layerId, std::vector<IRect> &rects)
++{
++    return GetComposerVdiImpl().SetLayerVisibleRegion(devId, layerId, rects);
++}
++
++extern "C" int32_t SetLayerBuffer(uint32_t devId, uint32_t layerId, const BufferHandle &buffer, int32_t fence)
++{
++    return GetComposerVdiImpl().SetLayerBuffer(devId, layerId, buffer, fence);
++}
++
++extern "C" int32_t SetLayerCompositionType(uint32_t devId, uint32_t layerId, V1_0::CompositionType type)
++{
++    return GetComposerVdiImpl().SetLayerCompositionType(devId, layerId, type);
++}
++
++extern "C" int32_t SetLayerBlendType(uint32_t devId, uint32_t layerId, BlendType type)
++{
++    return GetComposerVdiImpl().SetLayerBlendType(devId, layerId, type);
++}
++
++extern "C" int32_t SetLayerMaskInfo(uint32_t devId, uint32_t layerId, const MaskInfo maskInfo)
++{
++    return GetComposerVdiImpl().SetLayerMaskInfo(devId, layerId, maskInfo);
++}
++
++extern "C" int32_t SetLayerColor(uint32_t devId, uint32_t layerId, const LayerColor &layerColor)
++{
++    return GetComposerVdiImpl().SetLayerColor(devId, layerId, layerColor);
++}
++
++extern "C" int32_t RegSeamlessChangeCallback(SeamlessChangeCallback cb, void *data)
++{
++    (void)cb;
++    (void)data;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t GetDisplaySupportedModesExt(uint32_t devId, std::vector<DisplayModeInfoExt> &modes)
++{
++    (void)devId;
++    (void)modes;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t SetDisplayModeAsync(uint32_t devId, uint32_t modeId, ModeCallback cb, void *data)
++{
++    (void)devId;
++    (void)modeId;
++    (void)cb;
++    (void)data;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t GetDisplayVBlankPeriod(uint32_t devId, uint64_t &period)
++{
++    (void)devId;
++    (void)period;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t SetLayerPerFrameParameter(uint32_t devId, uint32_t layerId, const std::string &key,
++    const std::vector<int8_t> &value)
++{
++    (void)devId;
++    (void)layerId;
++    (void)key;
++    (void)value;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t GetSupportedLayerPerFrameParameterKey(std::vector<std::string> &keys)
++{
++    (void)keys;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t SetDisplayOverlayResolution(uint32_t devId, uint32_t width, uint32_t height)
++{
++    (void)devId;
++    (void)width;
++    (void)height;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t RegRefreshCallback(RefreshCallback cb, void *data)
++{
++    if (cb == nullptr) {
++        DISPLAY_LOGE("RegRefreshCallback: refresh callback is nullptr");
++        return HDF_FAILURE;
++    }
++    gRefreshCb = cb;
++    gRefreshData = data;
++    std::shared_ptr<VsyncCallBack> vsyncCb =
++        std::make_shared<VsyncCallBack>(RefreshVBlankTrampoline, nullptr, 0);
++    DrmVsyncWorker::GetInstance().ReqesterVBlankCb(vsyncCb);
++    DrmVsyncWorker::GetInstance().EnableVsync(true);
++    return HDF_SUCCESS;
++}
++
++extern "C" int32_t GetDisplaySupportedColorGamuts(uint32_t devId, std::vector<ColorGamut> &gamuts)
++{
++    (void)devId;
++    (void)gamuts;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t GetHDRCapabilityInfos(uint32_t devId, HDRCapability &info)
++{
++    (void)devId;
++    (void)info;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t RegDisplayVBlankIdleCallback(VBlankIdleCallback cb, void *data)
++{
++    (void)cb;
++    (void)data;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t SetDisplayConstraint(uint32_t devId, uint64_t frameID, uint64_t ns, uint32_t type)
++{
++    (void)devId;
++    (void)frameID;
++    (void)ns;
++    (void)type;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t SetHardwareCursorPosition(uint32_t devId, int32_t x, int32_t y)
++{
++    (void)devId;
++    (void)x;
++    (void)y;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t EnableHardwareCursorStats(uint32_t devId, bool enable)
++{
++    (void)devId;
++    (void)enable;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t GetHardwareCursorStats(uint32_t devId, uint32_t &frameCount, uint32_t &vsyncCount)
++{
++    (void)devId;
++    (void)frameCount;
++    (void)vsyncCount;
++    return HDF_ERR_NOT_SUPPORT;
++}
++
++extern "C" int32_t SetDisplayActiveRegion(uint32_t devId, const IRect &rect)
++{
++    (void)devId;
++    (void)rect;
++    return HDF_ERR_NOT_SUPPORT;
+ }
+ } // DISPLAY
+ } // HDI
+diff --git a/display/composer/vdi_base/src/hdi_drm_composition.cpp b/display/composer/vdi_base/src/hdi_drm_composition.cpp
+index 0e6e88bea..d437395b1 100644
+--- a/display/composer/vdi_base/src/hdi_drm_composition.cpp
++++ b/display/composer/vdi_base/src/hdi_drm_composition.cpp
+@@ -15,6 +15,7 @@
+ 
+ #include "hdi_drm_composition.h"
+ #include <cerrno>
++#include <unistd.h>
+ #include "hdi_drm_layer.h"
+ 
+ namespace OHOS {
+@@ -287,21 +288,37 @@ int32_t HdiDrmComposition::Apply(bool modeSet)
+     /* Remove useless planes from the drm */
+     RemoveUnusePlane(atomicReqPtr.Get());
+ 
+-    ret = drmModeAtomicAddProperty(pset, mConnector->GetId(), mConnector->GetPropCrtcId(), mCrtc->GetId());
+-    DISPLAY_LOGD("set the connector id: %{public}d, propId %{public}d, crtcId %{public}d", mConnector->GetId(),
+-        mConnector->GetPropCrtcId(), mCrtc->GetId());
+-    DISPLAY_CHK_RETURN((ret < 0), DISPLAY_FAILURE,
+-        DISPLAY_LOGE("can not add the crtc id prop %{public}d", errno));
+-
+-    // set to active
+-    DISPLAY_LOGD("set crtc to active");
+-    ret = drmModeAtomicAddProperty(pset, mCrtc->GetId(), mCrtc->GetActivePropId(), 1);
+-    DISPLAY_CHK_RETURN((ret < 0), DISPLAY_FAILURE,
+-        DISPLAY_LOGE("can not add the active prop errno %{public}d", errno));
++    // [LubanCat4 bring-up fix] 不再每帧重设 connector CRTC_ID 与 CRTC ACTIVE：
++    // ① 这两项已由 Apply() 开头的 UpdateMode() 在 mCrtc->NeedModeSet() 时设置，
++    //    并用 DRM_MODE_ATOMIC_ALLOW_MODESET 提交；DRM 原子状态是持久的，无需重复设置。
++    // ② 每帧写 CRTC 的 ACTIVE 会令该 CRTC 的 active_changed=true，于是
++    //    drm_atomic_crtc_needs_modeset() 恒为真 → 内核每帧重跑完整 modeset 检查 →
++    //    dw_hdmi_rockchip_encoder_atomic_check() → hdmi_select_link_config()
++    //    → 实测：移动鼠标时内核 "use tmds mode" 达 ~41 次/秒（静止时为 0），
++    //      且 drmModeAtomicCommit 频繁返回 EBUSY(-16)（modeset 类提交互相挤占）→ 丢帧。
++    // ③ 去掉后本帧只剩平面属性 + out-fence，等价于纯 page-flip。
++    // 若日后出现"设置模式后不亮屏"，应先查 UpdateMode()/SetActiveMode() 路径，
++    // 不要把这两句加回来。
+ 
+     uint32_t flags = DRM_MODE_ATOMIC_NONBLOCK;
+ 
+-    ret = drmModeAtomicCommit(drmFd, atomicReqPtr.Get(), flags, nullptr);
++    // [LubanCat4 bring-up fix 2] EBUSY 不是致命错误：
++    // NONBLOCK 提交在上一次 flip 尚未完成时会返回 -EBUSY，原实现直接 DISPLAY_CHK_RETURN
++    // 丢弃该帧（实测移动鼠标时 ~36 次/秒）。这里改为有限次重试，最后一次退化为阻塞提交
++    // （去掉 NONBLOCK，内核会等上一次提交完成，不会再返回 EBUSY），只有真正的错误才上报失败。
++    // 配合 fix 1（去掉每帧 modeset 属性）使用：fix 1 把 EBUSY 从 ~36/秒 降到 ~2/秒，
++    // fix 2 消化这部分残留，避免丢帧造成的抖动。
++    constexpr int32_t MAX_COMMIT_RETRY = 3;
++    for (int32_t attempt = 0; attempt <= MAX_COMMIT_RETRY; attempt++) {
++        if (attempt == MAX_COMMIT_RETRY) {
++            flags &= ~static_cast<uint32_t>(DRM_MODE_ATOMIC_NONBLOCK);
++        }
++        ret = drmModeAtomicCommit(drmFd, atomicReqPtr.Get(), flags, nullptr);
++        if (ret == 0 || errno != EBUSY) {
++            break;
++        }
++        usleep(2000); // 2ms：给上一次 flip 一点退休时间
++    }
+     DISPLAY_CHK_RETURN((ret != 0), DISPLAY_FAILURE,
+         DISPLAY_LOGE("drmModeAtomicCommit failed %{public}d errno %{public}d", ret, errno));
+     // set the release fence
+diff --git a/display/composer/vdi_base/src/hdi_gfx_composition.cpp b/display/composer/vdi_base/src/hdi_gfx_composition.cpp
+index 2d9f544e1..cf25b4309 100644
+--- a/display/composer/vdi_base/src/hdi_gfx_composition.cpp
++++ b/display/composer/vdi_base/src/hdi_gfx_composition.cpp
+@@ -89,25 +89,20 @@ bool HdiGfxComposition::CanHandle(HdiLayer &hdiLayer)
+ 
+ bool HdiGfxComposition::UseCompositionClient(std::vector<HdiLayer *> &layers)
+ {
+-    const int32_t MAX_LAYER_COUNT = 4;
+-    int32_t layerCount = 0;
+-    bool hasCompositionClient = false;
+-
+-    for (auto &layer : layers) {
+-        if (!CanHandle(*layer)) {
+-            continue;
+-        }
+-        CompositionType type = layer->GetCompositionType();
+-        layerCount += (type != COMPOSITION_VIDEO) && (type != COMPOSITION_CURSOR);
+-        hasCompositionClient = hasCompositionClient || (type == COMPOSITION_CLIENT);
+-    }
+-    return hasCompositionClient || (layerCount > MAX_LAYER_COUNT);
++    /* [LOCAL FIX] 本板卡内核里的 rga 驱动是 v1.3.4（RGA_IOC_REQUEST_SUBMIT/CONFIG +
++     * struct rga_user_request），而 vendor 侧预置的 librga 是 1.8.1 那一代
++     * （RGA_END_CONFIG/RGA_CMD_CONFIG + struct rga_user_ctx_t）。两者 ioctl 号不一致，
++     * librga 的 improcess 必定失败（DISP: Failed to call RockChipRga interface），
++     * 进而 Apply/Commit 失败导致整屏黑。
++     * 这里强制所有图层走客户端(Mali/GPU)合成，不再调用 RGA 的 Blit/FillRect。 */
++    (void)layers;
++    return true;
+ }
+ 
+ int32_t HdiGfxComposition::SetLayers(std::vector<HdiLayer *> &layers, HdiLayer &clientLayer)
+ {
+     DISPLAY_LOGD("layers size %{public}zd", layers.size());
+-    CompositionType defaultCompType = UseCompositionClient(layers) ? COMPOSITION_CLIENT : COMPOSITION_DEVICE;
++    /* [LOCAL FIX] 统一走客户端(GPU)合成，见 UseCompositionClient 注释 */
+     mClientLayer = &clientLayer;
+     mCompLayers.clear();
+     for (auto &layer : layers) {
+@@ -115,12 +110,9 @@ int32_t HdiGfxComposition::SetLayers(std::vector<HdiLayer *> &layers, HdiLayer &
+             continue;
+         }
+ 
+-        if ((layer->GetCompositionType() == COMPOSITION_VIDEO) ||
+-            (layer->GetCompositionType() == COMPOSITION_CURSOR)) {
+-            layer->SetDeviceSelect(layer->GetCompositionType());
+-        } else {
+-            layer->SetDeviceSelect(defaultCompType);
+-        }
++        /* [LOCAL FIX] 一律交给客户端合成：VIDEO/CURSOR 也不走设备侧，
++         * 避免 Apply() 里的 ClearRect -> GfxFuncs->FillRect（同样是 RGA）。 */
++        layer->SetDeviceSelect(COMPOSITION_CLIENT);
+ 
+         mCompLayers.push_back(layer);
+     }
+@@ -218,6 +210,9 @@ int32_t HdiGfxComposition::Apply(bool modeSet)
+                 DISPLAY_CHK_RETURN((ret != DISPLAY_SUCCESS), DISPLAY_FAILURE,
+                     DISPLAY_LOGE("blit layer %{public}d failed ", i));
+                 break;
++            case COMPOSITION_CLIENT:
++                /* [LOCAL FIX] 该层由客户端(GPU)自行合成，设备侧无需处理 */
++                break;
+             default:
+                 DISPLAY_LOGE("the gfx composition can not surpport the type %{public}d", compType);
+                 break;
+diff --git a/wlan/client/wifi_driver_client.map b/wlan/client/wifi_driver_client.map
+index 208f96817..5a87d0678 100644
+--- a/wlan/client/wifi_driver_client.map
++++ b/wlan/client/wifi_driver_client.map
+@@ -49,6 +49,32 @@
+     ClientGetApBandwidth;
+     GetValidFreqByBand;
+     WifiStopPnoScan;
++    WifiCmdAddIf;
++    WifiCmdAssoc;
++    WifiCmdCancelRemainOnChannel;
++    WifiCmdChangeBeacon;
++    WifiCmdDelKey;
++    WifiCmdDisconnet;
++    WifiCmdGetDrvFlags;
++    WifiCmdGetHwFeature;
++    WifiCmdGetOwnMac;
++    WifiCmdNewKey;
++    WifiCmdProbeReqReport;
++    WifiCmdRemainOnChannel;
++    WifiCmdRemoveIf;
++    WifiCmdSendAction;
++    WifiCmdSendMlme;
++    WifiCmdSetAp;
++    WifiCmdSetApWpsP2pIe;
++    WifiCmdSetClient;
++    WifiCmdSetKey;
++    WifiCmdSetMode;
++    WifiCmdSetNetdev;
++    WifiCmdStaRemove;
++    WifiEapolDisable;
++    WifiEapolEnable;
++    WifiEapolPacketReceive;
++    WifiEapolPacketSend;
+   local:
+     *;
+ };
+\ No newline at end of file

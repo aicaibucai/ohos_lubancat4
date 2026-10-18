@@ -1,0 +1,414 @@
+# ============================================================
+# 仓库: foundation/graphic/graphic_2d
+# 上游: https://gitcode.com/openharmony/graphic_graphic_2d
+# 基线: 9fdf5854a4 2026-07-15 !31290 merge fix/shape-recursion-dos-6.1 into OpenHarmony-6.1-Release
+# ============================================================
+
+diff --git a/frameworks/opengl_wrapper/src/EGL/egl_wrapper_entry.cpp b/frameworks/opengl_wrapper/src/EGL/egl_wrapper_entry.cpp
+index b3446f1774..067efc1b3e 100644
+--- a/frameworks/opengl_wrapper/src/EGL/egl_wrapper_entry.cpp
++++ b/frameworks/opengl_wrapper/src/EGL/egl_wrapper_entry.cpp
+@@ -300,11 +300,25 @@ EGLint EglGetErrorImpl(void)
+ 
+ static __eglMustCastToProperFunctionPointerType FindBuiltinWrapper(const char* procname)
+ {
++    static void* dlglv3Handle = nullptr;
++    if (dlglv3Handle == nullptr) {
+ #if (defined(__aarch64__) || defined(__x86_64__))
+-    static void* dlglv3Handle = dlopen("/system/lib64/libGLESv3.so", RTLD_NOW | RTLD_LOCAL);
++    /* [LOCAL FIX] 本产品把 GLES wrapper 库安装在 /system/lib64/platformsdk/ 下，
++     * 而原代码硬编码的 /system/lib64/libGLESv3.so 并不存在（本文件 32 位分支
++     * 用的就是带 platformsdk 的路径）。dlopen 失败会使 eglGetProcAddress 拿不到
++     * 符号，导致 SystemUI 画不出内容 —— 表现为整屏黑（DRM 侧一切正常）。
++     * 这里按顺序回退查找，兼容两种布局。 */
++    dlglv3Handle = dlopen("/system/lib64/libGLESv3.so", RTLD_NOW | RTLD_LOCAL);
++    if (dlglv3Handle == nullptr) {
++        dlglv3Handle = dlopen("/system/lib64/platformsdk/libGLESv3.so", RTLD_NOW | RTLD_LOCAL);
++    }
++    if (dlglv3Handle == nullptr) {
++        dlglv3Handle = dlopen("libGLESv3.so", RTLD_NOW | RTLD_LOCAL);
++    }
+ #else
+-    static void* dlglv3Handle = dlopen("/system/lib/platformsdk/libGLESv3.so", RTLD_NOW | RTLD_LOCAL);
++    dlglv3Handle = dlopen("/system/lib/platformsdk/libGLESv3.so", RTLD_NOW | RTLD_LOCAL);
+ #endif
++    }
+     if (dlglv3Handle == nullptr) {
+         WLOGE("Failed to load GLES library using dl open");
+         return nullptr;
+diff --git a/graphic_config.gni b/graphic_config.gni
+index 00162799d5..4aea03f85f 100644
+--- a/graphic_config.gni
++++ b/graphic_config.gni
+@@ -170,7 +170,12 @@ if (graphic_2d_feature_rs_enable_eglimage || current_os == "android") {
+ }
+ 
+ if (graphic_2d_feature_rs_enable_uni_render) {
+-  graphic_2d_feature_enable_sdf = true
++  # [LOCAL FIX] 本移植树不含 graphic_2d_ext(SDF) 组件，无条件打开会让
++  # 2d_graphics/BUILD.gn 引用 "graphic_2d_ext:libsdf" 报 Undefined identifier。
++  # 改为"组件存在才打开"。
++  if (path_exists("//foundation/graphic/graphic_2d_ext/BUILD.gn")) {
++    graphic_2d_feature_enable_sdf = true
++  }
+   if (graphic_2d_feature_product == "phone") {
+     graphic_2d_feature_enable_chipset_vsync = true
+   }
+@@ -184,6 +189,9 @@ if (graphic_2d_feature_enable_afbc) {
+   gpu_defines += [ "RS_ENABLE_AFBC" ]
+ }
+ 
++# [LOCAL FIX] rs_enable_parallel_render 在开关关闭时也必须已定义，
++# 否则 render_service/BUILD.gn:358 引用它会报 Undefined identifier。
++rs_enable_parallel_render = false
+ if (graphic_2d_feature_parallel_render_enable) {
+   rs_enable_parallel_render = true
+   gpu_defines += [ "RS_ENABLE_PARALLEL_RENDER" ]
+diff --git a/rosen/modules/2d_graphics/src/drawing/config/DrawingConfig.cpp b/rosen/modules/2d_graphics/src/drawing/config/DrawingConfig.cpp
+index 12a05e398e..c7085c93fd 100644
+--- a/rosen/modules/2d_graphics/src/drawing/config/DrawingConfig.cpp
++++ b/rosen/modules/2d_graphics/src/drawing/config/DrawingConfig.cpp
+@@ -15,6 +15,7 @@
+ 
+ 
+ #include "config/DrawingConfig.h"
++#include "parameters.h"
+ #ifdef DRAWING_DISABLE_API
+ #include <string>
+ #include <vector>
+diff --git a/rosen/modules/2d_graphics/src/drawing/utils/performanceCaculate.cpp b/rosen/modules/2d_graphics/src/drawing/utils/performanceCaculate.cpp
+index 1d9ae1d5f5..3e9b4a9864 100644
+--- a/rosen/modules/2d_graphics/src/drawing/utils/performanceCaculate.cpp
++++ b/rosen/modules/2d_graphics/src/drawing/utils/performanceCaculate.cpp
+@@ -14,6 +14,7 @@
+  */
+ #ifdef ROSEN_OHOS
+ #include <parameter.h>
++#include "parameters.h"
+ #include <parameters.h>
+ #include <sys/time.h>
+ #include <sys/timerfd.h>
+@@ -99,4 +100,4 @@ void PerformanceCaculate::SetCaculateSwitch(bool start)
+ 
+ } // namespace Drawing
+ } // namespace Rosen
+-} // namespace OHOS
+\ No newline at end of file
++} // namespace OHOS
+diff --git a/rosen/modules/2d_graphics/src/drawing/utils/system_properties.cpp b/rosen/modules/2d_graphics/src/drawing/utils/system_properties.cpp
+index a1563c98ae..8a733ec1d5 100644
+--- a/rosen/modules/2d_graphics/src/drawing/utils/system_properties.cpp
++++ b/rosen/modules/2d_graphics/src/drawing/utils/system_properties.cpp
+@@ -15,6 +15,7 @@
+ 
+ #ifndef ROSEN_ARKUI_X
+ #include <parameter.h>
++#include "parameters.h"
+ #include <parameters.h>
+ #endif
+ #include "utils/system_properties.h"
+@@ -227,4 +228,4 @@ bool SystemProperties::CheckVulkanEnable()
+ #endif
+ } // namespace Drawing
+ } // namespace Rosen
+-} // namespace OHOS
+\ No newline at end of file
++} // namespace OHOS
+diff --git a/rosen/modules/render_service/composer/composer_base/layer_backend/hdi_output.cpp b/rosen/modules/render_service/composer/composer_base/layer_backend/hdi_output.cpp
+index c8ac2adf1d..1575b910ab 100644
+--- a/rosen/modules/render_service/composer/composer_base/layer_backend/hdi_output.cpp
++++ b/rosen/modules/render_service/composer/composer_base/layer_backend/hdi_output.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include <cstdint>
++#include "parameters.h"
+ #include <unordered_set>
+ #include "rs_trace.h"
+ #include "hdi_log.h"
+diff --git a/rosen/modules/render_service/core/drawable/dfx/rs_refresh_rate_dfx.cpp b/rosen/modules/render_service/core/drawable/dfx/rs_refresh_rate_dfx.cpp
+index a3c6e824f9..f5aa974a24 100644
+--- a/rosen/modules/render_service/core/drawable/dfx/rs_refresh_rate_dfx.cpp
++++ b/rosen/modules/render_service/core/drawable/dfx/rs_refresh_rate_dfx.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "rs_refresh_rate_dfx.h"
++#include "parameters.h"
+ 
+ #include <parameters.h>
+ 
+diff --git a/rosen/modules/render_service/core/feature/anco_manager/rs_anco_manager.cpp b/rosen/modules/render_service/core/feature/anco_manager/rs_anco_manager.cpp
+index fbbd4c3c35..56ef20ac6f 100644
+--- a/rosen/modules/render_service/core/feature/anco_manager/rs_anco_manager.cpp
++++ b/rosen/modules/render_service/core/feature/anco_manager/rs_anco_manager.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "rs_anco_manager.h"
++#include "parameters.h"
+ 
+ #include <parameters.h>
+ #include "param/sys_param.h"
+diff --git a/rosen/modules/render_service/core/feature/capture/rs_surface_capture_task_parallel.cpp b/rosen/modules/render_service/core/feature/capture/rs_surface_capture_task_parallel.cpp
+index cfb7579cb2..ba803ec2cf 100644
+--- a/rosen/modules/render_service/core/feature/capture/rs_surface_capture_task_parallel.cpp
++++ b/rosen/modules/render_service/core/feature/capture/rs_surface_capture_task_parallel.cpp
+@@ -28,6 +28,7 @@
+ #include "feature/uifirst/rs_uifirst_manager.h"
+ #include "feature_cfg/graphic_feature_param_manager.h"
+ #include "memory/rs_tag_tracker.h"
++#include "parameters.h"   // [LOCAL FIX] system::GetBoolParameter 需要（UniRender 分支使用）
+ #include "params/rs_surface_render_params.h"
+ #include "pipeline/render_thread/rs_base_render_engine.h"
+ #include "pipeline/render_thread/rs_uni_render_util.h"
+@@ -860,7 +861,8 @@ bool RSSurfaceCaptureTaskParallel::PixelMapCopy(std::unique_ptr<Media::PixelMap>
+                     PixelMapSamplingDump(pixelmap, pixelmap->GetWidth() / 2, pixelmap->GetHeight() / 2) |
+                     PixelMapSamplingDump(pixelmap, pixelmap->GetWidth() - 1, pixelmap->GetHeight() / 2) |
+                     PixelMapSamplingDump(pixelmap, pixelmap->GetWidth() / 2, pixelmap->GetHeight() - 1);
+-    if ((pixelDump & ALPHA_MASK) == 0) {
++    // [LOCAL FIX] ALPHA_MASK 在本树中未定义，这里用 RGBA8888 的 alpha 掩码常量
++    if ((pixelDump & 0xFF000000) == 0) {
+         RS_LOGW("RSSurfaceCaptureTaskParallel::PixelMapCopy pixelmap is transparent");
+     }
+     pixelmap->SetMemoryName("RSSurfaceCaptureForClient");
+diff --git a/rosen/modules/render_service/core/feature/capture/rs_ui_capture_solo_task_parallel.cpp b/rosen/modules/render_service/core/feature/capture/rs_ui_capture_solo_task_parallel.cpp
+index 2cbf948b90..f972298b0d 100644
+--- a/rosen/modules/render_service/core/feature/capture/rs_ui_capture_solo_task_parallel.cpp
++++ b/rosen/modules/render_service/core/feature/capture/rs_ui_capture_solo_task_parallel.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "feature/capture/rs_ui_capture_solo_task_parallel.h"
++#include "parameters.h"
+ 
+ #include <memory>
+ #include <parameters.h>
+diff --git a/rosen/modules/render_service/core/feature/capture/rs_ui_capture_task_parallel.cpp b/rosen/modules/render_service/core/feature/capture/rs_ui_capture_task_parallel.cpp
+index 7cff7215f5..c66956699f 100644
+--- a/rosen/modules/render_service/core/feature/capture/rs_ui_capture_task_parallel.cpp
++++ b/rosen/modules/render_service/core/feature/capture/rs_ui_capture_task_parallel.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "feature/capture/rs_ui_capture_task_parallel.h"
++#include "parameters.h"
+ 
+ #include <memory>
+ #include <sys/mman.h>
+@@ -729,7 +730,7 @@ std::function<void()> RSUiCaptureTaskParallel::CreateSurfaceSyncCopyTask(
+                          PixelMapSamplingDump(pixelmap, pixelmap->GetWidth() / 2, pixelmap->GetHeight() / 2) |
+                          PixelMapSamplingDump(pixelmap, pixelmap->GetWidth() - 1, pixelmap->GetHeight() / 2) |
+                          PixelMapSamplingDump(pixelmap, pixelmap->GetWidth() / 2, pixelmap->GetHeight() - 1);
+-        if ((pixelDump & ALPHA_MASK) == 0) {
++        if ((pixelDump & 0xFF000000) == 0) {
+             RS_LOGW("RSUiCaptureTaskParallel::CreateSurfaceSyncCopyTask pixelmap is transparent");
+             if (needDump) {
+                 RS_LOGI("RSUiCaptureTaskParallel::CreateSurfaceSyncCopyTask Do Dumptree. "
+diff --git a/rosen/modules/render_service/core/feature/gpuComposition/rs_vk_image_manager.cpp b/rosen/modules/render_service/core/feature/gpuComposition/rs_vk_image_manager.cpp
+index d911277f35..417d82cf76 100644
+--- a/rosen/modules/render_service/core/feature/gpuComposition/rs_vk_image_manager.cpp
++++ b/rosen/modules/render_service/core/feature/gpuComposition/rs_vk_image_manager.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "rs_vk_image_manager.h"
++#include "parameters.h"
+ 
+ #include <parameter.h>
+ #include <parameters.h>
+@@ -433,4 +434,4 @@ std::shared_ptr<Drawing::Image> RSVkImageManager::GetIntersectImage(Drawing::Rec
+     return cutDownImage;
+ }
+ } // namespace Rosen
+-} // namespace OHOS
+\ No newline at end of file
++} // namespace OHOS
+diff --git a/rosen/modules/render_service/core/feature/hdr/rs_hdr_util.cpp b/rosen/modules/render_service/core/feature/hdr/rs_hdr_util.cpp
+index 1774e8b8d0..a6c299323d 100644
+--- a/rosen/modules/render_service/core/feature/hdr/rs_hdr_util.cpp
++++ b/rosen/modules/render_service/core/feature/hdr/rs_hdr_util.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "rs_hdr_util.h"
++#include "parameters.h"
+ 
+ #include <parameters.h>
+ 
+@@ -748,4 +749,4 @@ GSError RSHdrUtil::SetMetadata(SurfaceBuffer* buffer,
+ #endif
+ 
+ } // namespace Rosen
+-} // namespace OHOS
+\ No newline at end of file
++} // namespace OHOS
+diff --git a/rosen/modules/render_service/core/feature/rdo/rs_rdo.cpp b/rosen/modules/render_service/core/feature/rdo/rs_rdo.cpp
+index 1c0f784e19..7095424f48 100644
+--- a/rosen/modules/render_service/core/feature/rdo/rs_rdo.cpp
++++ b/rosen/modules/render_service/core/feature/rdo/rs_rdo.cpp
+@@ -13,6 +13,7 @@
+  * limitations under the License.
+ */
+ #include <csignal>
++#include "parameters.h"
+ #include <cstddef>
+ #include <cstdlib>
+ #include <cstring>
+@@ -202,4 +203,4 @@ __attribute__((visibility("default"))) int32_t EnableRSCodeCache()
+ }
+ #endif
+ } // namespace Rosen
+-} // namespace OHOS
+\ No newline at end of file
++} // namespace OHOS
+diff --git a/rosen/modules/render_service/core/pipeline/main_thread/rs_main_thread.cpp b/rosen/modules/render_service/core/pipeline/main_thread/rs_main_thread.cpp
+index a9e06b0167..ff27e08f55 100644
+--- a/rosen/modules/render_service/core/pipeline/main_thread/rs_main_thread.cpp
++++ b/rosen/modules/render_service/core/pipeline/main_thread/rs_main_thread.cpp
+@@ -16,6 +16,7 @@
+ #define EGL_EGLEXT_PROTOTYPES
+ 
+ #include "pipeline/main_thread/rs_main_thread.h"
++#include "parameters.h"
+ 
+ #include <algorithm>
+ #include <cstdint>
+diff --git a/rosen/modules/render_service/core/pipeline/render_thread/rs_draw_frame.cpp b/rosen/modules/render_service/core/pipeline/render_thread/rs_draw_frame.cpp
+index b605cedaec..f998c02f64 100644
+--- a/rosen/modules/render_service/core/pipeline/render_thread/rs_draw_frame.cpp
++++ b/rosen/modules/render_service/core/pipeline/render_thread/rs_draw_frame.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "rs_draw_frame.h"
++#include "parameters.h"
+ 
+ #include <hitrace_meter.h>
+ #include <parameters.h>
+diff --git a/rosen/modules/render_service/core/screen_manager/rs_screen_manager.cpp b/rosen/modules/render_service/core/screen_manager/rs_screen_manager.cpp
+index 1cce83ae4e..743394f334 100644
+--- a/rosen/modules/render_service/core/screen_manager/rs_screen_manager.cpp
++++ b/rosen/modules/render_service/core/screen_manager/rs_screen_manager.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "rs_screen_manager.h"
++#include "parameters.h"
+ 
+ #include <parameter.h>
+ #include <parameters.h>
+diff --git a/rosen/modules/render_service/core/system/rs_system_parameters.cpp b/rosen/modules/render_service/core/system/rs_system_parameters.cpp
+index 22de6e7a77..45b62caec2 100644
+--- a/rosen/modules/render_service/core/system/rs_system_parameters.cpp
++++ b/rosen/modules/render_service/core/system/rs_system_parameters.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "rs_system_parameters.h"
++#include "parameters.h"
+ 
+ #include <cstdlib>
+ #include <parameter.h>
+diff --git a/rosen/modules/render_service/main/render_server/rs_render_service.cpp b/rosen/modules/render_service/main/render_server/rs_render_service.cpp
+index 235666b011..9c076c5851 100644
+--- a/rosen/modules/render_service/main/render_server/rs_render_service.cpp
++++ b/rosen/modules/render_service/main/render_server/rs_render_service.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "rs_render_service.h"
++#include "parameters.h"
+ 
+ #include <iservice_registry.h>
+ #include <malloc.h>
+diff --git a/rosen/modules/render_service_base/src/platform/ohos/rs_innovation.cpp b/rosen/modules/render_service_base/src/platform/ohos/rs_innovation.cpp
+index bf4fc7e7a6..5098bc3e75 100644
+--- a/rosen/modules/render_service_base/src/platform/ohos/rs_innovation.cpp
++++ b/rosen/modules/render_service_base/src/platform/ohos/rs_innovation.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "platform/common/rs_innovation.h"
++#include "parameters.h"
+ 
+ #include <dlfcn.h>
+ #include <parameters.h>
+diff --git a/rosen/modules/render_service_base/src/platform/ohos/rs_log.cpp b/rosen/modules/render_service_base/src/platform/ohos/rs_log.cpp
+index ce3ede3ac4..ce2a457fe4 100644
+--- a/rosen/modules/render_service_base/src/platform/ohos/rs_log.cpp
++++ b/rosen/modules/render_service_base/src/platform/ohos/rs_log.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "platform/common/rs_log.h"
++#include "parameters.h"
+ 
+ #include <cstdarg>
+ #include <cstdio>
+diff --git a/rosen/modules/render_service_base/src/platform/ohos/rs_system_properties.cpp b/rosen/modules/render_service_base/src/platform/ohos/rs_system_properties.cpp
+old mode 100755
+new mode 100644
+index d2b84bc9a6..5b14197465
+--- a/rosen/modules/render_service_base/src/platform/ohos/rs_system_properties.cpp
++++ b/rosen/modules/render_service_base/src/platform/ohos/rs_system_properties.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "platform/common/rs_system_properties.h"
++#include "parameters.h"
+ 
+ #include <charconv>
+ #include <cstdlib>
+diff --git a/rosen/modules/render_service_profiler/rs_profiler_capture_recorder.cpp b/rosen/modules/render_service_profiler/rs_profiler_capture_recorder.cpp
+index 36cd7e301c..088c788f26 100644
+--- a/rosen/modules/render_service_profiler/rs_profiler_capture_recorder.cpp
++++ b/rosen/modules/render_service_profiler/rs_profiler_capture_recorder.cpp
+@@ -13,6 +13,7 @@
+  * limitations under the License.
+  */
+ #include "rs_profiler_capture_recorder.h"
++#include "parameters.h"
+ 
+ #include <cstdio>
+ #include <cstdlib>
+@@ -387,4 +388,4 @@ void RSCaptureRecorder::EndCaptureMSKP()
+     }
+ }
+ 
+-} // namespace OHOS::Rosen
+\ No newline at end of file
++} // namespace OHOS::Rosen
+diff --git a/rosen/modules/render_service_profiler/rs_profiler_utils.cpp b/rosen/modules/render_service_profiler/rs_profiler_utils.cpp
+old mode 100755
+new mode 100644
+index f16e3bbc64..ef4f61aba3
+--- a/rosen/modules/render_service_profiler/rs_profiler_utils.cpp
++++ b/rosen/modules/render_service_profiler/rs_profiler_utils.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "rs_profiler_utils.h"
++#include "parameters.h"
+ 
+ #include <chrono>
+ #include <cstdarg>
+@@ -652,4 +653,4 @@ void Utils::FileWrite(const void* data, size_t size, size_t count, FILE* file)
+     FileWrite(file, data, size * count);
+ }
+ 
+-} // namespace OHOS::Rosen
+\ No newline at end of file
++} // namespace OHOS::Rosen
+diff --git a/rosen/modules/safuzz/rs_ipc_dos_simulator/customized/random_typeface.cpp b/rosen/modules/safuzz/rs_ipc_dos_simulator/customized/random_typeface.cpp
+index 80e055143f..0d750b7d93 100644
+--- a/rosen/modules/safuzz/rs_ipc_dos_simulator/customized/random_typeface.cpp
++++ b/rosen/modules/safuzz/rs_ipc_dos_simulator/customized/random_typeface.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "customized/random_typeface.h"
++#include "parameters.h"
+ 
+ #include <filesystem>
+ 

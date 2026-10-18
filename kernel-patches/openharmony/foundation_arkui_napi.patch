@@ -1,0 +1,109 @@
+# ============================================================
+# 仓库: foundation/arkui/napi
+# 上游: https://gitcode.com/openharmony/arkui_napi
+# 基线: c24f5a9c 2026-03-16 !2572 merge OpenHarmony-6.1-Release into OpenHarmony-6.1-Release
+# ============================================================
+
+diff --git a/native_engine/native_async_work.cpp b/native_engine/native_async_work.cpp
+index 7abb597e..5d670324 100644
+--- a/native_engine/native_async_work.cpp
++++ b/native_engine/native_async_work.cpp
+@@ -271,7 +271,7 @@ void NativeAsyncWork::AsyncAfterWorkCallback(uv_work_t* req, int status)
+ #endif
+ 
+     TryCatch tryCatch(reinterpret_cast<napi_env>(engine));
+-    HILOG_DEBUG("NativeAsyncWork::AsyncAfterWorkCallback start to execute.");
++    HILOG_INFO("[E0-NAPI] AsyncAfterWorkCallback start to execute (worker结果回到JS线程了).");
+ #ifdef ENABLE_HITRACE
+     StartTrace(HITRACE_TAG_ACE, "Native async work complete callback, " + that->GetTraceDescription());
+     bool isValidTraceId = that->taskTraceId_.IsValid();
+diff --git a/native_engine/native_engine.cpp b/native_engine/native_engine.cpp
+index 7a432271..bddb60d4 100644
+--- a/native_engine/native_engine.cpp
++++ b/native_engine/native_engine.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "native_engine/native_engine.h"
++#include <atomic>
+ #include <cstdint>
+ #include <memory>
+ 
+@@ -275,6 +276,15 @@ bool NativeEngine::ReinitUVLoop()
+ 
+ void NativeEngine::Loop(LoopMode mode, bool needSync)
+ {
++    // [E0 诊断 2026-10-02] 只读埋点：JS 线程是否真的在泵 uv loop（只打前 5 次，避免刷屏）
++    {
++        static std::atomic<int32_t> e0LoopCalls{ 0 };
++        int32_t callNo = e0LoopCalls.fetch_add(1);
++        if (callNo < 5) {
++            HILOG_INFO("[E0-NAPI] NativeEngine::Loop #%{public}d engine=%{public}p mode=%{public}d",
++                callNo, static_cast<void*>(this), static_cast<int32_t>(mode));
++        }
++    }
+     if (loop_ == nullptr) {
+         HILOG_ERROR("uv loop is nullptr");
+         return;
+@@ -492,8 +502,11 @@ void NativeEngine::EncodeToChinese(napi_value value, std::string& buffer, const
+ #if !defined(PREVIEW)
+ void NativeEngine::CheckUVLoop()
+ {
++    // [E0 诊断 2026-10-02] 只读埋点：谁挂了 uv loop 驱动
++    HILOG_INFO("[E0-NAPI] CheckUVLoop CALLED, engine=%{public}p", this);
+     checkUVLoop_ = true;
+-    uv_thread_create(&uvThread_, NativeEngine::UVThreadRunner, this);
++    int32_t rc = uv_thread_create(&uvThread_, NativeEngine::UVThreadRunner, this);
++    HILOG_INFO("[E0-NAPI] CheckUVLoop uv_thread_create rc=%{public}d", rc);
+ }
+ 
+ void NativeEngine::UVThreadRunner(void* nativeEngine)
+@@ -505,6 +518,8 @@ void NativeEngine::UVThreadRunner(void* nativeEngine)
+     pthread_setname_np(pthread_self(), name.c_str());
+ #endif
+     auto engine = static_cast<NativeEngine*>(nativeEngine);
++    // [E0 诊断 2026-10-02] 只读埋点：UVLoop 线程已启动
++    HILOG_INFO("[E0-NAPI] UVThreadRunner STARTED (thread name=UVLoop), engine=%{public}p", static_cast<void*>(engine));
+     engine->PostLoopTask();
+     while (engine->checkUVLoop_) {
+         int32_t fd = uv_backend_fd(engine->loop_);
+@@ -544,6 +559,8 @@ void NativeEngine::UVThreadRunner(void* nativeEngine)
+ 
+ void NativeEngine::CancelCheckUVLoop()
+ {
++    // [E0 诊断 2026-10-02] 只读埋点：谁在收尾 uv loop 驱动
++    HILOG_INFO("[E0-NAPI] CancelCheckUVLoop CALLED, engine=%{public}p", static_cast<void*>(this));
+     checkUVLoop_ = false;
+     uv_async_send(&uvAsync_);
+     uv_sem_post(&uvSem_);
+@@ -552,6 +569,20 @@ void NativeEngine::CancelCheckUVLoop()
+ 
+ void NativeEngine::PostLoopTask()
+ {
++    // [E0 诊断 2026-10-02] 只读埋点：UVLoop 线程有没有在请求 JS 线程跑 loop（只打前 5 次）
++    {
++        static std::atomic<int32_t> e0PostLoopCalls{ 0 };
++        int32_t callNo = e0PostLoopCalls.fetch_add(1);
++        if (callNo < 5) {
++            HILOG_INFO("[E0-NAPI] PostLoopTask #%{public}d engine=%{public}p postTaskEmpty=%{public}d",
++                callNo, static_cast<void*>(this), static_cast<int32_t>(postTask_ == nullptr ? 1 : 0));
++        }
++    }
++    if (postTask_ == nullptr) {
++        // 没有宿主驱动：原本会直接抛 bad_function_call，这里只告警返回（用于暴露问题而非掩盖）
++        HILOG_ERROR("[E0-NAPI] PostLoopTask but postTask_ is EMPTY (no host drives uv loop)");
++        return;
++    }
+     postTask_(true);
+     uv_sem_wait(&uvSem_);
+ }
+@@ -559,6 +590,9 @@ void NativeEngine::PostLoopTask()
+ 
+ void NativeEngine::SetPostTask(PostTask postTask)
+ {
++    // [E0 诊断 2026-10-02] 只读埋点：谁给这个 engine 挂了 postTask
++    HILOG_INFO("[E0-NAPI] SetPostTask CALLED, engine=%{public}p postTaskEmpty=%{public}d",
++        static_cast<void*>(this), static_cast<int32_t>(postTask == nullptr ? 1 : 0));
+     postTask_ = postTask;
+ }
+ 

@@ -1,0 +1,214 @@
+# ============================================================
+# 仓库: build
+# 上游: https://gitcode.com/openharmony/build
+# 基线: 857b249d 2026-05-13 !6706 merge OpenHarmony-6.1-Release into OpenHarmony-6.1-Release
+# ============================================================
+
+diff --git a/compile_standard_whitelist.json b/compile_standard_whitelist.json
+index 008ad010..ee21bdd4 100644
+--- a/compile_standard_whitelist.json
++++ b/compile_standard_whitelist.json
+@@ -1,12 +1,16 @@
+ {
+     "bundle_subsystem_error": [
+         "device/board/hihope/rk3568/ohos.build",
++        "device/board/hihope/dayu210/ohos.build",
+         "device/board/hisilicon/hispark_taurus/linux/ohos.build",
+         "device/board/hisilicon/hispark_taurus/ohos.build",
+         "device/qemu/arm_virt/linux/ohos.build",
+         "third_party/flutter/glfw/bundle.json",
+         "vendor/hihope/rk3568/ohos.build",
+-        "vendor/hihope/ipcamera/ohos.build"
++        "vendor/hihope/dayu210/ohos.build",
++        "vendor/hihope/ipcamera/ohos.build",
++        "device/board/embedfire/lubancat4/ohos.build",
++        "vendor/embedfire/lubancat4/ohos.build"
+     ],
+     "subsystem_components": [],
+     "gn_part_or_subsystem_error": [
+@@ -21,6 +25,7 @@
+         "//device/board/hihope/rk3568/camera/vdi_impl/v4l2/pipeline_core:camera_pipeline_core",
+         "//device/board/hihope/rk3568/camera/vdi_impl/v4l2:camera_host_vdi_impl_1.0",
+         "//device/board/hihope/rk3568/camera/vdi_impl/v4l2:camera_pipeline_config",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2:camera_pipeline_config",
+         "//device/soc/rockchip/rk3568/hardware/codec/jpeg:libjpeg_vdi_impl",
+         "//device/soc/rockchip/rk3568/hardware/codec:libcodec_oem_interface",
+         "//device/soc/rockchip/rk3568/hardware/display:display_composer_vendor",
+@@ -29,14 +34,38 @@
+         "//device/soc/rockchip/rk3568/hardware/display:libdisplay_buffer_vendor",
+         "//device/soc/rockchip/rk3568/hardware/display:libdisplay_composer_vdi_impl",
+         "//device/soc/rockchip/rk3568/hardware/mpp/mpp/legacy:librockchip_vpu",
++        "//device/soc/rockchip/rk3588/hardware/mpp/mpp/legacy:librockchip_vpu",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/component/common:libRkOMX_Resourcemanager",
++        "//device/soc/rockchip/rk3588/hardware/omx_il/component/common:libRkOMX_Resourcemanager",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/component/video/dec:libomxvpu_dec",
++        "//device/soc/rockchip/rk3588/hardware/omx_il/component/video/dec:libomxvpu_dec",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/component/video/enc:libomxvpu_enc",
++        "//device/soc/rockchip/rk3588/hardware/omx_il/component/video/enc:libomxvpu_enc",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/core:libOMX_Core",
++        "//device/soc/rockchip/rk3588/hardware/omx_il/core:libOMX_Core",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/libOMXPlugin:libOMX_Pluginhw",
++        "//device/soc/rockchip/rk3588/hardware/omx_il/libOMXPlugin:libOMX_Pluginhw",
+         "//ide/tools/previewer:lite_previewer",
+         "//vendor/hihope/rk3568/bluetooth:libbt_vendor",
+-        "//vendor/hihope/ipcamera/bluetooth:libbt_vendor"
++        "//vendor/hihope/ipcamera/bluetooth:libbt_vendor",
++        "//device/soc/rockchip/rk3588/hardware/codec:codec_oem_interface",
++        "//device/soc/rockchip/rk3588/hardware/codec:libcodec_oem_interface",
++        "//device/soc/rockchip/rk3588/hardware/display:display_buffer_model",
++        "//device/soc/rockchip/rk3588/hardware/display:display_composer_model",
++        "//device/soc/rockchip/rk3588/hardware/display:display_composer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:display_gfx",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_buffer_vdi_impl",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_buffer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_composer_vdi_impl",
++        "//device/soc/rockchip/rk3588/hardware/display:libhigbm_vendor",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/device_manager:camera_device_manager",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/driver_adapter:camera_v4l2_adapter",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/pipeline_core:camera_ipp_algo_example",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/pipeline_core:camera_pipeline_core",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2:camera_host_vdi_impl_1.0",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2:camera_pipeline_config",
++        "//device/soc/rockchip/rk3588/hardware/codec/jpeg:libjpeg_vdi_impl",
++        "//vendor/embedfire/lubancat4/bluetooth:libbt_vendor"
+     ],
+     "deps_added_external_part_module": [
+         "//arkcompiler/toolchain/inspector:ark_debugger_static",
+@@ -57,7 +86,7 @@
+         "//base/security/device_security_level/baselib/msglib:messenger_static",
+         "//base/security/device_security_level/baselib/utils:utils_static",
+         "//base/security/device_security_level/interfaces/inner_api:dslm_sdk",
+-	"//base/security/device_security_level/interfaces/inner_api:dslm_sdk_small",
++        "//base/security/device_security_level/interfaces/inner_api:dslm_sdk_small",
+         "//base/security/device_security_level/oem_property/ohos/lite:dslm_ohos_cred_obj",
+         "//base/security/device_security_level/services/common:service_common_obj",
+         "//base/security/device_security_level/services/dslm:service_dslm_obj",
+@@ -116,11 +145,13 @@
+         "//device/soc/rockchip/rk3568/hardware/mpp/mpp/legacy:librockchip_vpu",
+         "//device/soc/rockchip/rk3568/hardware/mpp/mpp/legacy:rockchip_vpu_src",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/component/common:RkOMX_Basecomponent",
++        "//device/soc/rockchip/rk3588/hardware/omx_il/component/common:RkOMX_Basecomponent",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/component/common:libRkOMX_Resourcemanager",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/component/video/dec:libomxvpu_dec",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/component/video/enc:libomxvpu_enc",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/core:libOMX_Core",
+         "//device/soc/rockchip/rk3568/hardware/omx_il/osal:RkOMX_OSAL",
++        "//device/soc/rockchip/rk3588/hardware/omx_il/osal:RkOMX_OSAL",
+         "//drivers/hdf_core/adapter/build/test_common:libhdf_test_common",
+         "//drivers/hdf_core/adapter/uhdf/manager:hdf_core",
+         "//drivers/hdf_core/adapter/uhdf/posix:hdf_posix_osal",
+@@ -311,7 +342,27 @@
+         "//third_party/flutter/build/skia:skia_shared",
+         "//third_party/vk-gl-cts/framework/platform/ohos/rosen_context:rosen_context",
+         "//third_party/vk-gl-cts/framework/platform:libdeqp_ohos_platform",
+-        "//ide/tools/previewer:lite_previewer"
++        "//ide/tools/previewer:lite_previewer",
++        "//device/soc/rockchip/rk3588/hardware/codec:libcodec_oem_interface",
++        "//device/soc/rockchip/rk3588/hardware/display:display_composer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:display_gfx",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_buffer_vdi_impl",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_buffer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_composer_vdi_impl",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/pipeline_core:camera_pipeline_core",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2:camera_host_vdi_impl_1.0",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/device_manager:camera_device_manager",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/driver_adapter:camera_v4l2_adapter",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/metadata_manager:camera_metadata_manager",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/pipeline_core:camera_ipp_algo_example",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/pipeline_core:camera_pipeline_core",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2:camera_host_vdi_impl_1.0",
++        "//vendor/hihope/dayu210/bluetooth:libbt_vendor",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/device_manager:camera_device_manager",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/driver_adapter:camera_v4l2_adapter",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/metadata_manager:camera_metadata_manager",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/pipeline_core:camera_ipp_algo_example",
++        "//vendor/embedfire/lubancat4/bluetooth:libbt_vendor"
+     ],
+     "external_deps_added_self_part_module": [
+         "//build/rust/tests/test_bin_crate:test_bin_crate",
+@@ -418,6 +469,23 @@
+         "//vendor/hihope/rk3568/bluetooth:libbt_vendor",
+         "//vendor/hihope/ipcamera/bluetooth:libbt_vendor",
+         "//vendor/hihope/ipcamera/bluetooth:libbt_vendor",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/device_manager:camera_device_manager",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/driver_adapter:camera_v4l2_adapter",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/metadata_manager:camera_metadata_manager",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/pipeline_core:camera_ipp_algo_example",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/pipeline_core:camera_pipeline_core",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2:camera_host_vdi_impl_1.0",
++        "//vendor/hihope/dayu210/bluetooth:libbt_vendor",
++        "//device/soc/rockchip/rk3588/hardware/codec/jpeg:libjpeg_vdi_impl",
++        "//device/soc/rockchip/rk3588/hardware/codec:libcodec_oem_interface",
++        "//device/soc/rockchip/rk3588/hardware/display:display_composer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:display_gfx",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_buffer_vdi_impl",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_buffer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_composer_vdi_impl",
++        "//device/soc/rockchip/rk3588/hardware/display:libhigbm_vendor",
++        "//device/soc/rockchip/rk3588/hardware/mpp/mpp/hdi_mpp:hdi_mpp",
++        "//device/soc/rockchip/rk3588/hardware/mpp/mpp/legacy:rockchip_vpu_src",
+         "//commonlibrary/c_utils/base:utils",
+         "//commonlibrary/c_utils/base:utilsbase",
+         "//third_party/f2fs-tools/fsck:fsck.f2fs",
+@@ -467,7 +535,22 @@
+         "//foundation/multimedia/audio_framework/services/audio_service:audio_service_static",
+         "//foundation/multimedia/av_session/services/session:avsession_cast_item_static",
+         "//foundation/multimedia/av_session/services/session:avsession_item_static",
+-        "//foundation/multimedia/av_session/services/session:avsession_service_static"
++        "//foundation/multimedia/av_session/services/session:avsession_service_static",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/device_manager:camera_device_manager",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/driver_adapter:camera_v4l2_adapter",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/pipeline_core:camera_ipp_algo_example",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/pipeline_core:camera_pipeline_core",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2:camera_host_vdi_impl_1.0",
++        "//device/soc/rockchip/rk3588/hardware/codec/jpeg:libjpeg_vdi_impl",
++        "//device/soc/rockchip/rk3588/hardware/codec:libcodec_oem_interface",
++        "//device/soc/rockchip/rk3588/hardware/display:display_composer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:display_gfx",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_buffer_vdi_impl",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_buffer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_composer_vdi_impl",
++        "//device/soc/rockchip/rk3588/hardware/display:libhigbm_vendor",
++        "//vendor/embedfire/lubancat4/bluetooth:libbt_vendor",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/metadata_manager:camera_metadata_manager"
+     ],
+     "third_deps_bundle_not_add": [
+         "//arkcompiler/toolchain/tooling:libark_ecma_debugger_test",
+@@ -719,6 +802,23 @@
+         "//third_party/glslang:glslang_validator",
+         "//third_party/glslang:spirv-remap",
+         "//third_party/vk-gl-cts/modules/glshared:libdeqp-gl-shared",
+-        "//third_party/rust/crates/rust-openssl/openssl-sys:lib"
++        "//third_party/rust/crates/rust-openssl/openssl-sys:lib",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/pipeline_core:camera_pipeline_core",
++        "//device/soc/rockchip/rk3588/hardware/display:display_composer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:libdisplay_buffer_vendor",
++        "//device/soc/rockchip/rk3588/hardware/display:libhigbm_vendor",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/device_manager:camera_device_manager",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/driver_adapter:camera_v4l2_adapter",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/metadata_manager:camera_metadata_manager",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/pipeline_core:camera_ipp_algo_example",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2/pipeline_core:camera_pipeline_core",
++        "//device/board/hihope/dayu210/camera/vdi_impl/v4l2:camera_host_vdi_impl_1.0",
++        "//vendor/hihope/dayu210/bluetooth:libbt_vendor",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/device_manager:camera_device_manager",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/driver_adapter:camera_v4l2_adapter",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/metadata_manager:camera_metadata_manager",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2/pipeline_core:camera_ipp_algo_example",
++        "//device/board/embedfire/lubancat4/camera/vdi_impl/v4l2:camera_host_vdi_impl_1.0",
++        "//vendor/embedfire/lubancat4/bluetooth:libbt_vendor"
+     ]
+ }
+diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
+index be3d7ed5..53f81e20 100755
+--- a/config/compiler/BUILD.gn
++++ b/config/compiler/BUILD.gn
+@@ -1007,7 +1007,7 @@ config("chromium_code") {
+     }
+   } else {
+     cflags = [ "-Wall" ]
+-    if (treat_warnings_as_errors && !is_arkui_x) {
++    if (treat_warnings_as_errors && !is_arkui_x && false) {
+       cflags += [ "-Werror" ]
+ 
+       # The compiler driver can sometimes (rarely) emit warnings before calling

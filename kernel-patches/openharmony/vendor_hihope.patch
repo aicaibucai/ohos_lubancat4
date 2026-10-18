@@ -1,0 +1,174 @@
+# ============================================================
+# 仓库: vendor/hihope
+# 上游: https://gitcode.com/openharmony/vendor_hihope
+# 基线: 826d5e1 2026-02-27 !1619 merge cherry-pick-mr-1617-1771921142419-auto into OpenHarmony-6.1-Release
+# ============================================================
+
+diff --git a/dayu210/config.json b/dayu210/config.json
+index 80ef099..8a0ab27 100755
+--- a/dayu210/config.json
++++ b/dayu210/config.json
+@@ -9,8 +9,8 @@
+   "api_version": 8,
+   "enable_ramdisk": true,
+   "enable_absystem": false,
+-  "build_selinux": false,
+-  "build_seccomp": false,
++  "build_selinux": true,
++  "build_seccomp": true,
+   "inherit": [ "productdefine/common/inherit/rich.json", "productdefine/common/inherit/chipset_common.json" ],
+   "subsystems": [
+     {
+@@ -48,6 +48,31 @@
+         }
+       ]
+     },
++    {
++      "subsystem": "developtools",
++      "components": [
++        {
++          "component": "ace_ets2bundle",
++          "features": []
++        },
++        {
++          "component": "smartperf_host",
++          "features": []
++        }
++      ]
++    },
++    {
++      "subsystem": "sdk",
++      "components": [
++        { "component": "sdk", "features": [] }
++      ]
++    },
++    {
++      "subsystem": "global",
++      "components": [
++        { "component": "font_manager", "features": [] }
++      ]
++    },
+     {
+       "subsystem": "hdf",
+       "components": [
+@@ -243,7 +268,16 @@
+           "features": [
+             "skia_feature_upgrade = true"
+           ]
+-        }
++        },
++        { "component": "abseil-cpp", "features": [] },
++        { "component": "alsa-lib", "features": [] },
++        { "component": "libtiff", "features": [] },
++        { "component": "libusb", "features": [] },
++        { "component": "optimized_routines", "features": [] },
++        { "component": "pcre2", "features": [] },
++        { "component": "protobuf", "features": [] },
++        { "component": "rust_libc", "features": [] },
++        { "component": "typescript", "features": [] }
+       ]
+     },
+     {
+@@ -299,7 +333,8 @@
+         {
+           "component": "vulkan-headers",
+           "features": []
+-        }
++        },
++        { "component": "graphic_utils_lite", "features": [] }
+       ]
+     },
+     {
+diff --git a/dayu210/security_config/high_privilege_process_list.json b/dayu210/security_config/high_privilege_process_list.json
+index 4a6ceae..c0eb284 100755
+--- a/dayu210/security_config/high_privilege_process_list.json
++++ b/dayu210/security_config/high_privilege_process_list.json
+@@ -95,6 +95,11 @@
+             "name": "module_update_sa",
+             "uid": "root",
+             "gid": "root"
++        },
++        {
++            "name": "sys_installer_sa",
++            "uid": "root",
++            "gid": "root"
+         }
+     ]
+ }
+diff --git a/dayu210/security_config/sanitizer_check_list.gni b/dayu210/security_config/sanitizer_check_list.gni
+index 82dd169..612d62b 100755
+--- a/dayu210/security_config/sanitizer_check_list.gni
++++ b/dayu210/security_config/sanitizer_check_list.gni
+@@ -218,6 +218,11 @@ bypass_netmanager_base = [
+   "net_policy_manager_if",
+   "socket_permission",
+   "netconn_ndk",
++  "netsys_controller_static",
++  "net_conn_manager_static",
++  "net_policy_manager_static_no_cfi",
++  "net_pac_manager",
++  "net_pac_manager_static",
+ ]
+ 
+ # camera_framework : //foundation/multimedia/camera_framework
+@@ -499,6 +504,9 @@ bypass_time_service = [ "time_system_ability_static" ]
+ # imf : //base/inputmethod/imf
+ bypass_imf = [
+   "inputmethod_client",  # client target, not required to enable cfi
++  "inputmethod_client_fuzz_static",  # test target, not required to enable cfi
++  "inputmethod_ability_fuzz_static",  # test target, not required to enable cfi
++  "inputmethod_fuzztest_common",  # test target, not required to enable cfi
+ ]
+ 
+ # location : //base/location
+@@ -632,14 +640,20 @@ bypass_qos_manager = [
+ bypass_call_manager = [
+   "call",  # napi target, not required to enable cfi
+   "tel_call_manager_api",  # client target, not required to enable cfi
++  "call_manager_test_base",  # client target, not required to enable cfi
++
+ ]
+ 
+-bypass_cellular_call = []
++bypass_cellular_call = [
++    "cellular_call_test_base",  # client target, not required to enable cfi
++]
+ 
+ # core_service : //base/telephony/core_service
+ bypass_core_service = [
+   "vcard",  #cfi not configured
+   "libtel_vcard",  #cfi not configured
++  "ffrt_mocked", #test target, not required to enable cfi
++  "core_service_test_base", #test target, not required to enable cfi
+ ]
+ 
+ bypass_rill_adapter = []
+@@ -1240,7 +1254,9 @@ bypass_dfs_service = []
+ 
+ bypass_dlp_permission_service = [ "ohdlp_permission" ]
+ 
+-bypass_cellular_data = []
++bypass_cellular_data = [
++  "tel_cellular_data_static",  # test target, not required to enable cfi
++]
+ 
+ # request : //base/request/request
+ bypass_request = [
+@@ -1503,6 +1519,7 @@ bypass_graphic_2d = [
+   "rs_graphic_test",
+   "rs_graphic_test_main",
+   "font_asset",
++  "layer_backend_test_impl",  # test target with gmock, not required to enable cfi
+ ]
+ 
+ # security_component_manager : //base/security/security_component_manager
+@@ -1511,6 +1528,9 @@ bypass_security_component_manager = [
+   "security_component_no_cfi_enhance_adapter_src_set",
+   "security_component_no_cfi_framework_src_set",
+   "security_component_no_cfi_enhance_sdk_src_set",
++  "sec_comp_service_stub_no_cfi",
++  "sec_comp_no_cfi_service_proxy",
++  "security_component_no_cfi_disable_enhance_adapter_src_set",
+ ]
+ 
+ # distributed_bundle_framework : //foundation/bundlemanager/distributed_bundle_framework

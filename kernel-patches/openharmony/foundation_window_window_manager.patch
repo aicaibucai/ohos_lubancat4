@@ -1,0 +1,98 @@
+# ============================================================
+# 仓库: foundation/window/window_manager
+# 上游: https://gitcode.com/openharmony/window_window_manager
+# 基线: 7413b3e2e7 2026-04-03 !18588 merge 5 into OpenHarmony-6.1-Release
+# ============================================================
+
+diff --git a/dmserver/src/abstract_display.cpp b/dmserver/src/abstract_display.cpp
+index 35a153e4f2..99c4cb8498 100644
+--- a/dmserver/src/abstract_display.cpp
++++ b/dmserver/src/abstract_display.cpp
+@@ -15,6 +15,11 @@
+ 
+ #include "abstract_display.h"
+ 
++#include <algorithm>
++#include <cstdlib>
++
++#include <parameters.h>
++
+ #include "abstract_screen_controller.h"
+ #include "display_manager_config.h"
+ #include "display_manager_service.h"
+@@ -26,6 +31,12 @@ constexpr int32_t PAD_SCREEN_WIDTH = 2560;
+ constexpr int32_t PHONE_SCREEN_WIDTH = 2160;
+ constexpr float INCH_2_MM = 25.4f;
+ constexpr ScreenId DEFAULT_DISPLAY_ID = 0;
++// [LubanCat4 2in1/PC] 由 HDMI/EDID 真实物理 DPI 推导 DPR 时的安全上限（防 EDID 脏数据）。
++// 下限在自动路径上另取 1.0（见 AbstractDisplay 构造函数注释）。
++constexpr float MAX_VIRTUAL_PIXEL_RATIO = 4.0f;
++// 运行时覆盖（无需改配置文件）：param set persist.display.densitydpi 160
++// 取值语义与配置文件里的 <dpi> 一致（DPI，非 DPR）。设置后重启 dms 生效。
++constexpr const char* DISPLAY_DENSITY_DPI_PARAM = "persist.display.densitydpi";
+ }
+ 
+ AbstractDisplay::AbstractDisplay(DisplayId id, sptr<SupportedScreenModes>& info, sptr<AbstractScreen>& absScreen)
+@@ -64,6 +75,52 @@ AbstractDisplay::AbstractDisplay(DisplayId id, sptr<SupportedScreenModes>& info,
+             return;
+         }
+     }
++
++    // [LubanCat4 2in1/PC] 未固定配置 dpi（配置文件写 0）时，DPR 由显示器【真实物理尺寸】推导。
++    //
++    // 背景：lubancat4 定位是 PC/主机，显示输出走 HDMI 外接显示器，分辨率与物理尺寸都由
++    // 显示器 EDID 给出，链路已打通：
++    //   DrmConnector(c.mmWidth/mmHeight)  [drm_connector.cpp:38]
++    //     -> DisplayCapability.phyWidth/phyHeight  [drm_connector.cpp:153]
++    //     -> AbstractScreen::SetPhyWidth  [abstract_screen_controller.cpp:372]
++    //     -> 上面 CalculateXYDpi() 已算出 xDpi_/yDpi_
++    // 实测本板 27" 2560x1440 屏：xDpi_=108.37/yDpi_=107.58，与 EDID 声明的 600x340mm 完全一致。
++    //
++    // 此前产品配置把 <dpi> 写死 240（手机/平板密度）→ DPR=1.5，把真实 108 丢弃，
++    // 使 2560x1440 桌面屏按手机逻辑排布：逻辑分辨率被压到 1707vp、桌面 19 列、图标仅 81px。
++    // 现改为：有物理尺寸信息就据此推导；没有才回退旧启发式。
++    if (phyWidth_ != UINT32_MAX && phyHeight_ != UINT32_MAX && xDpi_ > 0.0f && yDpi_ > 0.0f) {
++        // ① 显式覆盖优先（语义同配置文件 <dpi>：DPI 值，非 DPR），供用户/板级脚本指定缩放：
++        //      param set persist.display.densitydpi 160   # 桌面 100% (DPR 1.0)
++        //      param set persist.display.densitydpi 192   # 桌面 120% (DPR 1.2)
++        //      param set persist.display.densitydpi 108   # 严格按物理尺寸 (DPR 0.675)
++        //    显式值只做区间保护，不被下面的"自动路径下限"夹住。
++        uint32_t overrideDpi = static_cast<uint32_t>(
++            std::atoi(OHOS::system::GetParameter(DISPLAY_DENSITY_DPI_PARAM, "0").c_str()));
++        bool hasOverride = (overrideDpi >= DOT_PER_INCH_MINIMUM_VALUE &&
++                            overrideDpi <= DOT_PER_INCH_MAXIMUM_VALUE);
++        float targetDpi = hasOverride ? static_cast<float>(overrideDpi) : ((xDpi_ + yDpi_) / 2.0f);
++        float rawRatio = targetDpi / BASELINE_DENSITY;
++        // 夹取规则：
++        //  · 自动路径下限 1.0（=100% 缩放）—— 桌面惯例缩放不低于 100%，且本屏真实 108dpi
++        //    算出 0.675 < 1 会让 1vp < 1px（逻辑分辨率 3780vp 反超物理 2560px），
++        //    破坏 OH 布局里依赖 vp>=px 的假设（1px 细线、最小触摸区）。
++        //    这正是"按真实 DPI 推导"在本屏上的合理落点：不缩放到 100% 以下。
++        //  · 显式 override 可低于 1.0（下限 80dpi → 0.5），以便按偏好/显示器试验。
++        //  · 上限 4.0 防 EDID 脏数据。
++        float minRatio = hasOverride ? (DOT_PER_INCH_MINIMUM_VALUE / static_cast<float>(BASELINE_DENSITY))
++                                     : 1.0f;
++        float finalRatio = std::min(std::max(rawRatio, minRatio), MAX_VIRTUAL_PIXEL_RATIO);
++        TLOGI(WmsLogTag::DMS,
++            "Display dpr: xdpi=%{public}f ydpi=%{public}f phy=%{public}ux%{public}u "
++            "override=%{public}u raw=%{public}f final=%{public}f",
++            xDpi_, yDpi_, phyWidth_, phyHeight_, overrideDpi, rawRatio, finalRatio);
++        virtualPixelRatio_ = finalRatio;
++        absScreen->SetVirtualPixelRatio(virtualPixelRatio_);
++        return;
++    }
++
++    // 无物理尺寸信息（内置屏/未上报）→ 保持原有按宽度的启发式
+     if ((info->width_ >= PHONE_SCREEN_WIDTH) || (info->height_ >= PHONE_SCREEN_WIDTH)) {
+         if ((info->width_ == PAD_SCREEN_WIDTH) || (info->height_ == PAD_SCREEN_WIDTH)) {
+             virtualPixelRatio_ = 2.0f; // Pad is 2.0
+diff --git a/interfaces/kits/napi/environmental/package.json b/interfaces/kits/napi/environmental/package.json
+index 036e374c03..96cc1430d9 100644
+--- a/interfaces/kits/napi/environmental/package.json
++++ b/interfaces/kits/napi/environmental/package.json
+@@ -11,4 +11,3 @@
+   "author": "window",
+   "license": "Apache-2.0"
+ }
+-  
+\ No newline at end of file

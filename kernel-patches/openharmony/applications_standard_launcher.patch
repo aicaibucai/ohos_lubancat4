@@ -1,0 +1,272 @@
+# ============================================================
+# 仓库: applications/standard/launcher
+# 上游: https://gitcode.com/openharmony/applications_launcher
+# 基线: f75dfb6 2025-08-19 !626 update feature/bigfolder/src/main/ets/default/model/BigFolderModel.ts. Merge pull request !626 from 王志港/master
+# ============================================================
+
+diff --git a/AppScope/app.json5 b/AppScope/app.json5
+index df6d54c..eaa9ddf 100644
+--- a/AppScope/app.json5
++++ b/AppScope/app.json5
+@@ -2,7 +2,7 @@
+   "app": {
+     "bundleName": "com.ohos.launcher",
+     "vendor": "ohos",
+-    "versionCode": 1000000,
++    "versionCode": 1000001,
+     "versionName": "1.0.0",
+     "icon": "$media:app_icon",
+     "label": "$string:app_name",
+diff --git a/build-profile.json5 b/build-profile.json5
+index a4899b6..1f80c07 100644
+--- a/build-profile.json5
++++ b/build-profile.json5
+@@ -4,8 +4,8 @@
+       {
+         "name": "default",
+         "signingConfig": "default",
+-        "compileSdkVersion": 20,
+-        "compatibleSdkVersion": 20
++        "compileSdkVersion": 23,
++        "compatibleSdkVersion": 23
+       }
+     ],
+     "signingConfigs": [
+diff --git a/common/src/main/ets/default/configs/RdbStoreConfig.ts b/common/src/main/ets/default/configs/RdbStoreConfig.ts
+index 4dbf4d9..abd398b 100644
+--- a/common/src/main/ets/default/configs/RdbStoreConfig.ts
++++ b/common/src/main/ets/default/configs/RdbStoreConfig.ts
+@@ -14,7 +14,13 @@
+  */
+ 
+ const RdbStoreConfig = {
+-  DB_NAME: 'Launcher.db',
++  // [LubanCat4 bring-up 2026-10-01] 原为 'Launcher.db'。该库在早期启动时按 S3（凭据加密）
++  // 创建过，RDB 服务把安全级别记在 SecurityPolicy 里且**拒绝降级**（日志：
++  // "Set security level from s3 to s1 ... errno:22"）→ 即使删掉库文件、把代码改成 S1，
++  // 打开仍失败 → getRdbStore 的 Promise 不返回 → initRdbConfig 卡死 → 不建窗。
++  // 故换一个新的库名，让它按 S1 全新创建（无降级问题）。
++  // 日后若打通用户解锁并恢复 S3，可改回 'Launcher.db'。
++  DB_NAME: 'Launcher_cat.db',
+   DB_VERSION: 1,
+   Badge: {
+     TABLE_NAME: 'BADGE',
+diff --git a/common/src/main/ets/default/manager/RdbStoreManager.ts b/common/src/main/ets/default/manager/RdbStoreManager.ts
+index d39f530..1ce1b2e 100644
+--- a/common/src/main/ets/default/manager/RdbStoreManager.ts
++++ b/common/src/main/ets/default/manager/RdbStoreManager.ts
+@@ -59,7 +59,15 @@ export class RdbStoreManager {
+     try {
+       const STORE_CONFIG: relationalStore.StoreConfig = {
+         name: RdbStoreConfig.DB_NAME,
+-        securityLevel: relationalStore.SecurityLevel.S3
++        // [LubanCat4 bring-up 2026-10-01] 原为 SecurityLevel.S3（凭据加密区 / EL3）。
++        // 本板 user 100 从未真正完成 os_account 用户解锁（日志：strongauthmanager
++        // "IsOsAccountUnlocked: account verified status: 0"、LnnGenerateCeKeyByHuks
++        // "user not unlocked"），CE 区不可用 → getRdbStore(S3) 的 Promise 永不 settle
++        // → initLauncher() 卡在 await initRdbConfig() → 后面的 createWindow 永不执行
++        // → launcher 无窗口、bootevent.launcher.ready 永不置位 → 解锁后全黑。
++        // 故 bring-up 期改为 S1（设备加密区，开机即可用）。
++        // 日后若打通了用户解锁流程，应恢复为 SecurityLevel.S3。
++        securityLevel: relationalStore.SecurityLevel.S1
+       };
+ 
+       this.mRdbStore = await relationalStore.getRdbStore(globalThis.desktopContext, STORE_CONFIG);
+diff --git a/common/src/main/ets/default/manager/WindowManager.ts b/common/src/main/ets/default/manager/WindowManager.ts
+index c316741..b165da0 100644
+--- a/common/src/main/ets/default/manager/WindowManager.ts
++++ b/common/src/main/ets/default/manager/WindowManager.ts
+@@ -368,6 +368,29 @@ class WindowManager {
+    * Register window event listener.
+    */
+   public registerWindowEvent() {
++    // [LubanCat4 bring-up 2026-10-01] initSubscriber() 是异步创建 subscriber，而本函数在
++    // launcher 初始化早期就被调用 → subscriber 仍为 undefined → commonEvent subscribe 的
++    // 入参非法直接抛异常（日志：CesNapi: Subscribe expected. Wrong argument type for arg0），
++    // 该异常会中断 initLauncher 后续所有初始化。这里改为：未就绪时先异步创建、创建完再订阅。
++    if (WindowManager.subscriber == null) {
++      Log.showInfo(TAG, 'registerWindowEvent: subscriber not ready, create then subscribe');
++      const subscribeInfo: commonEventMgr.CommonEventSubscribeInfo = {
++        events: [commonEventManager.RECENT_FULL_SCREEN, commonEventManager.RECENT_SPLIT_SCREEN]
++      };
++      commonEventMgr.createSubscriber(subscribeInfo).then((commonEventSubscriber: commonEventMgr.CommonEventSubscriber) => {
++        WindowManager.subscriber = commonEventSubscriber;
++        if (WindowManager.eventCallback != null) {
++          commonEventManager.registerCommonEvent(WindowManager.subscriber, WindowManager.eventCallback);
++        }
++      }).catch((err: BusinessError) => {
++        Log.showError(TAG, `registerWindowEvent createSubscriber failed, ${JSON.stringify(err)}`);
++      });
++      return;
++    }
++    if (WindowManager.eventCallback == null) {
++      Log.showInfo(TAG, 'registerWindowEvent: eventCallback not ready, skip');
++      return;
++    }
+     commonEventManager.registerCommonEvent(WindowManager.subscriber, WindowManager.eventCallback);
+   }
+ 
+diff --git a/feature/pagedesktop/src/main/ets/default/layout/PageDesktopLayout.ets b/feature/pagedesktop/src/main/ets/default/layout/PageDesktopLayout.ets
+index 13e0e17..329ff54 100644
+--- a/feature/pagedesktop/src/main/ets/default/layout/PageDesktopLayout.ets
++++ b/feature/pagedesktop/src/main/ets/default/layout/PageDesktopLayout.ets
+@@ -67,6 +67,13 @@ export struct PageDesktopLayout {
+     if (this.deviceType != CommonConstants.PAD_DEVICE_TYPE) {
+       mPageDesktopViewModel.registerAppListChangeCallback();
+     }
++    // [LubanCat4 bring-up] 本板 launcher 是"开机后由 AMS 拉起"，此时 BMS 的系统应用安装
++    // 早已结束，launcher 注册的 bundleMonitor 收不到任何"已装应用"事件；
++    // 而官方代码只在 AppModel.installationSubscriberCallBack()（bundle 变更回调）里
++    // 首次调用 getAppListAsync() 加载应用清单 → 本板永远不加载 →
++    // AppStorage('isDesktopLoadFinished') 恒为 false → GridSwiper.build() 直接 return →
++    // 桌面只剩壁纸、没有任何图标。这里在桌面页创建时主动拉一次清单（幂等）。
++    mPageDesktopViewModel.updateDesktopInfo();
+     CloseAppManager.getInstance().registerCloseAppHandler(new PageDesktopCloseAppHandler());
+   }
+ 
+diff --git a/product/phone/src/main/ets/MainAbility/MainAbility.ts b/product/phone/src/main/ets/MainAbility/MainAbility.ts
+index 3a5095a..5a7fb5a 100644
+--- a/product/phone/src/main/ets/MainAbility/MainAbility.ts
++++ b/product/phone/src/main/ets/MainAbility/MainAbility.ts
+@@ -38,6 +38,7 @@ import inputConsumer from '@ohos.multimodalInput.inputConsumer';
+ import { KeyCode } from '@ohos.multimodalInput.keyCode';
+ import window from '@ohos.window';
+ import { PreferencesHelper } from '@ohos/common/src/main/ets/default/manager/PreferencesHelper';
++import bundleManager from '@ohos.bundle.bundleManager';
+ 
+ const TAG = 'LauncherMainAbility';
+ 
+@@ -50,14 +51,52 @@ export default class MainAbility extends ServiceExtension {
+     this.initLauncher();
+   }
+ 
++  private probeAsyncNapi(): void {
++    const TAGP = 'ProbeAsyncNapi';
++    try {
++      Promise.resolve().then(() => {
++        Log.showInfo(TAGP, 'microtask fired');
++      });
++      setTimeout(() => {
++        Log.showInfo(TAGP, 'timer fired');
++      }, 1000);
++      bundleManager.getBundleInfo('com.ohos.launcher', 0)
++        .then(() => {
++          Log.showInfo(TAGP, 'napi promise form resolved');
++        })
++        .catch((e) => {
++          Log.showError(TAGP, `napi promise form rejected, ${JSON.stringify(e)}`);
++        });
++      bundleManager.getBundleInfo('com.ohos.launcher', 0, (err, data) => {
++        Log.showInfo(TAGP, `napi callback form fired, err=${JSON.stringify(err)}`);
++      });
++    } catch (e) {
++      Log.showError(TAGP, `probe throw, ${JSON.stringify(e)}`);
++    }
++  }
++
+   async initLauncher(): Promise<void> {
+     // init Launcher context
+     globalThis.desktopContext = this.context;
+-    // init rdb
+-    let dbStore = RdbStoreManager.getInstance();
+-    await dbStore.initRdbConfig();
+-    await dbStore.createTable();
+ 
++    // [LubanCat4 诊断 2026-10-01 傍晚] napi 异步回调探针。
++    // 本板自编 HAP 上 getRdbStore / initPreference / getAllLauncherAbilityInfo 的 Promise 永不 settle，
++    // 这里用 timer / microtask / napi-promise / napi-callback 四种形态一次性确认"卡在哪一层"。
++    this.probeAsyncNapi();
++
++
++    // [LubanCat4 bring-up 2026-10-01] firstActivate 原本在本函数末尾（initPreference 之后）才置位，
++    // 但本板 EntryView 的 onPageShow 早于该时刻发生 → EntryView.voteBootEvent() 不执行 →
++    // AppStorage('loaded') 恒为 false → EntryView 里 `if (this.loaded) { PageDesktopLayout() }`
++    // 永远不渲染（表现为"桌面只有壁纸、没有任何图标"），同时 bootevent.launcher.ready 也永不置位。
++    // 故提前到建窗之前置位，让首次 onPageShow 就能完成 voteBootEvent。
++    AppStorage.setOrCreate('firstActivate', true);
++
++    // [LubanCat4 bring-up 2026-10-01] 把"建桌面窗"提到 RDB 初始化之前。
++    // 原因：本板 getRdbStore() 的 Promise 不返回（详见 RdbStoreManager.ts 注释），
++    // 而原实现把 windowManager.createWindow(...) 放在 await initRdbConfig()/createTable() 之后
++    // → 桌面窗口永远不会被创建 → 解锁后全黑。
++    // 这里先建窗，RDB 即使再挂起，桌面窗口也已经存在（页面自己再去查库）。
+     let registerWinEvent = (win: window.Window) => {
+       win.on('windowEvent', (stageEventType) => {
+         // 桌面获焦或失焦时，通知桌面的卡片变为可见状态
+@@ -71,21 +110,71 @@ export default class MainAbility extends ServiceExtension {
+     // create Launcher entry view
+     windowManager.createWindow(globalThis.desktopContext, windowManager.DESKTOP_WINDOW_NAME,
+       windowManager.DESKTOP_RANK, 'pages/' + windowManager.DESKTOP_WINDOW_NAME, true, registerWinEvent);
++    Log.showInfo(TAG, 'createWindow(EntryView) called BEFORE rdb init');
++
++    // init rdb
++    // [LubanCat4 bring-up 2026-10-01] 本板 getRdbStore() 的 Promise 不返回（见 RdbStoreManager.ts 注释），
++    // 若照原样 await，后面的 initGlobalConst()/AppModel/图标初始化全部不会执行 → 桌面只有背景没有图标。
++    // 这里改为"限时等待"：给它 1.5 秒，超时就继续往下走（RDB 在后台仍会继续尝试，成功后再用不迟）。
++    let dbStore = RdbStoreManager.getInstance();
++    Log.showInfo(TAG, 'before rdb init (race with timeout)');
++    await Promise.race([
++      (async () => {
++        await dbStore.initRdbConfig();
++        await dbStore.createTable();
++      })(),
++      new Promise<void>((resolve) => {
++        setTimeout(() => {
++          Log.showError(TAG, 'rdb init timeout(1.5s), continue anyway');
++          resolve();
++        }, 1500);
++      })
++    ]);
++    Log.showInfo(TAG, 'after rdb init wait');
+ 
+-    await PreferencesHelper.getInstance().initPreference(this.context);
++    Log.showInfo(TAG, 'before initPreference (race with timeout)');
++    await Promise.race([
++      PreferencesHelper.getInstance().initPreference(this.context),
++      new Promise<void>((resolve) => {
++        setTimeout(() => {
++          Log.showError(TAG, 'initPreference timeout(1.5s), continue anyway');
++          resolve();
++        }, 1500);
++      })
++    ]);
++    Log.showInfo(TAG, 'after initPreference wait');
+     AppStorage.setOrCreate('firstActivate', true);
+     // init global const
+     this.initGlobalConst();
+     this.displayManager = DisplayManager.getInstance();
+ 
+     // init Gesture navigation
++    // [LubanCat4 bring-up 2026-10-01] 下面几步逐步 try/catch：本板 registerWindowEvent() 内部
++    // 会因 commonEvent subscribe 的入参未就绪而抛异常（CesNapi: Subscribe expected ... arg0），
++    // 原实现是裸调用 → 一处抛异常就把后面的 recent 窗口/输入消费者初始化全部中断。
+     this.startGestureNavigation();
+-    windowManager.registerWindowEvent();
+-    navigationBarCommonEventManager.registerNavigationBarEvent();
++    try {
++      windowManager.registerWindowEvent();
++    } catch (err) {
++      Log.showError(TAG, `registerWindowEvent failed, ${JSON.stringify(err)}`);
++    }
++    try {
++      navigationBarCommonEventManager.registerNavigationBarEvent();
++    } catch (err) {
++      Log.showError(TAG, `registerNavigationBarEvent failed, ${JSON.stringify(err)}`);
++    }
+ 
+     // load recent
+-    windowManager.createRecentWindow();
+-    this.registerInputConsumer();
++    try {
++      windowManager.createRecentWindow();
++    } catch (err) {
++      Log.showError(TAG, `createRecentWindow failed, ${JSON.stringify(err)}`);
++    }
++    try {
++      this.registerInputConsumer();
++    } catch (err) {
++      Log.showError(TAG, `registerInputConsumer failed, ${JSON.stringify(err)}`);
++    }
+   }
+ 
+   private registerInputConsumer(): void {

@@ -1,0 +1,47 @@
+# ============================================================
+# 仓库: applications/standard/screenlock
+# 上游: https://gitcode.com/openharmony/applications_screenlock
+# 基线: 9ee518e 2026-01-20 !256 merge 1209master into master
+# ============================================================
+
+diff --git a/features/screenlock/src/main/ets/com/ohos/model/accountsModel.ts b/features/screenlock/src/main/ets/com/ohos/model/accountsModel.ts
+index 3221823..d1e40cf 100644
+--- a/features/screenlock/src/main/ets/com/ohos/model/accountsModel.ts
++++ b/features/screenlock/src/main/ets/com/ohos/model/accountsModel.ts
+@@ -273,10 +273,33 @@ export default class AccountsModel {
+     @SysFaultLogger({FAULT_ID: FaultID.ACCOUNT_SYSTEM, MSG: "call func isOsAccountActived failed"})
+     isActivateAccount(callback: Callback<boolean>) {
+         Log.showDebug(TAG, `isActivateAccount userId:${this.mCurrentUserId}`)
+-        osAccount.getAccountManager().isOsAccountActived(this.mCurrentUserId).then((isActivate) => {
+-            Log.showInfo(TAG, `isActivateAccount userId:${this.mCurrentUserId} result: ${isActivate}`)
++        // [LOCAL FIX] 原实现没有 .catch()，一旦 isOsAccountActived() 抛异常或 Promise 一直不 settle，
++        // 回调永远不会执行，解锁流程（unlockScreen -> isActivateAccount）会静默中断，
++        // 表现就是"锁屏上滑没反应、永远解不开"。这里加超时与异常兜底：
++        // 查询失败时按"账号已激活"继续（mCurrentUserId 默认为 100，设备上账号 100 确实是 active）。
++        let finished = false
++        const finish = (isActivate: boolean, from: string) => {
++            if (finished) {
++                return
++            }
++            finished = true
++            Log.showInfo(TAG, `isActivateAccount userId:${this.mCurrentUserId} result: ${isActivate} from:${from}`)
+             callback(isActivate)
+-        })
++        }
++        setTimeout(() => {
++            finish(true, 'timeout')
++        }, 500)
++        try {
++            osAccount.getAccountManager().isOsAccountActived(this.mCurrentUserId).then((isActivate) => {
++                finish(isActivate, 'query')
++            }).catch((err) => {
++                Log.showError(TAG, `isActivateAccount failed: ${JSON.stringify(err)}, fallback true`)
++                finish(true, 'catch')
++            })
++        } catch (e) {
++            Log.showError(TAG, `isActivateAccount exception: ${JSON.stringify(e)}, fallback true`)
++            finish(true, 'exception')
++        }
+     }
+     getCurrentUserId() {
+         return this.mCurrentUserId;

@@ -1,0 +1,41 @@
+# ============================================================
+# 仓库: base/theme/screenlock_mgr
+# 上游: https://gitcode.com/openharmony/theme_screenlock_mgr
+# 基线: 8c9ee4d 2026-01-30 !524 merge 0129master into master
+# ============================================================
+
+diff --git a/services/src/screenlock_system_ability.cpp b/services/src/screenlock_system_ability.cpp
+index 8660707..2cc5828 100644
+--- a/services/src/screenlock_system_ability.cpp
++++ b/services/src/screenlock_system_ability.cpp
+@@ -1211,14 +1211,28 @@ void ScreenLockSystemAbility::AuthStateInit(const int32_t userId)
+     std::unique_lock<std::mutex> authLock(authStateMutex_);
+     auto authIter = authStateInfo.find(userId);
+     if (authIter == authStateInfo.end()) {
+-        authStateInfo.insert(std::make_pair(userId, static_cast<int32_t>(AuthState::UNAUTH)));
++        // [LubanCat4 bring-up] 开机不再默认置为"未认证"。
++        // 本板无任何凭据（无密码/指纹/人脸），useriam 永远不会把认证状态推到 AUTHED_*，
++        // 于是 GetDeviceLockedStateByAuth(UNAUTH=0) 恒为 true → deviceLocked=true →
++        // AMS/WMS 不放行普通 ability（aa start 报 10106102；launcher 停在 app state #BEGIN、
++        // 不创建窗口、不出首帧）→ bootevent.launcher.ready 与 boot.completed 永不置位 →
++        // bootanimation 的全屏不透明黑层永不撤销（表现为开机黑屏，只能
++        // `service_control stop bootanimation` 手工恢复）。
++        // 故本板开机即视为"已通过凭据认证"。日后若给本板设置了真实凭据，
++        // 应把下面这行恢复为 static_cast<int32_t>(AuthState::UNAUTH)。
++        authStateInfo.insert(std::make_pair(userId, static_cast<int32_t>(AuthState::AUTHED_BY_CREDENTIAL)));
+     }
+     authLock.unlock();
+ 
+     std::lock_guard<std::mutex> screenStateLock(screenLockMutex_);
+     auto lockIter = isScreenlockedMap_.find(userId);
+     if (lockIter == isScreenlockedMap_.end()) {
+-        isScreenlockedMap_.insert(std::make_pair(userId, true));
++        // [LubanCat4 bring-up] 开机不再默认置为锁定。
++        // 原实现无条件 insert(userId, true)，导致无触摸屏/锁屏页面无法渲染的设备
++        // 永远处于 screenLocked=true：launcher 无法进入前台建窗 -> 不置位
++        // bootevent.launcher.ready -> init 启动事件超时后反复重启。
++        // 本板无凭据、无触摸屏，故开机即视为已解锁，直达桌面。
++        isScreenlockedMap_.insert(std::make_pair(userId, false));
+     }
+ }
+ 
