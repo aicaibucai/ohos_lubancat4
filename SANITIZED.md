@@ -93,6 +93,7 @@ git config user.email "<your-github-noreply-email>"
 | `changes-5.0.3/repo-diff.err` | 124 B | 仅 repo 版本升级提示，零信息量 |
 | `forensic-20261008/diag5_full2.txt`、`diag5_probe1.txt` | 各 56 KB | 与 `diag5_full1.txt` 是同一次崩溃寄存器 dump 的重复版本（三者均 1048 行，仅起始偏移不同），保留 full1 |
 | `forensic-20261008/diag.txt` | 64 B | uboot `printenv devnum` 输出，与移植无关 |
+| `forensic-20261008/` 下 15 个中间输出 | ~56 KB | `diag2/3/4/5_out`、`diag5_screen_dump`、`diag_out`、`diag10_out`、`dyn_dpi`、`geo`、`hgm`、`icon_final`、`icon_path`、`icon_size_out`、`iconformula`、`two`。**结论已全部写入 `docs/05` 正文**（§24.1–24.3 的几何/公式/刷新率分析、§24.6 的常量三方对照），raw 文件只是取证来源。保留 11 个被文档引用的核心证据 |
 | **全部图片**（10 个 `*.jpeg` / `*.png`，共 ~1.7 MB） | 1.7 MB | 用户要求不上传图片。已在 `docs/05` 开头统一说明，正文引用改为删除线标注 |
 
 ### 3.1 源码树改动导出时的排除项
@@ -212,7 +213,7 @@ REPLACEMENTS = [
 
 | 指标 | 脱敏前 | 脱敏后 |
 |---|---|---|
-| 文件数 | 1910 | 90 |
+| 文件数 | 1910 | 75 |
 | 总体积 | ~47 MB | ~3.9 MB |
 | 硬件序列号 | 20 处 | 0 |
 | 家目录路径 | ~50 处 | 0 |
