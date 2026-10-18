@@ -82,6 +82,77 @@ openharmony-lubancat/
 
 ---
 
+## 三.5、上游仓库地址
+
+本项目的全部工作都基于下面两个上游。**fork / clone 时请对照本表**，
+不要从错误的源拉代码（`repo sync` 会按 manifest 自动选择）。
+
+### OpenHarmony 主代码
+
+| 项 | 值 |
+|---|---|
+| 版本 | **6.1.0.31** / API 23 |
+| manifest 分支 | `OpenHarmony-6.1-Release` |
+| 官方镜像站 | https://gitee.com/openharmony |
+| 实际使用的 remote | https://gitcode.com/openharmony （`default.xml` 的 `remote="gitcode"`） |
+| 代码托管 | https://gitcode.com/openharmony |
+| 官方文档 | https://gitee.com/openharmony/docs |
+
+初始化源码树（约 100 GB，需预留 300 GB 磁盘）：
+
+```bash
+repo init -u https://gitcode.com/openharmony/manifest.git \
+          -b OpenHarmony-6.1-Release --no-repo-verify
+repo sync -c -j$(nproc)
+```
+
+本仓库 patch 涉及的具体上游仓库（每个 patch 头部也标注了各自的基线 commit）：
+
+| 仓库 | 地址 |
+|---|---|
+| graphic_2d | https://gitcode.com/openharmony/graphic_graphic_2d |
+| drivers_peripheral | https://gitcode.com/openharmony/drivers_peripheral |
+| window_manager | https://gitcode.com/openharmony/window_window_manager |
+| arkui_ace_engine | https://gitcode.com/openharmony/arkui_ace_engine |
+| arkui_napi | https://gitcode.com/openharmony/arkui_napi |
+| applications_launcher | https://gitcode.com/openharmony/applications_launcher |
+| applications_screenlock | https://gitcode.com/openharmony/applications_screenlock |
+| screenlock_mgr | https://gitcode.com/openharmony/screenlock_mgr |
+| device_board_hihope | https://gitcode.com/openharmony/device_board_hihope |
+| vendor_hihope | https://gitcode.com/openharmony/vendor_hihope |
+| toybox | https://gitcode.com/openharmony/third_party_toybox |
+| build | https://gitcode.com/openharmony/build |
+| integration_verification | https://gitcode.com/openharmony/developtools_integration_verification |
+
+### 野火 LubanCat 板卡 SDK
+
+| 项 | 值 |
+|---|---|
+| 组织 | https://github.com/LubanCat |
+| **内核（本项目的内核基线）** | https://github.com/LubanCat/kernel |
+| 内核分支 | `lbc-develop-5.10`（对应本项目的 5.10.209） |
+| 全部源码仓库 | https://github.com/LubanCat/manifests |
+| u-boot | https://github.com/LubanCat/u-boot |
+| rkbin（loader/工具） | https://github.com/LubanCat/rkbin |
+| Ubuntu rootfs | https://github.com/LubanCat/ubuntu |
+| Debian rootfs | https://github.com/LubanCat/debian12 |
+
+拉取板卡 SDK：
+
+```bash
+mkdir LubanCat_SDK && cd LubanCat_SDK
+repo init -u https://github.com/LubanCat/manifests.git -b lubancat_linux_generic
+repo sync -c -j$(nproc)
+```
+
+> ⚠️ 内核仓库有两个分支：`lbc-develop-5.10` 与 `lbc-develop-6.1`。
+> 本项目用 **5.10**（方案 B 的原厂基线），别拉错。
+> 移植专用的 `openharmony-kernel` 工作副本由 `setup-openharmony-kernel.sh`
+> 从原厂内核改造而来，改动已全部导出到
+> [kernel-patches/openharmony-kernel.patch](kernel-patches/openharmony-kernel.patch)。
+
+---
+
 ## 四、关键路径速查（占位符）
 
 脱敏后的路径占位符，使用时替换为你自己的实际路径：
@@ -132,26 +203,98 @@ $HDC -t 192.168.x.x:36199 shell
 ## 五.5、如何在自己的树上复现移植
 
 所有源码改动已导出为可直接 `git apply` 的 patch，集中在
-[kernel-patches/](kernel-patches/README.md)：
+[kernel-patches/](kernel-patches/README.md)。**完整流程如下**，
+建议按顺序执行，每一步都带校验。
+
+### 前置：准备两棵源码树
 
 ```bash
-# 1) 内核（原厂 5.10.209 + HDF + binder/access_token）
+# A. OpenHarmony 6.1 源码树（见「三.5、上游仓库地址」）
+export OH_SRC=/path/to/openharmony-lts
+
+# B. 野火板卡 SDK（只取内核仓库即可）
 git clone https://github.com/LubanCat/kernel openharmony-kernel
 cd openharmony-kernel
-git apply --check ../kernel-patches/openharmony-kernel.patch
-git apply         ../kernel-patches/openharmony-kernel.patch
-ln -s "$OH_SRC/drivers/hdf_core/framework/include" include/hdf   # 符号链接需手工建
+git checkout lbc-develop-5.10          # 必须是 5.10 分支
+cd -
+export LUBANCAT_SDK=/path/to/LubanCat_SDK
 
-# 2) OpenHarmony 源码树（13 个仓库）
+# C. 本仓库（文档 + patch）
+git clone https://github.com/aicaibucai/ohos_lubancat4.git
+export DOCS=$PWD/ohos_lubancat4
+```
+
+> ⚠️ **内核必须 checkout 到 patch 标注的基线 commit**，不能直接用分支 HEAD。
+> 上游 `lbc-develop-5.10` 仍在前进，分支 HEAD 已领先基线半年以上，
+> 直接 apply 会在 `.version`、`Makefile`、`binder.c` 等处失败。
+>
+> ```bash
+> cd "$LUBANCAT_SDK/openharmony-kernel"
+> BASE=$(grep -m1 '^# 基线:' "$DOCS/kernel-patches/openharmony-kernel.patch" | awk '{print $3}')
+> echo "基线: $BASE"
+> git fetch --depth 1 origin "$BASE" && git checkout FETCH_HEAD
+> ```
+>
+> 已在干净克隆上实测：checkout 到基线后 `git apply --check` 与 `git apply` 均**一次通过**，
+> `drivers/accesstokenid/`、`drivers/hdf/`、binder ioctl、`CONFIG_ACCESS_TOKENID=y` 全部落地。
+
+### 步骤 1：应用内核补丁
+
+```bash
+cd "$LUBANCAT_SDK/openharmony-kernel"
+
+# 先检查（不落盘），全部 hunk 能匹配才继续
+git apply --check "$DOCS/kernel-patches/openharmony-kernel.patch"
+
+# 确认无误后正式应用
+git apply "$DOCS/kernel-patches/openharmony-kernel.patch"
+
+# 补上 patch 有意不含的符号链接（指向 OH 源码树的 HDF 头文件）
+ln -sfn "$OH_SRC/drivers/hdf_core/framework/include" include/hdf
+
+# 校验
+git status --short | head
+```
+
+### 步骤 2：应用 OpenHarmony 源码树补丁
+
+```bash
 cd "$OH_SRC"
-for p in <本仓库>/kernel-patches/openharmony/*.patch; do
+
+for p in "$DOCS"/kernel-patches/openharmony/*.patch; do
   repo=$(grep -m1 '^# 仓库:' "$p" | sed 's/^# 仓库: //')
-  git -C "$repo" apply --check "$p" && git -C "$repo" apply "$p"
+  echo ">>> $repo"
+  git -C "$repo" apply --check "$p" \
+    && git -C "$repo" apply "$p" \
+    || echo "!!! 应用失败：$repo（可能是基线 commit 不一致，见 $p 头部）"
 done
 ```
 
-所有 patch 均通过 `git apply --check` 验证（14/14），
-每个 patch 头部标注了上游仓库地址与基线 commit。
+> 每个 patch 头部都写了 `# 上游:` 与 `# 基线:`。
+> 如果 `--check` 失败，先 `git -C <repo> fetch origin` 并 checkout 到该基线 commit。
+
+### 步骤 3：按需只应用某一类改动
+
+不必一次全上。例如只修黑屏相关：
+
+```bash
+cd "$OH_SRC"
+for p in foundation_graphic_graphic_2d drivers_peripheral vendor_hihope; do
+  git -C "$(grep -m1 '^# 仓库:' "$DOCS/kernel-patches/openharmony/$p.patch" | sed 's/^# 仓库: //')" \
+      apply "$DOCS/kernel-patches/openharmony/$p.patch"
+done
+```
+
+分组对照表见 [kernel-patches/README.md](kernel-patches/README.md#23-按改动性质分批应用推荐)。
+
+### 步骤 4：编译与刷机
+
+```bash
+# 完整构建流程见 docs/04-调试与操作手册.md
+# 要点：必须剥掉 IDE 注入的 safe-delete 包装，否则构建会中断
+```
+
+所有 patch 均通过 `git apply --check` 验证（14/14）。
 完整说明（含按改动性质分批应用、排除清单）见
 [kernel-patches/README.md](kernel-patches/README.md)。
 

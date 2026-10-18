@@ -56,19 +56,35 @@ kernel-patches/
 
 ### 1.3 应用方法
 
+⚠️ **必须先 checkout 到本 patch 标注的基线 commit**，不能用分支 HEAD。
+上游 `lbc-develop-5.10` 仍在前进（分支 HEAD 已领先基线约 6 个月），
+直接 apply 会在 `.version`、`Makefile`、`binder.c` 等处失败。
+
 ```bash
-# 前提：已克隆原厂内核仓库
+# 1) 克隆原厂内核
 git clone https://github.com/LubanCat/kernel openharmony-kernel
 cd openharmony-kernel
-git checkout <与 patch 头部标注的基线一致的 commit>
+git checkout lbc-develop-5.10
 
-# 应用
+# 2) 切到 patch 标注的基线（从 patch 头部自动提取，避免手抄错）
+BASE=$(grep -m1 '^# 基线:' ../kernel-patches/openharmony-kernel.patch | awk '{print $3}')
+git fetch --depth 1 origin "$BASE"
+git checkout FETCH_HEAD
+git log -1 --oneline          # 应与 patch 头部的 # 基线: 一致
+
+# 3) 检查后应用
 git apply --check ../kernel-patches/openharmony-kernel.patch   # 先检查
 git apply         ../kernel-patches/openharmony-kernel.patch   # 确认后应用
 
-# 或分步应用（只取 binder 部分）
+# 分步应用（只取 binder 部分）
 git apply --include='drivers/android/*' ../kernel-patches/openharmony-kernel.patch
 ```
+
+> 已在干净克隆上实测（2026-10-18）：checkout 到基线 `2b6e516c0` 后，
+> `--check` 与 `apply` 均一次通过，`drivers/accesstokenid/`、`drivers/hdf/`、
+> binder ioctl、`CONFIG_ACCESS_TOKENID=y` 全部落地。
+> apply 时会打印约 144 条 `trailing whitespace` 警告，来自上游源码本身的
+> 行尾空格，**无害，可忽略**。
 
 ### 1.4 需要手动处理的两件事
 
