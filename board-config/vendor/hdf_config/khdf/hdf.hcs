@@ -1,0 +1,26 @@
+#include "device_info/device_info.hcs"
+#include "platform/pwm_config.hcs"
+#include "platform/rk3568_watchdog_config.hcs"
+#include "platform/rk3568_uart_config.hcs"
+#include "platform/sdio_config.hcs"
+#include "platform/emmc_config.hcs"
+#include "platform/rk3568_spi_config.hcs"
+#include "input/input_config.hcs"
+#include "wifi/wlan_platform.hcs"
+#include "wifi/wlan_chip_hi3881.hcs"
+#include "camera/camera_config.hcs"
+#include "sensor/sensor_config.hcs"
+#include "audio/audio_config.hcs"
+#include "audio/codec_config.hcs"
+#include "audio/dai_config.hcs"
+#include "audio/dma_config.hcs"
+#include "audio/dsp_config.hcs"
+#include "audio/analog_headset_config.hcs"
+#include "light/light_config.hcs"
+#include "vibrator/vibrator_config.hcs"
+#include "vibrator/linear_vibrator_config.hcs"
+#include "lcd/lcd_config.hcs"
+
+root {
+    module = "rockchip,rk3568_chip";
+}

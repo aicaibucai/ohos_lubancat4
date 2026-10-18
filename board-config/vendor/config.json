@@ -1,0 +1,213 @@
+{
+  "product_name": "lubancat4",
+  "device_company": "embedfire",
+  "device_build_path": "device/board/embedfire/lubancat4",
+  "target_cpu": "arm64",
+  "type": "standard",
+  "version": "3.0",
+  "board": "rk3588",
+  "enable_ramdisk": true,
+  "enable_absystem": false,
+  "build_selinux": true,
+  "build_seccomp": true,
+  "support_jsapi": true,
+  "inherit": [
+    "productdefine/common/inherit/rich.json",
+    "productdefine/common/inherit/chipset_common.json"
+  ],
+  "subsystems": [
+    {
+      "subsystem": "build",
+      "components": [ { "component": "build_framework", "features": [] } ]
+    },
+    {
+      "subsystem": "startup",
+      "components": [
+        { "component": "startup_l2", "features": [] },
+        {
+          "component": "init",
+          "features": [ "init_feature_ab_partition = true" ]
+        }
+      ]
+    },
+    {
+      "subsystem": "hiviewdfx",
+      "components": [
+        { "component": "hilog", "features": [] },
+        { "component": "hitrace", "features": [] },
+        { "component": "faultloggerd", "features": [] },
+        { "component": "hisysevent", "features": [] },
+        { "component": "hichecker", "features": [ "hichecker_support_asan=false" ] }
+      ]
+    },
+    {
+      "subsystem": "resourceschedule",
+      "components": [
+        { "component": "ffrt", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "security",
+      "components": [
+        { "component": "device_auth", "features": [] },
+        { "component": "access_token", "features": [] },
+        { "component": "huks", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "commonlibrary",
+      "components": [ { "component": "c_utils", "features": [] } ]
+    },
+    {
+      "subsystem": "communication",
+      "components": [
+        { "component": "ipc", "features": [] },
+        { "component": "dsoftbus", "features": [ "dsoftbus_get_devicename=false" ] }
+      ]
+    },
+    {
+      "subsystem": "notification",
+      "components": [ { "component": "eventhandler", "features": [] } ]
+    },
+    {
+      "subsystem": "systemabilitymgr",
+      "components": [
+        { "component": "samgr", "features": [] },
+        { "component": "safwk", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "distributeddatamgr",
+      "components": [
+        { "component": "datamgr_service", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "developtools",
+      "components": [
+        { "component": "hdc", "features": [] },
+        { "component": "ace_ets2bundle", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "securec",
+      "components": [ { "component": "thirdparty_bounds_checking_function", "features": [] } ]
+    },
+    {
+      "subsystem": "device_rk3588",
+      "components": [ { "component": "device_rk3588", "features": [] } ]
+    },
+    {
+      "subsystem": "hdf",
+      "components": [
+        {
+          "component": "hdf_core",
+          "features": [
+            "hdf_core_platform_test_support = true",
+            "hdf_core_default_peripheral_config = false"
+          ]
+        },
+        { "component": "drivers_interface_display", "features": [] },
+        {
+          "component": "drivers_peripheral_display",
+          "features": [
+            "drivers_peripheral_display_vdi_default = true",
+            "drivers_peripheral_display_community = true"
+          ]
+        }
+      ]
+    },
+    {
+      "subsystem": "thirdparty",
+      "components": [
+        { "component": "alsa-lib", "features": [] },
+        { "component": "libusb", "features": [] },
+        {
+          "component": "libuv",
+          "features": [
+            "libuv_use_ffrt = true"
+          ]
+        },
+        { "component": "noto-cjk", "features": [] },
+        { "component": "notofonts", "features": [] },
+        { "component": "pcre2", "features": [] },
+        { "component": "rust_libc", "features": [] },
+        { "component": "tex-hyphen", "features": [] },
+        { "component": "typescript", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "developtools",
+      "components": [ { "component": "smartperf_host", "features": [] } ]
+    },
+    {
+      "subsystem": "arkui",
+      "components": [
+        {
+          "component": "ace_engine",
+          "features": [
+            "ace_engine_feature_enable_accessibility = true",
+            "ace_engine_feature_enable_web = true",
+            "ace_engine_feature_enable_upgrade_skia = true"
+          ]
+        },
+        { "component": "ui_appearance", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "graphic",
+      "components": [
+        {
+          "component": "graphic_2d",
+          "features": [
+            "graphic_2d_feature_rs_enable_eglimage = true",
+            "graphic_2d_feature_use_texgine = true",
+            "graphic_2d_feature_upgrade_skia = true",
+            "graphic_2d_feature_rs_enable_uni_render = true"
+          ]
+        },
+        { "component": "graphic_3d", "features": [] },
+        { "component": "graphic_utils_lite", "features": [] },
+        { "component": "graphics_effect", "features": [] },
+        { "component": "vulkan-headers", "features": [] },
+        { "component": "vulkan-loader", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "hdf",
+      "components": [
+        { "component": "drivers_adapter", "features": [] },
+        {
+          "component": "drivers_interface_audio",
+          "features": [ "drivers_interface_audio_community = true" ]
+        },
+        { "component": "drivers_interface_bluetooth", "features": [] },
+        { "component": "drivers_interface_lpplayer", "features": [] },
+        { "component": "drivers_tools", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "multimedia",
+      "components": [ { "component": "video_processing_engine", "features": [] } ]
+    },
+    {
+      "subsystem": "castplus",
+      "components": [
+        { "component": "cast_engine", "features": [] },
+        { "component": "sharing_framework", "features": [] }
+      ]
+    },
+    {
+      "subsystem": "security",
+      "components": [ { "component": "selinux_adapter", "features": [] } ]
+    },
+    {
+      "subsystem": "tee",
+      "components": [ { "component": "tee_client", "features": [] } ]
+    },
+    {
+      "subsystem": "sdk",
+      "components": [ { "component": "sdk", "features": [] } ]
+    }
+  ]
+}

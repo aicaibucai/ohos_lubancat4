@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "napi 异步探针模块"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "napi 异步探针能力"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "LubanCatProbe"
+    },
+    {
+      "name": "page_title",
+      "value": "LubanCat4 napi 探针"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+root {
+    platform {
+        template dai_controller {
+            match_attr = "";
+            serviceName = "";
+        }
+        controller_0x120c1020 :: dai_controller {
+            match_attr = "hdf_dai_driver";
+            serviceName = "dai_service";
+
+            idInfo {
+                    chipName = "rk3588";
+                    chipIdRegister = 0xfe470000;
+                    chipIdSize = 0x1000;
+                }
+
+            regConfig {
+
+                 /*  reg: register address
+                     rreg: register address
+                     shift: shift bits
+                     rshift: rshift bits
+                     min: min value
+                     max: max value
+                     mask: mask of value
+                     invert: enum InvertVal 0-uninvert 1-invert
+                     value: value
+
+                     reg, rreg, shift, value, min, max, mask, invert value
+                 */
+                 ctrlParamsSeqConfig = [
+                    0xff,    0xff,    8,     8,     0x0,    0x1,    0x1,    0,    0,    // accessory enable
+                    0xff,    0xff,    0,     0,     0x0,    0x1,    0x1,    0,    0    // codec enable
+                 ];
+
+
+                 controlsConfig = [
+                     /*
+                         "External Codec Enable",
+                         "Internally Codec Enable",
+                     */
+                     /*array index, iface, enable*/
+                     6,  4,  0,
+                     7,  4,  0
+                 ];
+
+                 daiStartupSeqConfig = [
+                     0x0000,  0x0000,  0,  0,  0,          0xF,           0xF,    0,   0xf,              // AIP_I2S_REG_CFG0
+                     0x0004,  0x0004,  0,  0,  0,          0xF,           0xF,    0,   0xf,              // AIP_I2S_REG_CFG1
+                     0x0008,  0x0008,  0,  0,  0,      0xFFFFF,       0xFFFFF,    0,   0x00071f1f,       // AOP_I2S_REG_CFG0
+                     0x0010,  0x0010,  16, 16, 0,   0xFFFFFFFF,    0xFFFFFFFF,    0,   0x1f0100          // AOP_I2S_REG_CFG1
+                 ];
+
+                 daiParamsSeqConfig = [
+                     0x0008,    0x0008,   16,     16,     0x0,     0xFF,     0xFF,    0,    0x0,    // ao i2s_frequency
+                     0x0008,    0x0008,    0,      0,    0x1E,     0xFF,     0xFF,    0,    0x0,    // ao i2s_frequency
+                     0x0000,    0x0000,    0,      0,     0x0,      0xF,      0xF,    0,    0x0,    // ao i2s_format
+                     0x0000,    0x0000,    15,    15,     0x0,      0x3,      0x3,    0,    0x0,    // ao i2s_channel
+                     0x0008,    0x0008,   16,     16,     0x0,     0xFF,     0xFF,    0,    0x0,    // ai i2s_frequency
+                     0x0008,    0x0008,    8,      8,    0x1E,     0xFF,     0xFF,    0,    0x0,    // ai i2s_frequency
+                     0x0004,    0x0004,    0,      0,     0x0,      0xF,      0xF,    0,    0x0,    // ai i2s_format
+                     0x0004,    0x0004,    15,    15,     0x0,      0x3,      0x3,    0,    0x0     // ai i2s_channel
+                ];
+
+              }
+        }
+    }
+}

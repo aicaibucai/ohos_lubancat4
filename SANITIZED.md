@@ -128,6 +128,8 @@ git config user.email "<your-github-noreply-email>"
 | ~~`Launcher_3745.db`~~ | 已核查无个人数据（仅系统应用名与网格配置），但作为 SQLite 二进制**未随仓库发布** |
 | `patches/*.patch` | 纯代码 diff，无路径泄漏 |
 | `kernel-patches/**/*.patch` | 纯代码 diff，已全量扫描：无家目录路径、无 `D:\`、无内网 IP、无邮箱 |
+| `board-config/**` | 板级与产品配置。已处理：`NET_IP/NET_GW`（→ `192.168.x.x`）、`BOARD_KERNEL_DIR`（→ `$LUBANCAT_SDK/...`） |
+| `tools/oh-probe-app/**` | 探针工程。已处理：`patch-hap.sh` / `build-probe.sh` 里的绝对路径（→ `$DEV_HOME` / `$OH_SRC` / `<FLASH_DIR>` / `$NODE_BIN`） |
 | `research-pc-2in1/*.txt` | 上游仓库调研记录（gitee API 查询结果），无敏感信息 |
 | `forensic-20261008/diag*.txt` | 运行时取证输出，路径已脱敏 |
 
@@ -213,8 +215,8 @@ REPLACEMENTS = [
 
 | 指标 | 脱敏前 | 脱敏后 |
 |---|---|---|
-| 文件数 | 1910 | 75 |
-| 总体积 | ~47 MB | ~3.9 MB |
+| 文件数 | 1910 | 306 |
+| 总体积 | ~47 MB | ~6.2 MB |
 | 硬件序列号 | 20 处 | 0 |
 | 家目录路径 | ~50 处 | 0 |
 | Windows 路径 | ~35 处 | 0 |

@@ -44,6 +44,8 @@
 | [docs/04-调试与操作手册.md](docs/04-调试与操作手册.md) | 串口/hdc/镜像修改/内核重编/烧录全操作 + softbus 排查指引 | 实际操作时照抄 |
 | [changes-5.0.3/README.md](changes-5.0.3/README.md) | 5.0.3 阶段全部移植补丁归档与恢复方法 | 需要重放 5.0.3 补丁时 |
 | **[kernel-patches/README.md](kernel-patches/README.md)** | **当前 6.1 阶段的内核 + 源码树全部改动，`git apply` 可直接应用** | 要在自己的树上复现移植时 |
+| **[board-config/README.md](board-config/README.md)** | **板级与产品配置归档**（`device/board` + `vendor/embedfire`，这两个目录在源码树里不是 git 仓库） | 恢复板级配置 / 了解分区表与 init 脚本 |
+| [tools/README.md](tools/README.md) | napi 异步探针 App（定位 libuv 根因的工具） | 需要复现或继续排查 napi 问题时 |
 
 辅助文件：
 - `setup-openharmony-kernel.sh` — HDF 内核改造脚本（板级内核 + HDF 一键改造）
@@ -67,6 +69,10 @@ openharmony-lubancat/
 ├── kernel-patches/              # ★ 当前 6.1 阶段的全部源码改动（可 git apply）
 │   ├── openharmony-kernel.patch #   内核：binder/access_token/HDF/DTS/defconfig
 │   └── openharmony/             #   源码树：13 个仓库的改动
+├── board-config/                # ★ 板级+产品配置（源码树里非 git，单独归档）
+│   ├── board/                   #   device/board/embedfire/lubancat4
+│   └── vendor/                  #   vendor/embedfire/lubancat4
+├── tools/                       # 辅助工具（napi 异步探针 App）
 ├── changes-5.0.3/               # 5.0.3 阶段补丁归档
 ├── patches/                     # libuv / napi 异步派发补丁
 ├── patches-2in1-dpi/            # PC/2in1 DPI + WMS 窗口裁剪

@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "napi async probe module"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "napi async probe ability"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "LubanCatProbe"
+    },
+    {
+      "name": "page_title",
+      "value": "LubanCat4 napi probe"
+    }
+  ]
+}

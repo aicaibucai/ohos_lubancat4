@@ -1,0 +1,26 @@
+{
+    "subsystem": "device_rk3588",
+    "parts": {
+        "device_rk3588": {
+            "module_list": [
+                "//device/board/embedfire/${product_name}:lubancat4_group",
+                "//vendor/embedfire/${product_name}/bluetooth:libbt_vendor",
+                "//vendor/embedfire/${product_name}/bluetooth:BCM4362A2.hcd"
+            ],
+            "test_list": [
+                "//kernel/linux/build/test:linuxkerneltest"
+            ],
+            "inner_kits": [],
+            "component_deps": [
+                "c_utils",
+                "drivers_interface_display",
+                "graphic_surface",
+                "hdf_core",
+                "hilog",
+                "hitrace",
+                "ipc",
+                "device_soc_rk3588"
+            ]
+        }
+    }
+}

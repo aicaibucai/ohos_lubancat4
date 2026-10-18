@@ -1,0 +1,6 @@
+# fstab.required - 第一阶段必需挂载（无 ramdisk，init 从 /system/etc 读取）
+#<src>                                                  <mnt_point> <type>    <mnt_flags and options>  <fs_mgr_flags>
+/dev/block/platform/fe2e0000.mmc/by-name/vendor          /vendor     ext4     ro,barrier=1            wait,required
+/dev/block/platform/fe2e0000.mmc/by-name/sys-prod        /sys_prod   ext4     ro,barrier=1            wait
+/dev/block/platform/fe2e0000.mmc/by-name/chip-prod       /chip_prod  ext4     ro,barrier=1            wait
+/dev/block/platform/fe2e0000.mmc/by-name/userdata        /data       ext4     nosuid,nodev            wait,check

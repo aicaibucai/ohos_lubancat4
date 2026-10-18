@@ -1,0 +1,18 @@
+{
+  "parts": {
+    "product_lubancat4": {
+      "module_list": [
+        "//vendor/embedfire/lubancat4/default_app_config:default_app_config",
+        "//vendor/embedfire/lubancat4/image_conf:custom_image_conf",
+        "//vendor/embedfire/lubancat4/preinstall-config:preinstall-config",
+        "//vendor/embedfire/lubancat4/resourceschedule:resourceschedule",
+        "//vendor/embedfire/lubancat4/etc:product_etc_conf",
+        "//vendor/embedfire/lubancat4/hals/audio:hdf_audio_config",
+        "//vendor/embedfire/lubancat4/hals/codec/:hdf_codec_config",
+        "//vendor/embedfire/lubancat4/hdf_config/uhdf:hdf_config",
+        "//vendor/embedfire/lubancat4/window_config:window_config"
+      ]
+    }
+  },
+  "subsystem": "product_lubancat4"
+}
