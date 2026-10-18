@@ -41,6 +41,37 @@ kernel-patches/
 而是在**原厂 5.10.209 内核**上直接嫁接 OH 需要的内核特性。
 完整决策过程见 [docs/03-编译排查与内核适配.md](../docs/03-编译排查与内核适配.md) 第二章。
 
+#### 原厂内核仓库（本 patch 的基线来源）
+
+| 项 | 值 |
+|---|---|
+| **仓库地址** | **https://github.com/LubanCat/kernel** |
+| 所属组织 | https://github.com/LubanCat （野火 / Embedfire） |
+| 使用分支 | `lbc-develop-5.10` |
+| 内核版本 | 5.10.209-rk3588 |
+| **本 patch 的基线 commit** | `2b6e516c0c6407a864430b5cb4d4a01232400d6c`（2026-04-23） |
+| 另有一个分支 | `lbc-develop-6.1` —— **本项目不用**，别拉错 |
+
+只取内核仓库（最小依赖）：
+
+```bash
+git clone https://github.com/LubanCat/kernel openharmony-kernel
+cd openharmony-kernel
+git checkout lbc-develop-5.10
+```
+
+或通过板卡 SDK manifest 拉取（`kernel-5.10` 路径即内核仓库）：
+
+```bash
+repo init -u https://github.com/LubanCat/manifests.git -b lubancat_linux_generic
+repo sync -c -j$(nproc)
+# 内核检出到 LubanCat_SDK/kernel-5.10/
+```
+
+> 移植专用的 `openharmony-kernel` 工作副本由仓库根目录的
+> `setup-openharmony-kernel.sh` 从原厂内核改造而来，
+> 本 patch 就是该工作副本相对上游基线的完整 `git diff`。
+
 ### 1.2 改动内容
 
 | 类别 | 文件 | 说明 |
@@ -61,7 +92,7 @@ kernel-patches/
 直接 apply 会在 `.version`、`Makefile`、`binder.c` 等处失败。
 
 ```bash
-# 1) 克隆原厂内核
+# 1) 克隆原厂内核（https://github.com/LubanCat/kernel）
 git clone https://github.com/LubanCat/kernel openharmony-kernel
 cd openharmony-kernel
 git checkout lbc-develop-5.10
