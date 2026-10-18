@@ -1,4 +1,0 @@
-> printenv devnum
-devnum=0
-=> #0, OK
-mmc0(part 0) is current 
