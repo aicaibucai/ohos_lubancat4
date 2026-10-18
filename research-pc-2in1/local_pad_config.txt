@@ -1,0 +1,40 @@
+=== 1) pad 的 PageDesktopGridStyleConfig 关键值 ===
+
+/**
+ * Pad grid style config class
+ */
+export default class PadPageDesktopGridStyleConfig extends PageDesktopGridStyleConfig {
+  /**
+   * icon size
+   */
+  mIconSize = StyleConstants.DEFAULT_APP_ICON_SIZE_WIDTH;
+
+  /**
+   * name size
+   */
+  mNameSize = StyleConstants.DEFAULT_APP_NAME_SIZE;
+
+  /**
+   * margin
+   */
+  mMargin = StyleConstants.DEFAULT_MARGIN_SIZE;
+
+  /**
+   * name height
+   */
+  mNameHeight = StyleConstants.DEFAULT_APP_NAME_HEIGHT;
+
+  /**
+
+=== 2) pad 产品 LauncherLayoutPreLoader（固定 pad）===
+  }
+
+  protected loadData(): void {
+    LayoutViewModel.getInstance().setDevice(CommonConstants.PAD_DEVICE_TYPE);
+  }
+
+  public releaseConfigAndData(): void {
+
+=== 3) 是否有运行时读 device_type 的路径 ===
+127:    globalThis.RdbStoreManagerInstance.updateSettings('device_type', deviceType);
+135:  getDeviceType(): string {

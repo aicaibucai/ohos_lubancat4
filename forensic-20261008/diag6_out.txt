@@ -1,0 +1,20 @@
+===== 1) 谁提供 densityDPI / densityPixels（DMS 侧）=====
+foundation/window/window_manager/dmserver/src/abstract_display.cpp:60:        uint32_t densityDpi = static_cast<uint32_t>(numbersConfig["dpi"][0]);
+foundation/window/window_manager/dmserver/src/abstract_display.cpp:61:        if (densityDpi >= DOT_PER_INCH_MINIMUM_VALUE && densityDpi <= DOT_PER_INCH_MAXIMUM_VALUE) {
+foundation/window/window_manager/dmserver/src/abstract_display.cpp:62:            virtualPixelRatio_ = static_cast<float>(densityDpi) / BASELINE_DENSITY;
+foundation/window/window_manager/test/systemtest/dms/display_change_test.cpp:339:    uint32_t densityDpi = 320;
+foundation/window/window_manager/test/systemtest/dms/display_change_test.cpp:340:    ASSERT_EQ(DMError::DM_OK, defaultScreen_->SetDensityDpi(densityDpi));
+foundation/window/window_manager/test/systemtest/dms/display_change_test.cpp:351:    uint32_t densityDpi = 80;
+foundation/window/window_manager/test/systemtest/dms/display_change_test.cpp:352:    ASSERT_EQ(DMError::DM_OK, defaultScreen_->SetDensityDpi(densityDpi));
+foundation/window/window_manager/test/systemtest/dms/display_change_test.cpp:363:    uint32_t densityDpi = DOT_PER_INCH_MAXIMUM_VALUE + 1;
+
+===== 2) 关键：OH 的默认 density 配置（resources 或 etc）=====
+./third_party/vk-gl-cts/external/vulkancts/scripts/src/extensions/VK_KHR_display.json
+./third_party/vk-gl-cts/external/vulkancts/scripts/src/extensions/VK_KHR_get_display_properties2.json
+./third_party/vk-gl-cts/external/vulkancts/scripts/src/extensions/VK_KHR_display_swapchain.json
+./interface/sdk_c/arkui/display_manager/libdm.ndk.json
+./interface/sdk_c/graphic/graphic_2d/native_display_soloist/libnative_display_soloist.ndk.json
+
+===== 3) screenDensity 在 config.json 里的标准写法（对照 phone.json）=====
+
+===== 4) 全树找 'screenDensity' 作为 feature =====

@@ -1,0 +1,21 @@
+    let column = ~~((realWidth + minGutter) / (itemSize + minGutter));
+    let userWidth = (realWidth + minGutter - (itemSize + minGutter) * column);
+    let gutter = (userWidth / (column - 1)) + minGutter;
+    let row = ~~((realHeight + gutter) / (itemSize + gutter));
+    let marginTop = ((realHeight + gutter - (itemSize + gutter) * row) / 2);
+    if (!this.mIsPad) {
+        if (row > 6) {
+            row = 6;
+        }
+
+        if (this.mNavigationBarStatus) {
+            realHeight = realHeight + this.mLauncherLayoutStyleConfig.mSysBottomHeight;
+        }
+        let remainHeight = (realHeight + gutter - (itemSize + gutter) * row)
+        realHeight -= remainHeight
+        marginTop = remainHeight / 2 + this.mSysUITopHeight
+    }
+    //set desktop icon
+    let ratio = this.mLauncherLayoutStyleConfig.mIconRatio;
+    let lines = this.mLauncherLayoutStyleConfig.mNameLines;
+    let appTextSize = this.mLauncherLayoutStyleConfig.mNameSize;

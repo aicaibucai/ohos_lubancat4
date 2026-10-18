@@ -1,0 +1,21 @@
+--- $HOME/work/lubancat4-openharmony-porting/patches-2in1-dpi/display_manager_config.xml.orig	2026-10-09 20:28:35.329818300 +0800
++++ vendor/embedfire/lubancat4/window_config/display_manager_config.xml	2026-10-09 20:34:36.654309700 +0800
+@@ -15,7 +15,17 @@
+  -->
+  <Configs>
+     <!--Window display dpi, valid range is 80~640, use 0 if no configuration is requeired-->
+-    <dpi>240</dpi>
++
++    <!-- [LubanCat4 2in1/PC 2026-10-09] 由 240 改为 0 = "不固定 DPI"。
++         本板定位是 PC/主机，显示走 HDMI 外接显示器：分辨率与物理尺寸都由显示器 EDID 给出。
++         写死 240 会让 DPR=240/160=1.5，把 EDID 的真实 108dpi 丢弃，
++         使 2560x1440 的桌面屏按手机逻辑排布（逻辑分辨率 1707vp、桌面 19 列、图标仅 81px）。
++         置 0 后 DMS 走"按真实物理 DPI 推导"的分支（见 abstract_display.cpp 的
++         [LubanCat4 2in1/PC] 段），并支持运行时覆盖：
++             param set persist.display.densitydpi 160   # 桌面 100%（DPR=1.0）
++             param set persist.display.densitydpi 192   # 桌面 120%（DPR=1.2）
++         如需恢复"固定密度"行为，把下面的 0 改回 240 即可。 -->
++    <dpi>0</dpi>
+     <!-- Indicate the deviation between the default device display direction and the direction -->
+     <!-- of the sensor. Use 0 in default, available values are {0, 90, 180, 270} -->
+     <defaultDeviceRotationOffset>0</defaultDeviceRotationOffset>

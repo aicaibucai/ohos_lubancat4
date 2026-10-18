@@ -1,0 +1,137 @@
+diff --git a/native_engine/native_async_work.cpp b/native_engine/native_async_work.cpp
+index 7abb597e..9d9de066 100644
+--- a/native_engine/native_async_work.cpp
++++ b/native_engine/native_async_work.cpp
+@@ -24,6 +24,7 @@
+ #endif
+ 
+ #include <cinttypes>
++#include <map>
+ #include "native_api_internal.h"
+ 
+ #ifdef ENABLE_CONTAINER_SCOPE
+@@ -42,6 +43,31 @@ const std::string TRACE_POINT_ASYNCWORKCALLBACK = "napi::NativeAsyncWork::AsyncW
+ using namespace OHOS::HiviewDFX;
+ #endif
+ 
++// [LubanCat4 补丁 2026-10-01] 每个 JS 线程（EventRunner）只创建一个 loop 泵 EventHandler，
++// 并在进程生命周期内一直持有它：EventHandler 构造时会把自身注册进 EventQueue 的观察者列表，
++// 若随即析构会在队列里留下悬垂指针（主线程下一轮 GetEvent 时跳野地址崩溃）。
++namespace {
++std::mutex g_uvLoopPumpMutex;
++std::map<OHOS::AppExecFwk::EventRunner*, std::shared_ptr<OHOS::AppExecFwk::EventHandler>> g_uvLoopPumpHandlers;
++
++std::shared_ptr<OHOS::AppExecFwk::EventHandler> GetOrCreateUvLoopPumpHandler()
++{
++    std::shared_ptr<OHOS::AppExecFwk::EventRunner> runner = OHOS::AppExecFwk::EventRunner::Current();
++    if (runner == nullptr) {
++        return nullptr;
++    }
++    std::lock_guard<std::mutex> lock(g_uvLoopPumpMutex);
++    auto it = g_uvLoopPumpHandlers.find(runner.get());
++    if (it != g_uvLoopPumpHandlers.end()) {
++        return it->second;
++    }
++    auto handler = std::make_shared<OHOS::AppExecFwk::EventHandler>(runner);
++    g_uvLoopPumpHandlers.emplace(runner.get(), handler);
++    HILOG_INFO("LubanCat4 fix: create uv loop pump handler for runner %{public}p", runner.get());
++    return handler;
++}
++} // namespace
++
+ NativeAsyncWork::NativeAsyncWork(NativeEngine* engine,
+                                  NativeAsyncExecuteCallback execute,
+                                  NativeAsyncCompleteCallback complete,
+@@ -89,6 +115,16 @@ NativeAsyncWork::NativeAsyncWork(NativeEngine* engine,
+         containerScopeId_ = ContainerScope::CurrentId();
+     }
+ #endif
++    // [LubanCat4 补丁 2026-10-01] 本对象在 JS 线程上创建，这里记住该线程的 EventRunner。
++    // 某些前端路径（共享运行时的 hybrid 路径）不会调用 SetPostTask/CheckUVLoop，
++    // 进程内就没人驱动 napi 的 uv loop：uv_queue_work 的 worker 会执行，
++    // 但 AsyncAfterWorkCallback 永远不会被调度，导致所有 promise/callback 形态的
++    // napi 异步 API（RDB / preferences / bundle 查询 / 账号 …）永不回到 JS。
++    // 这里改为由 napi 自己保证：worker 完成后向 JS 线程投递一次 loop 泵。
++    std::shared_ptr<OHOS::AppExecFwk::EventRunner> runner = OHOS::AppExecFwk::EventRunner::Current();
++    if (runner != nullptr) {
++        uvLoopPumpHandler_ = GetOrCreateUvLoopPumpHandler();
++    }
+ }
+ 
+ NativeAsyncWork::~NativeAsyncWork() = default;
+@@ -228,6 +264,7 @@ void NativeAsyncWork::AsyncWorkCallback(uv_work_t* req)
+         HiTraceId currentId = HiTraceChain::SaveAndSet(that->taskTraceId_);
+         HiTraceChain::Tracepoint(HITRACE_TP_SR, that->taskTraceId_, "%s", TRACE_POINT_ASYNCWORKCALLBACK.c_str());
+         that->execute_(that->engine_, that->data_);
++        that->PostUvLoopPump();
+         FinishTrace(HITRACE_TAG_ACE);
+         HiTraceChain::Tracepoint(HITRACE_TP_SS, that->taskTraceId_, "%s", TRACE_POINT_ASYNCWORKCALLBACK.c_str());
+         HiTraceChain::Restore(currentId);
+@@ -235,11 +272,29 @@ void NativeAsyncWork::AsyncWorkCallback(uv_work_t* req)
+     }
+ #endif
+     that->execute_(that->engine_, that->data_);
++    that->PostUvLoopPump();
+ #ifdef ENABLE_HITRACE
+     FinishTrace(HITRACE_TAG_ACE);
+ #endif
+ }
+ 
++// [LubanCat4 补丁 2026-10-01] 在 JS 线程上跑一次 uv loop，让 uv_queue_work 的完成回调
++// （AsyncAfterWorkCallback）被调度。宿主已经挂好 uv loop 驱动时，多跑一次是无害的。
++void NativeAsyncWork::PostUvLoopPump()
++{
++    if (uvLoopPumpHandler_ == nullptr || engine_ == nullptr) {
++        return;
++    }
++    NativeEngine* engine = engine_;
++    uint64_t engineId = engineId_;
++    uvLoopPumpHandler_->PostTask([engine, engineId]() {
++        if (engine->GetId() != engineId) {
++            return;
++        }
++        engine->Loop(LOOP_NOWAIT, false);
++    }, "LubanCat4UvLoopPump");
++}
++
+ void NativeAsyncWork::AsyncAfterWorkCallback(uv_work_t* req, int status)
+ {
+     if (req == nullptr) {
+diff --git a/native_engine/native_async_work.h b/native_engine/native_async_work.h
+index 1fe1f063..a101fcd3 100644
+--- a/native_engine/native_async_work.h
++++ b/native_engine/native_async_work.h
+@@ -21,9 +21,13 @@
+ #ifdef ENABLE_HITRACE
+ #include "hitrace/trace.h"
+ #endif
++#include <memory>
+ #include <mutex>
+ #include <queue>
+ #include <uv.h>
++// [LubanCat4 补丁 2026-10-01] worker 完成后需要在 JS 线程上跑一次 uv loop
++#include "event_handler.h"
++#include "event_runner.h"
+ 
+ struct NativeAsyncWorkDataPointer {
+     NativeAsyncWorkDataPointer()
+@@ -78,6 +82,9 @@ public:
+ private:
+     static void AsyncWorkCallback(uv_work_t* req);
+     static void AsyncAfterWorkCallback(uv_work_t* req, int status);
++    // [LubanCat4 补丁] worker 执行完毕后，唤醒 JS 线程跑一次 uv loop，
++    // 让 AsyncAfterWorkCallback（完成回调）能够被调度回 JS。
++    void PostUvLoopPump();
+ 
+     uv_work_t work_;
+     NativeEngine* engine_;
+@@ -89,6 +96,9 @@ private:
+     std::queue<NativeAsyncWorkDataPointer> asyncWorkRecvData_;
+     std::string traceDescription_;
+     std::string taskName_;
++    // [LubanCat4 补丁] 创建本任务的 JS 线程的 EventHandler（用于回投 loop 泵任务）
++    std::shared_ptr<OHOS::AppExecFwk::EventHandler> uvLoopPumpHandler_ = nullptr;
++
+ #ifdef ENABLE_CONTAINER_SCOPE
+     int32_t containerScopeId_;
+ #endif

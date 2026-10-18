@@ -1,0 +1,23 @@
+diff --git a/install.sh b/install.sh
+index 26a73fd7..8384c52e 100755
+--- a/install.sh
++++ b/install.sh
+@@ -10,6 +10,11 @@ set -e
+ cd $1
+ {
+ flock -x 100
++# Incremental build guard: grpc sources already unpacked and patched.
++if [ -d "grpc" ] && [ -f "grpc/.ohos_install_done" ]; then
++    echo "grpc already installed, skip"
++    exit 0
++fi
+ if [ -d "grpc" ];then
+     rm -rf grpc
+ fi
+@@ -24,4 +29,5 @@ patch -p1 < $1/fix-CVE-2023-33953-add-header-limit.patch
+ patch -p1 < $1/fix-CVE-2023-44487.patch
+ flock -u 100
+ } 100<>$1/lock_file.lock
++touch "$1/grpc/.ohos_install_done"
+ exit 0
+\ No newline at end of file

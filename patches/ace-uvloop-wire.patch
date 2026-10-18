@@ -1,0 +1,36 @@
+diff --git a/frameworks/bridge/declarative_frontend/engine/jsi/jsi_declarative_engine.cpp b/frameworks/bridge/declarative_frontend/engine/jsi/jsi_declarative_engine.cpp
+index 7522bb7c62a..837fd11cb4f 100644
+--- a/frameworks/bridge/declarative_frontend/engine/jsi/jsi_declarative_engine.cpp
++++ b/frameworks/bridge/declarative_frontend/engine/jsi/jsi_declarative_engine.cpp
+@@ -478,6 +478,9 @@ thread_local void* cardRuntime_;
+ thread_local shared_ptr<JsRuntime> localRuntime_;
+ thread_local void* g_declarativeRuntime = nullptr;
+ 
++// [LubanCat4 补丁 2026-10-01] 记录已挂过 napi uv loop 驱动的共享 engine，避免重复启动 UVLoop 线程。
++static NativeEngine* g_uvLoopWiredEngine = nullptr;
++
+ // ArkTsCard start
+ thread_local bool isUnique_ = false;
+ thread_local FormJsXNodeLoadMode currentMode_ = FormJsXNodeLoadMode::NONE;
+@@ -1632,6 +1635,21 @@ void JsiDeclarativeEngine::EngineTask(bool sharedRuntime)
+ #endif
+         RegisterWorker();
+         engineInstance_->RegisterFaPlugin();
++        return;
++    }
++
++    // [LubanCat4 补丁 2026-10-01] 共享运行时（hybrid 路径）下上游跳过了 SetPostTask + CheckUVLoop，
++    // 于是进程内没有任何人驱动 napi 的 uv loop：uv_queue_work 的 worker 会执行，
++    // 但 AsyncAfterWorkCallback 永不触发，导致所有 promise/callback 形态的 napi 异步 API
++    // （RDB / preferences / bundle 查询 / 账号 …）的完成回调都回不到 JS。
++    // 这里为共享 engine 也挂上驱动（同一 engine 只挂一次）。
++    if (nativeEngine_ != nullptr && g_uvLoopWiredEngine != nativeEngine_) {
++        g_uvLoopWiredEngine = nativeEngine_;
++        SetPostTask(nativeEngine_);
++#if !defined(PREVIEW)
++        nativeEngine_->CheckUVLoop();
++#endif
++        LOGI("LubanCat4 fix: wire napi uv loop for shared runtime engine %{public}p", nativeEngine_);
+     }
+ }
+ 

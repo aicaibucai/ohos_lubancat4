@@ -1,0 +1,24 @@
+[   35.213316] SAMGR: insert SA:1903_49
+[   35.214406] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 5
+1 pid 250 key: persist.samgr.cache.sa
+[   35.276749] SAMGR: SA:183 OpenSo 3ms
+[   35.504347] combophy_avdd0v85: disabling
+[   35.504385] combophy_avdd1v8: disabling
+[   37.213793] SAMGR: insert SA:1904_50
+[   37.215141] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 5
+2 pid 250 key: persist.samgr.cache.sa
+[   39.112215] SAMGR: insert SA:801_51
+[   39.112816] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 5
+3 pid 250 key: persist.samgr.cache.sa
+[   39.113185] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+ pid 291 key: accessibility.config.ready
+[   39.317246] SAMGR: SA:183 OpenSo 1ms
+[   40.899475] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 6
+ pid 449 key: bootevent.wms.fullscreen.ready
+[   42.110357] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+ pid 1250 key: bootevent.launcher.ready
+[   45.677751] [pid=244][PLUGIN][INFO][init_context.c:242]Poll sub init timeout,
+ sub init 0 exit
+[   45.679636] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 244) exit with code : 127
+

@@ -1,0 +1,42 @@
+  calculateDock(): any {
+    Log.showInfo(TAG, 'calculateDock start');
+    let margin = this.mLauncherLayoutStyleConfig.mDockSaveMargin;
+    let dockGap = this.mLauncherLayoutStyleConfig.mDockGutter;
+    let iconSize = this.mLauncherLayoutStyleConfig.mDockIconSize;
+    let listItemGap = this.mLauncherLayoutStyleConfig.mDockItemGap;
+    let dockPadding = this.mLauncherLayoutStyleConfig.mDockPadding;
+    let marginBottom = this.mLauncherLayoutStyleConfig.mDockMarginBottomHideBar;
+    if (!this.mNavigationBarStatus) {
+      marginBottom = this.mLauncherLayoutStyleConfig.mDockMarginBottom;
+    }
+    let maxDockNum = 0;
+    let dockSpaceWidth = this.mScreenWidth - 2 * margin;
+    let maxRecentNum = 3;
+    if (this.mScreenWidth < PresetStyleConstants.DEFAULT_DOCK_RECENT_WIDTH || !this.mIsPad) {
+      maxRecentNum = 0;
+      maxDockNum = ~~((dockSpaceWidth - 2 * dockPadding + listItemGap) / (iconSize + listItemGap));
+    } else {
+      let maxNum = ~~((dockSpaceWidth - dockGap - 4 * dockPadding + 2 * listItemGap) / (iconSize + listItemGap));
+      maxDockNum = maxNum - maxRecentNum;
+    }
+    this.mDockHeight = iconSize + 2 * dockPadding + marginBottom;
+    this.mWorkSpaceHeight = this.mScreenHeight - this.mSysUIBottomHeight - this.mDockHeight;
+    let result = {
+      mDockGap: dockGap,
+      mIconSize: iconSize,
+      mListItemWidth: iconSize,
+      mListItemHeight: iconSize,
+      mListItemGap: listItemGap,
+      mDockPadding: dockPadding,
+      mMaxRecentNum: maxRecentNum,
+      mMaxDockNum: maxDockNum,
+      mDockHeight: iconSize + 2 * dockPadding,
+      mMarginBottom: marginBottom
+    };
+    return result;
+  }
+
+  /**
+   * calculate desktop
+   */
+  calculateDesktop(): any {

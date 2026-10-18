@@ -1,0 +1,10 @@
+########## A) 官方 launcher 仓：是否存在 2in1/PC 实现 ##########
+  master            product/ = pad phone 
+  weekly_20250908   product/ = pad phone 
+
+########## B) local launcher source 的 product/ ##########
+  pad phone 
+
+########## C) ★SystemUI 有 pc 产品（对照）##########
+  default pc phone 
+  build-profile targets: "pc_entry" "pc_controlpanel" "pc_notificationpanel" "pc_statusbar" 

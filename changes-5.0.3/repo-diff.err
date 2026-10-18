@@ -1,0 +1,5 @@
+
+... A new version of repo (2.65) is available.
+... You should upgrade soon:
+    cp $OH_SRC/.repo/repo/repo $HOME/bin/repo
+

@@ -1,0 +1,12 @@
+########## 1) 社区是否有独立的 PC launcher 仓 ##########
+  [404] openharmony/applications_launcher_pc
+  [404] openharmony/launcher_pc
+  [404] openharmony/pc_launcher
+  [404] openharmony/applications_pc_launcher
+  [404] openharmony/applications_desktop
+
+########## 2) 官方 systemui 的 pc 产品构成 ##########
+controlpanel notificationpanel statusbar 
+########## 3) systemui entry pc/phone 的 deviceTypes ##########
+  pc: ['tablet'] pc_entry
+  phone: ['default'] phone_entry

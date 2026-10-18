@@ -1,0 +1,15 @@
+===== 1) 板上的 display 配置来源（vendor/config.json 里的 density）=====
+--- 本地 vendor/embedfire/lubancat4/config.json ---
+
+===== 2) 对比：dayu210 / rk3568 的 density 配置 =====
+
+===== 3) 全树搜 screenDensity 相关配置项 =====
+
+===== 4) 板上实时的 density 参数（用 getprop 等价方式）=====
+--- 其它可能来源 ---
+	  param: const.SystemCapability.PowerManager.DisplayPowerManager=true 
+	  param: const.SystemCapability.PowerManager.DisplayPowerManager.Lite=true 
+    map file: u:object_r:const_display_brightness_param:s0 
+	  param: const.display.brightness.min=1 
+	  param: const.display.brightness.default=102 
+	  param: const.display.brightness.max=255 

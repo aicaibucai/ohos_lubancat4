@@ -1,0 +1,22 @@
+diff --git a/install.sh b/install.sh
+index 6a1fe63..e5460c0 100755
+--- a/install.sh
++++ b/install.sh
+@@ -8,6 +8,11 @@
+ 
+ set -e
+ cd $1
++# Incremental build guard: sources already unpacked, configured and patched.
++if [ -d "libnl-3.7.0" ] && [ -f "libnl-3.7.0/.ohos_install_done" ]; then
++    echo "libnl already installed, skip"
++    exit 0
++fi
+ if [ -d "libnl-3.7.0" ];then
+     rm -rf libnl-3.7.0
+ fi
+@@ -16,4 +21,5 @@ cd $1/libnl-3.7.0
+ ./configure
+ patch -p1 < $1/slove-oh-update-sp3.patch --fuzz=0 --no-backup-if-mismatch
+ patch -p1 < $1/solve-oh-compile-problem.patch --fuzz=0 --no-backup-if-mismatch
++touch "$1/libnl-3.7.0/.ohos_install_done"
+ exit 0

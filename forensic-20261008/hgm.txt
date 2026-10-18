@@ -1,0 +1,16 @@
+########## 1) RS 认为 70Hz，但面板 activeMode=60Hz ##########
+  RefreshRateCounts: Refresh Rate:70, Count:6553
+  activeMode: 2560x1440, refreshRate=60
+  supportedMode[0]: 720x400, refreshRate=70   ← 可疑！
+
+########## 2) HGM 默认刷新率 / 取值逻辑 ##########
+
+########## 3) HGM 配置 xml ##########
+foundation/graphic/graphic_2d/rosen/test/render_service/render_service_base/fuzztest/hgmconfigchangecallbackproxy_fuzzer/project.xml
+foundation/graphic/graphic_2d/rosen/test/render_service/render_service_base/fuzztest/rshgmconfigdata_fuzzer/project.xml
+foundation/graphic/graphic_2d/rosen/test/render_service/render_service_base/fuzztest/hgmconfigchangecallbackstub_fuzzer/project.xml
+./foundation/graphic/graphic_2d/rosen/test/render_service/render_service_base/unittest/ipc_callbacks/hgm_config_change_callback_proxy_test.cpp
+./foundation/graphic/graphic_2d/rosen/test/render_service/render_service_base/unittest/ipc_callbacks/hgm_config_change_callback_stub_test.cpp
+./foundation/graphic/graphic_2d/rosen/modules/render_service_base/src/ipc_callbacks/hgm_config_change_callback_proxy.cpp
+./foundation/graphic/graphic_2d/rosen/modules/render_service_base/src/ipc_callbacks/hgm_config_change_callback_proxy.h
+./foundation/graphic/graphic_2d/rosen/modules/render_service_base/src/ipc_callbacks/hgm_config_change_callback_stub.h

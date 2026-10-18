@@ -1,0 +1,44 @@
+============================================================
+问题3/4 根因：WMS 浮动窗口尺寸上限 1920*vpr 裁剪 SystemUI 窗口
+============================================================
+
+--- [1] 算法：foundation/window/window_manager/wm/src/window_scene_session_impl.cpp:1505 ---
+std::pair<WindowLimits, WindowLimits> WindowSceneSessionImpl::GetSystemSizeLimits(
+    uint32_t displayWidth, uint32_t displayHeight, float vpr)
+{
+    WindowLimits systemLimits;                                            // Physical pixels
+    WindowLimits systemLimitsVP = WindowLimits::DEFAULT_VP_LIMITS();      // Virtual pixels
+
+    // Set maximum dimensions
+    const uint32_t configMaxSize = windowSystemConfig_.maxFloatingWindowSize_;
+    systemLimits.maxWidth_  = static_cast<uint32_t>(configMaxSize * vpr);   // ★ 1920 * vpr
+    systemLimits.maxHeight_ = static_cast<uint32_t>(configMaxSize * vpr);
+    systemLimitsVP.maxWidth_  = configMaxSize;
+    systemLimitsVP.maxHeight_ = configMaxSize;
+    ...
+
+--- [2] 默认值 1920 的三处定义 ---
+foundation/window/window_manager/wmserver/src/window_layout_policy.cpp:36
+    uint32_t WindowLayoutPolicy::maxFloatingWindowSize_ = 1920;  // 1920: default max size of floating window
+foundation/window/window_manager/wmserver/src/window_layout_policy.cpp:464
+    systemLimits.maxWidth_  = static_cast<uint32_t>(maxFloatingWindowSize_ * vpr);
+    systemLimits.maxHeight_ = static_cast<uint32_t>(maxFloatingWindowSize_ * vpr);
+foundation/window/window_manager/window_scene/common/include/window_session_property.h:911
+    uint32_t maxFloatingWindowSize_ = 1920;   // 1920: default max window size
+
+--- [3] 可被配置覆盖（但本板没配）---
+foundation/window/window_manager/window_scene/session_manager/src/scene_session_manager.cpp:795
+    item = config["maxFloatingWindowSize"];
+    if (GetSingleIntItem(item, param)) {
+        systemConfig_.maxFloatingWindowSize_ = static_cast<uint32_t>(param);
+    }
+
+板上 /system/etc/window/resources/window_manager_config.xml 内【没有】maxFloatingWindowSize 节点
+vendor/embedfire/lubancat4/window_config/window_manager_config.xml 内【也没有】
+  => 走代码默认值 1920
+
+--- [4] 算式推论 ---
+上限(px) = maxFloatingWindowSize_(1920) * vpr
+  DPR=1.5 -> 2880px  (> 2560 屏宽, 不裁剪)  -> 实测窗口 2560 ✓
+  DPR=1.2 -> 2304px  (< 2560 屏宽, 裁剪)    -> 实测窗口 2304 ✓
+  DPR=1.0 -> 1920px  (< 2560 屏宽, 裁剪)    -> 实测窗口 1920 ✓

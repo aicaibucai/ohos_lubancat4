@@ -1,0 +1,20 @@
+########## 1) PHONE_SCREEN_WIDTH / PAD_SCREEN_WIDTH 的值 ##########
+
+########## 2) OH 是否有 2in1 / PC 设备类型的 density 处理 ##########
+
+########## 3) SetDensityDpi 运行时接口（可用于动态调节）##########
+
+########## 4) 其它产品怎么配 dpi（对照） ##########
+  vendor/hihope/dayu210 -> dpi=240
+  vendor/hihope/rk3568 -> dpi=240
+  vendor/embedfire/lubancat4 -> dpi=240
+./vendor/embedfire/lubancat4/window_config/display_manager_config.xml
+./vendor/hihope/ipcamera_core_system/window_config/display_manager_config.xml
+./vendor/hihope/2in1_core_system/window_config/display_manager_config.xml
+./vendor/hihope/default_core_system/window_config/display_manager_config.xml
+./vendor/hihope/wearable/window_config/display_manager_config.xml
+./vendor/hihope/dayu210/window_config/display_manager_config.xml
+./vendor/hihope/tablet_core_system/window_config/display_manager_config.xml
+./vendor/hihope/rk3568/window_config/display_manager_config.xml
+./vendor/hihope/tv/window_config/display_manager_config.xml
+./foundation/window/window_manager/resources/config/other/display_manager_config.xml

@@ -1,0 +1,19 @@
+########## 1) dpi=0 时会走哪条路（阈值常量）##########
+foundation/window/window_manager/dmserver/src/abstract_display.cpp:25:constexpr int32_t PAD_SCREEN_WIDTH = 2560;
+foundation/window/window_manager/dmserver/src/abstract_display.cpp:26:constexpr int32_t PHONE_SCREEN_WIDTH = 2160;
+foundation/window/window_manager/window_scene/session/screen/src/screen_property.cpp:22:constexpr int32_t PHONE_SCREEN_WIDTH = 1344;
+
+########## 2) 谁把 window_config 里的 xml 装到 /system/etc/window/resources ##########
+./vendor/embedfire/lubancat4/window_config/BUILD.gn:24:  source = "display_manager_config.xml"
+./vendor/hihope/ipcamera_core_system/window_config/BUILD.gn:24:  source = "display_manager_config.xml"
+./vendor/hihope/2in1_core_system/window_config/BUILD.gn:24:  source = "display_manager_config.xml"
+./vendor/hihope/default_core_system/window_config/BUILD.gn:24:  source = "display_manager_config.xml"
+./vendor/hihope/wearable/window_config/BUILD.gn:24:  source = "display_manager_config.xml"
+./vendor/hihope/dayu210/window_config/BUILD.gn:24:  source = "display_manager_config.xml"
+./vendor/hihope/tablet_core_system/window_config/BUILD.gn:24:  source = "display_manager_config.xml"
+./vendor/hihope/rk3568/window_config/BUILD.gn:24:  source = "display_manager_config.xml"
+
+########## 3) 2in1 / PC 产品是否真的用 240（有无 dpi 覆盖机制）##########
+foundation/window/window_manager/dmserver/src/abstract_display.cpp:60:        uint32_t densityDpi = static_cast<uint32_t>(numbersConfig["dpi"][0]);
+foundation/window/window_manager/dmserver/src/abstract_display.cpp:61:        if (densityDpi >= DOT_PER_INCH_MINIMUM_VALUE && densityDpi <= DOT_PER_INCH_MAXIMUM_VALUE) {
+foundation/window/window_manager/dmserver/src/abstract_display.cpp:62:            virtualPixelRatio_ = static_cast<float>(densityDpi) / BASELINE_DENSITY;

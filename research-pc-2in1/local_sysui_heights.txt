@@ -1,0 +1,13 @@
+=== launcher 假设的 SystemUI 高度（phone 常量）===
+applications/standard/launcher/product/phone/src/main/ets/common/constants/PhonePresetStyleConstants.ts:28:  static readonly DEFAULT_SYS_TOP_HEIGHT = 44;
+applications/standard/launcher/product/phone/src/main/ets/common/constants/PhonePresetStyleConstants.ts:33:  static readonly DEFAULT_SYS_BOTTOM_HEIGHT = 36;
+applications/standard/launcher/common/src/main/ets/default/constants/PresetStyleConstants.ts:26:  static readonly DEFAULT_SYS_TOP_HEIGHT = 44;
+applications/standard/launcher/common/src/main/ets/default/constants/PresetStyleConstants.ts:31:  static readonly DEFAULT_SYS_BOTTOM_HEIGHT = 44;
+applications/standard/launcher/common/src/main/ets/default/constants/PresetStyleConstants.ts:41:  static readonly DEFAULT_PHONE_SYSTEM_UI = 132;
+applications/standard/launcher/common/src/main/ets/default/constants/PresetStyleConstants.ts:51:  static readonly DEFAULT_PHONE_INDICATOR_HEIGHT = 32;
+
+=== systemui 实际导航栏高度 ===
+      "name": "navigation_bar_button_width",
+      "name": "navigation_bar_button_height",
+      "name": "navigation_bar_button_icon_width",
+      "name": "navigation_bar_button_icon_height",

@@ -1,0 +1,21 @@
+diff --git a/make_openssl_build_all_generated.sh b/make_openssl_build_all_generated.sh
+index 48084a4ff..521eb93be 100755
+--- a/make_openssl_build_all_generated.sh
++++ b/make_openssl_build_all_generated.sh
+@@ -21,6 +21,16 @@ openssl_selected_platform="$3"
+ # https://github.com/openssl/openssl/blob/master/INSTALL.md#out-of-tree-builds
+ # OpenSSL can be configured to build in a build directory separate from the source code directory.
+ # It's done by placing yourself in some other directory and invoking the configuration commands from there.
++# Incremental build: if openssl is already configured and its generated files
++# are in place, skip the wipe+rebuild (it deletes ~1800 files and re-runs
++# Configure + `make build_all_generated` on every gn gen). Delete the
++# platform directory manually to force a regeneration.
++if [ -f "${build_all_generated_path}/${openssl_selected_platform}/Makefile" ] && \
++   [ -f "${build_all_generated_path}/${openssl_selected_platform}/configdata.pm" ]; then
++    echo "openssl build_all_generated already exists, skip regeneration"
++    exit 0
++fi
++
+ rm -rf ${build_all_generated_path}/${openssl_selected_platform}
+ mkdir -p ${build_all_generated_path}/${openssl_selected_platform}
+ pushd ${build_all_generated_path}/${openssl_selected_platform}

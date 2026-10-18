@@ -1,0 +1,22 @@
+=== 1) ★Launcher.hap 是预置的（非源码编）===
+16:ohos_prebuilt_etc("launcher_hap") {
+17-  source = "Launcher.hap"
+18-  module_install_dir = "app/com.ohos.launcher"
+19-  part_name = "prebuilt_hap"
+20-  subsystem_name = "applications"
+--
+291:    "//applications/standard/hap:launcher_hap",
+292-    "//applications/standard/hap:launcher_settings_hap",
+
+=== 2) 板上 HAP 与预置一致 ===
+  预置 md5: 24fbca2b48b8b3b212f53f7a56a4d80a
+  板上 md5: 24fbca2b48b8b3b212f53f7a56a4d80a  (module name = phone_launcher)
+
+=== 3) 之前的 launcher 部署脚本（本会话已有）===
+$HOME/work/ace-debug-forensics/deploy_launcher_dbname.sh
+$HOME/work/ace-debug-forensics/deploy_launcher_hap.sh
+$HOME/work/ace-debug-forensics/deploy_launcher_s1.sh
+$HOME/work/ace-debug-forensics/deploy_launcher_v2.sh
+
+=== 4) launcher 的构建方式（hvigor）===
+applications/standard/launcher/hvigorw

@@ -1,0 +1,18 @@
+--- patches-2in1-dpi/window_manager_config.xml.orig-wmfix	2026-10-09 23:11:10.203647882 +0800
++++ patches-2in1-dpi/window_manager_config.xml.after-wmfix	2026-10-09 23:11:10.200031821 +0800
+@@ -21,6 +21,15 @@
+     </decor>
+     <!--max number of main window that could be shown on display-->
+     <maxAppWindowNumber>100</maxAppWindowNumber>
++    <!--max floating window size (px = value * virtualPixelRatio).
++        Default is 1920, which is SMALLER than this board's 2560x1440 HDMI panel:
++        at DPR=1.0 the WMS system-window limit drops to only 1920px, so WMS clips
++        SystemUI (status bar / navigation bar) to 1920 wide, while launcher's main
++        window keeps 2560 -> two coordinate systems -> visual misalignment
++        (nav-bar/time/dock appear shifted). Raise it above the panel width to
++        avoid clipping on large displays. Verified: 1920*vpr with DPR 1.5->2880
++        (no clip), 1.2->2304 (clip), 1.0->1920 (clip).-->
++    <maxFloatingWindowSize>4096</maxFloatingWindowSize>
+     <!--minimizeByOther enable is true means fullscreen window will be minmized by other fullscreen window-->
+     <minimizeByOther enable="true"></minimizeByOther>
+     <!--window mdoe change hot zones config, fullscreen primary secondary-->

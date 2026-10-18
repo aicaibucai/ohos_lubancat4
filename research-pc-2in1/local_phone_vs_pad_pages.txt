@@ -1,0 +1,30 @@
+=== 1) EntryView 的 pages 路由（phone vs pad）===
+--- phone main_pages.json ---
+{
+  "src": [
+    "pages/FormManagerView",
+    "pages/FormServiceView",
+    "pages/EmptyPage",
+    "pages/EntryView",
+    "pages/RecentView",
+    "pages/SubDisplayWallpaperPage"
+  ]
+}
+--- pad main_pages.json ---
+{
+  "src": [
+    "pages/AppCenterView",
+    "pages/EmptyPage",
+    "pages/EntryView",
+    "pages/RecentView",
+    "pages/SubDisplayWallpaperPage"
+  ]
+}
+
+=== 2) 模块名（同 HAP 内如何区分）===
+product/phone/src/main/module.json5:    "name": "phone_launcher",
+product/phone/src/main/module.json5:        "name": "ArkTSPartialUpdate",
+product/phone/src/main/module.json5:        "name": "com.ohos.launcher.MainAbility",
+product/phone/src/main/module.json5:        "name": "ohos.permission.INJECT_INPUT_EVENT"
+product/phone/src/main/module.json5:        "name": "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED"
+product/phone/src/main/module.json5:        "name": "ohos.permission.INSTALL_BUNDLE"

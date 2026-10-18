@@ -1,0 +1,10 @@
+########## A) 图标尺寸公式验证（54 是怎么算出来的）##########
+  calculateDesktop(): iconHeight = itemSize - 2*iconMarginVertical - nameHeight - iconNameMargin
+    itemSize(mAppItemSize)      = 80  (phone DEFAULT_APP_LAYOUT_SIZE)
+    ratio(mIconRatio)           = 0.0375  (DEFAULT_APP_TOP_RATIO)
+    iconNameMargin              = 4  (DEFAULT_ICON_NAME_GAP)
+    nameHeight(DESKTOP_NAME)    = 16  (DEFAULT_DESKTOP_NAME_HEIGHT)
+  ⇒ iconHeight = 80 - 2*(0.0375*80) - 16 - 4 = 80 - 6 - 16 - 4 = 54  ← 与实测 81px/1.5=54vp 完全吻合
+
+########## B) 70Hz 是否来自某个配置 ##########
+--- 是否 RS 默认 60/120 ---

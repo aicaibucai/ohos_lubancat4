@@ -1,0 +1,208 @@
+diff --git a/services/dtbschedmgr/BUILD.gn b/services/dtbschedmgr/BUILD.gn
+index 78f8376..187b482 100644
+--- a/services/dtbschedmgr/BUILD.gn
++++ b/services/dtbschedmgr/BUILD.gn
+@@ -112,6 +112,17 @@ ohos_shared_library("distributedschedsvr") {
+     "src/dfx/dms_continue_time_dumper.cpp",
+     "src/dfx/dms_hisysevent_report.cpp",
+     "src/dfx/dms_hitrace_chain.cpp",
++    "src/mission/distributed_bm_storage.cpp",
++    "src/mission/distributed_bundle_info.cpp",
++    "src/mission/dms_continue_recv_manager.cpp",
++    "src/mission/dms_continue_send_manager.cpp",
++    "src/mission/distributed_mission_broadcast_listener.cpp",
++    "src/mission/distributed_mission_change_listener.cpp",
++    "src/mission/distributed_mission_died_listener.cpp",
++    "src/mission/mission_info_converter.cpp",
++    "src/mission/dsched_sync_e2e.cpp",
++    "src/mission/wifi_state_adapter.cpp",
++    "src/mission/wifi_state_listener.cpp",
+     "src/distributedWant/distributed_operation.cpp",
+     "src/distributedWant/distributed_operation_builder.cpp",
+     "src/distributedWant/distributed_want.cpp",
+@@ -205,26 +216,15 @@ ohos_shared_library("distributedschedsvr") {
+ 
+   if (dmsfwk_mission_manager) {
+     sources += [
+-      "src/mission/distributed_bm_storage.cpp",
+-      "src/mission/distributed_bundle_info.cpp",
+-      "src/mission/distributed_data_change_listener.cpp",
+-      "src/mission/distributed_data_storage.cpp",
+-      "src/mission/distributed_mission_broadcast_listener.cpp",
+-      "src/mission/distributed_mission_change_listener.cpp",
+-      "src/mission/distributed_mission_died_listener.cpp",
+-      "src/mission/distributed_mission_focused_listener.cpp",
+-      "src/mission/distributed_mission_info.cpp",
+-      "src/mission/distributed_sched_mission_manager.cpp",
+-      "src/mission/dms_continue_recv_manager.cpp",
+-      "src/mission/dms_continue_send_manager.cpp",
+-      "src/mission/dsched_sync_e2e.cpp",
+-      "src/mission/kvstore_death_recipient.cpp",
+-      "src/mission/mission_changed_notify.cpp",
+-      "src/mission/mission_info_converter.cpp",
+-      "src/mission/snapshot.cpp",
+-      "src/mission/snapshot_converter.cpp",
+-      "src/mission/wifi_state_adapter.cpp",
+-      "src/mission/wifi_state_listener.cpp",
++    "src/mission/distributed_data_change_listener.cpp",
++    "src/mission/distributed_data_storage.cpp",
++    "src/mission/distributed_mission_focused_listener.cpp",
++    "src/mission/distributed_mission_info.cpp",
++    "src/mission/distributed_sched_mission_manager.cpp",
++    "src/mission/kvstore_death_recipient.cpp",
++    "src/mission/mission_changed_notify.cpp",
++    "src/mission/snapshot.cpp",
++    "src/mission/snapshot_converter.cpp",
+     ]
+     external_deps += [ "image_framework:image_native" ]
+   }
+diff --git a/services/dtbschedmgr/include/distributed_sched_service.h b/services/dtbschedmgr/include/distributed_sched_service.h
+index c74c247..628e600 100644
+--- a/services/dtbschedmgr/include/distributed_sched_service.h
++++ b/services/dtbschedmgr/include/distributed_sched_service.h
+@@ -328,7 +328,9 @@ private:
+     std::mutex registerMutex_;
+     std::atomic<int32_t> token_ {0};
+     std::map<std::string, sptr<AppStateObserver>> bundleNameMap_;
++#ifdef SUPPORT_DISTRIBUTED_MISSION_MANAGER
+     sptr<DistributedMissionFocusedListener> missionFocusedListener_ = nullptr;
++#endif
+ };
+ 
+ class ConnectAbilitySession {
+diff --git a/services/dtbschedmgr/src/distributed_sched_service.cpp b/services/dtbschedmgr/src/distributed_sched_service.cpp
+index aba59ba..5b3f822 100644
+--- a/services/dtbschedmgr/src/distributed_sched_service.cpp
++++ b/services/dtbschedmgr/src/distributed_sched_service.cpp
+@@ -73,9 +73,9 @@
+ #include "mission/dms_continue_send_manager.h"
+ #include "mission/dms_continue_recv_manager.h"
+ #include "mission/distributed_sched_mission_manager.h"
++#endif
+ #include "mission/dsched_sync_e2e.h"
+ #include "mission/wifi_state_listener.h"
+-#endif
+ 
+ namespace OHOS {
+ namespace DistributedSchedule {
+@@ -139,7 +139,9 @@ constexpr int32_t DMSDURATION_DSTTOSRCRPCTIME = 3;
+ constexpr int32_t DMSDURATION_SRCTODSTRPCTIME = 5;
+ constexpr int32_t DMSDURATION_STARTABILITY = 6;
+ constexpr int32_t HID_HAP = 10000; /* first hap user */
++#ifdef SUPPORT_DISTRIBUTED_MISSION_MANAGER
+ constexpr int32_t WINDOW_MANAGER_SERVICE_ID = 4606;
++#endif
+ constexpr int32_t SEMI_WIFI_ID = 1010;
+ DataShareManager &dataShareManager = DataShareManager::GetInstance();
+ }
+@@ -328,6 +330,7 @@ void DistributedSchedService::InitMissionManager()
+ #endif
+ }
+ 
++#ifdef SUPPORT_DISTRIBUTED_MISSION_MANAGER
+ void DistributedSchedService::OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
+ {
+     HILOGI("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
+@@ -337,6 +340,7 @@ void DistributedSchedService::OnAddSystemAbility(int32_t systemAbilityId, const
+         HILOGE("get RegisterMissionListener failed, ret: %{public}d", ret);
+     }
+ }
++#endif
+ 
+ void DistributedSchedService::InitDataShareManager()
+ {
+@@ -350,11 +354,15 @@ void DistributedSchedService::InitDataShareManager()
+         }
+         DmsUE::GetInstance().ChangedSwitchState(dataShareManager.IsCurrentContinueSwitchOn(), ERR_OK);
+         if (dataShareManager.IsCurrentContinueSwitchOn()) {
++#ifdef SUPPORT_DISTRIBUTED_MISSION_MANAGER
+             DMSContinueSendMgr::GetInstance().NotifyMissionFocused(missionId, FocusedReason::INIT);
++#endif
+             DSchedContinueManager::GetInstance().Init();
+         } else {
++#ifdef SUPPORT_DISTRIBUTED_MISSION_MANAGER
+             DMSContinueSendMgr::GetInstance().NotifyMissionUnfocused(missionId, UnfocusedReason::NORMAL);
+             DMSContinueRecvMgr::GetInstance().OnContinueSwitchOff();
++#endif
+             DSchedContinueManager::GetInstance().UnInit();
+         };
+     };
+@@ -384,10 +392,12 @@ void DistributedSchedService::InitCommonEventListener()
+     auto applyMonitor = std::make_shared<CommonEventListener>(subscribeInfo);
+     EventFwk::CommonEventManager::SubscribeCommonEvent(applyMonitor);
+     DmsBmStorage::GetInstance()->UpdateDistributedData();
++#ifdef SUPPORT_DISTRIBUTED_MISSION_MANAGER
+     if (DmsKvSyncE2E::GetInstance()->CheckDeviceCfg()) {
+         DmsKvSyncE2E::GetInstance()->PushAndPullData();
+     }
+ #endif
++#endif
+ }
+ 
+ void DistributedSchedService::InitWifiStateListener()
+@@ -419,7 +429,9 @@ void DistributedSchedService::InitWifiSemiStateListener()
+ void DistributedSchedService::InitDeviceCfg()
+ {
+     HILOGI("called");
++#ifdef SUPPORT_DISTRIBUTED_MISSION_MANAGER
+     DmsKvSyncE2E::GetInstance()->SetDeviceCfg();
++#endif
+ }
+ 
+ void DistributedSchedService::DurationStart(const std::string srcDeviceId, const std::string dstDeviceId)
+@@ -3400,4 +3412,4 @@ void DistributedSchedService::SetCleanMissionFlag(const OHOS::AAFwk::Want& want,
+     dschedContinuation_->SetCleanMissionFlag(missionId, isCleanMission);
+ }
+ } // namespace DistributedSchedule
+-} // namespace OHOS
+\ No newline at end of file
++} // namespace OHOS
+diff --git a/services/dtbschedmgr/src/distributed_sched_stub.cpp b/services/dtbschedmgr/src/distributed_sched_stub.cpp
+index 72bc9a1..a02346f 100644
+--- a/services/dtbschedmgr/src/distributed_sched_stub.cpp
++++ b/services/dtbschedmgr/src/distributed_sched_stub.cpp
+@@ -39,12 +39,12 @@
+ #include "dtbschedmgr_log.h"
+ #include "dtbschedmgr_device_info_storage.h"
+ #include "parcel_helper.h"
++#include "mission/dms_continue_recv_manager.h"
+ 
+ #ifdef SUPPORT_DISTRIBUTED_MISSION_MANAGER
+ #include "image_source.h"
+ 
+ #include "mission/distributed_sched_mission_manager.h"
+-#include "mission/dms_continue_recv_manager.h"
+ #include "mission/mission_info_converter.h"
+ #include "mission/snapshot_converter.h"
+ #include "napi_error_code.h"
+@@ -136,6 +136,7 @@ void DistributedSchedStub::InitLocalFuncsInner()
+         &DistributedSchedStub::StopRemoteExtensionAbilityInner;
+ }
+ 
++#ifdef SUPPORT_DISTRIBUTED_MISSION_MANAGER
+ void DistributedSchedStub::InitLocalMissionManagerInner()
+ {
+     localFuncsMap_[static_cast<uint32_t>(IDSchedInterfaceCode::GET_REMOTE_MISSION_SNAPSHOT_INFO)] =
+@@ -157,6 +158,7 @@ void DistributedSchedStub::InitLocalMissionManagerInner()
+     localFuncsMap_[static_cast<uint32_t>(IDSchedInterfaceCode::SET_MISSION_CONTINUE_STATE)] =
+         &DistributedSchedStub::SetMissionContinueStateInner;
+ }
++#endif
+ 
+ void DistributedSchedStub::InitRemoteFuncsInner()
+ {
+diff --git a/services/dtbschedmgr/test/BUILD.gn b/services/dtbschedmgr/test/BUILD.gn
+index d1a4814..8499e38 100644
+--- a/services/dtbschedmgr/test/BUILD.gn
++++ b/services/dtbschedmgr/test/BUILD.gn
+@@ -237,8 +237,9 @@ ohos_unittest("dschedcontinuetest") {
+     public_deps = dsched_public_deps
+   }
+ 
++  defines = []
+   if (dmsfwk_mission_manager) {
+-    defines = [ "SUPPORT_DISTRIBUTED_MISSION_MANAGER" ]
++    defines += [ "SUPPORT_DISTRIBUTED_MISSION_MANAGER" ]
+   }
+ 
+   if (dmsfwk_standard_form_share) {

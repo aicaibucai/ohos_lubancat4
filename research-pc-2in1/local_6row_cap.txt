@@ -1,0 +1,8 @@
+=== 1) phone 分支的 6 行上限（问题1-4 根因）===
+206:        if (row > 6) {
+
+=== 2) pad 常量 ===
+product/pad/src/main/ets/common/constants/StyleConstants.ts:18:  static readonly DEFAULT_APP_ICON_SIZE_WIDTH = 54;
+
+=== 3) 官方仓 product 目录（结论）===
+  gitee openharmony/applications_launcher: product/ = { pad, phone }  （无 2in1/pc）

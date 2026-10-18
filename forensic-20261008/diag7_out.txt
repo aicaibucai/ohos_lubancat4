@@ -1,0 +1,57 @@
+===== 1) abstract_display.cpp 40-90（DPI 从哪读）=====
+    width_ = static_cast<int32_t>(info->width_);
+    height_ = static_cast<int32_t>(info->height_);
+    refreshRate_ = info->refreshRate_;
+    orientation_ = absScreen->orientation_;
+    name_ = absScreen->GetScreenName();
+    static_cast<void>(RequestRotation(absScreen->rotation_));
+    if (width_ > height_) {
+        displayOrientation_ = DisplayOrientation::LANDSCAPE;
+    } else {
+        displayOrientation_ = DisplayOrientation::PORTRAIT;
+    }
+    if (info->width_ < info->height_) {
+        isDefaultVertical_ = true;
+    } else {
+        isDefaultVertical_ = false;
+    }
+
+    CalculateXYDpi(absScreen->GetPhyWidth(), absScreen->GetPhyHeight());
+    auto numbersConfig = DisplayManagerConfig::GetIntNumbersConfig();
+    if (numbersConfig.count("dpi") != 0) {
+        uint32_t densityDpi = static_cast<uint32_t>(numbersConfig["dpi"][0]);
+        if (densityDpi >= DOT_PER_INCH_MINIMUM_VALUE && densityDpi <= DOT_PER_INCH_MAXIMUM_VALUE) {
+            virtualPixelRatio_ = static_cast<float>(densityDpi) / BASELINE_DENSITY;
+            absScreen->SetVirtualPixelRatio(virtualPixelRatio_);
+            return;
+        }
+    }
+    if ((info->width_ >= PHONE_SCREEN_WIDTH) || (info->height_ >= PHONE_SCREEN_WIDTH)) {
+        if ((info->width_ == PAD_SCREEN_WIDTH) || (info->height_ == PAD_SCREEN_WIDTH)) {
+            virtualPixelRatio_ = 2.0f; // Pad is 2.0
+        } else {
+            virtualPixelRatio_ = 3.0f; // Phone is 3.0
+        }
+    } else {
+        virtualPixelRatio_ = 1.0f; // Other is 1.0
+    }
+    absScreen->SetVirtualPixelRatio(virtualPixelRatio_);
+}
+
+void AbstractDisplay::CalculateXYDpi(uint32_t phyWidth, uint32_t phyHeight)
+{
+    if (phyWidth == 0 || phyHeight == 0) {
+        return;
+    }
+
+    phyWidth_ = phyWidth;
+    phyHeight_ = phyHeight;
+    xDpi_ = width_ * INCH_2_MM / phyWidth_;
+    yDpi_ = height_ * INCH_2_MM / phyHeight_;
+}
+
+
+===== 2) numbersConfig / config 文件路径 =====
+58:    auto numbersConfig = DisplayManagerConfig::GetIntNumbersConfig();
+59:    if (numbersConfig.count("dpi") != 0) {
+60:        uint32_t densityDpi = static_cast<uint32_t>(numbersConfig["dpi"][0]);

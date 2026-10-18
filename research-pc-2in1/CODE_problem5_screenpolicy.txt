@@ -1,0 +1,54 @@
+============================================================
+问题5 根因：息屏时主动退订公共事件 -> 锁屏时钟冻结
+现象："当前时间是51分，但是显示50，只有移动鼠标才会刷新"
+============================================================
+
+--- [1] 根因代码 ---
+applications/standard/screenlock/common/src/main/ets/default/commonEvent/CommonEventManager.ts:92-96
+function ScreenPolicy(manager: InnerManager): ClearPolicy {
+  return sEventManager.subscribe(SCREEN_CHANGE_EVENT, (isScreenOn: boolean) => {
+    isScreenOn ? manager.subscriberCommonEvent() : manager.unSubscriberCommonEvent();  // ★息屏退订
+  });
+}
+
+applications/standard/screenlock/common/src/main/ets/default/TimeManager.ts:65-75
+public init(context: any) {
+  this.mManager = getCommonEventManager(TAG, TIME_SUBSCRIBE_INFO, () => this.notifyTimeChange(), ...);
+  this.mManager.subscriberCommonEvent();
+  this.mManager.applyPolicy([POLICY.SCREEN_POLICY]);   // ★把"息屏退订"策略套到时钟上
+  this.initTimeFormat(context);
+}
+
+TIME_SUBSCRIBE_INFO 订阅的事件 (TimeManager.ts:37-43):
+  COMMON_EVENT_TIME_CHANGED / COMMON_EVENT_TIMEZONE_CHANGED / COMMON_EVENT_TIME_TICK
+
+SCREEN_CHANGE_EVENT 发布者 ScreenLockManager.ts:56-58
+  (由 commonEvent SCREEN_OFF / SCREEN_ON 触发)
+
+ClockIcon 依赖链 (clockIcon.ets:35-38):
+  sEventManager.subscribe(TIME_CHANGE_EVENT, ...) <- TimeManager 发布 <- TIME_TICK 驱动
+
+--- [2] 设备日志时间线（决定性证据）---
+22:46:29.912  screenChangeEvent = true    (亮屏) -> 重新订阅
+22:46:29.924  CommonEvent_TimeManagerSc --> registerSubscriber success, size: 1
+22:47:00      ✓ Time_Change_Event 刷新（正常）
+22:47:00.001  screenChangeEvent = false   (息屏!) -> ★退订
+22:48:00 ~ 22:59:00  每分钟 TIME_TICK 都在发布:
+    C01202/Unordered: Pid 559 publish usual.event.TIME_TICK to -1 end(1,1,0,0)
+    ...共 12 条...
+  但 ScreenLock 【一条 handle common event 都没有】 -> 时钟冻结 13 分钟
+23:00:44.513  Decorators --> debounce invoke notifyScreenEvent（鼠标唤醒）
+23:00:45.015  screenChangeEvent = true    (亮屏) -> 重新订阅
+23:00:45.025  registerSubscriber success, size: 1
+23:01:00.008  ✓ handle common event: usual.event.TIME_TICK -> 立刻刷新到 23:01
+
+--- [3] 电源侧佐证 (hidumper -s PowerManagerService -a '-a') ---
+Current State: SLEEP  Reason: 1     ScreenOffTime: Timeout=30000ms
+Last Screen On: 1064872   Last Screen Off: 1094928
+State: AWAKE   Reason: MOUSE        <- 唤醒源就是鼠标
+=> 默认 30 秒无操作即息屏 => 看锁屏时钟时多半已处于"退订"状态
+
+--- [4] 候选修法 ---
+① 取消 TimeManager 上的 applyPolicy([SCREEN_POLICY])，让 TIME_TICK 常驻订阅  <- 推荐
+② 息屏退订的同时改本地 setInterval 每分钟刷新
+③ 不改（靠鼠标唤醒兜底）  <- 用户已明确不接受

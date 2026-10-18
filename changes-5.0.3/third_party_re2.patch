@@ -1,0 +1,22 @@
+diff --git a/install.sh b/install.sh
+index eb1f244..8c8dcc1 100755
+--- a/install.sh
++++ b/install.sh
+@@ -7,10 +7,16 @@
+ # Copyright(c) 2023 Huawei Device Co., Ltd.
+ 
+ set -e
++# Incremental build guard: re2 sources are already unpacked.
++if [ -d "re2" ] && [ -f "re2/.ohos_install_done" ]; then
++    echo "re2 already installed, skip"
++    exit 0
++fi
+ cd $1
+ if [ -d "re2" ];then
+     rm -rf re2
+ fi
+ tar zxvf re2-2021-11-01.tar.gz
+ mv re2-2021-11-01 re2
++touch "$1/re2/.ohos_install_done"
+ exit 0
+\ No newline at end of file

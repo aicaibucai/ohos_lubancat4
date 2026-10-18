@@ -1,0 +1,17 @@
+########## OH 自家 PC 产品（2in1）的 density 配置 ##########
+  2in1_core_system -> dpi=[240]
+  tablet_core_system -> dpi=[240]
+  tv -> dpi=[240]
+  default_core_system -> dpi=[240]
+
+########## 2in1 的完整 dpi 相关行 ##########
+16- <Configs>
+17:    <!--Window display dpi, valid range is 80~640, use 0 if no configuration is requeired-->
+18:    <dpi>240</dpi>
+19-    <!-- Indicate the deviation between the default device display direction and the direction -->
+
+########## 树内默认（other） ##########
+16- <Configs>
+17:    <!--Window display dpi, valid range is 80~640, use 0 if no configuration is requeired-->
+18:    <dpi>0</dpi>
+19- </Configs>

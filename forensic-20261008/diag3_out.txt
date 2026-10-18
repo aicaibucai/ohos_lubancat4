@@ -1,0 +1,32 @@
+===== 1) 屏幕密度真值（多来源对比）=====
+--- param ---
+Get parameter "const.product.screenDensity" fail! errNum is:106!
+Get parameter "persist.display.density" fail! errNum is:106!
+--- display 属性 ---
+
+-------------------------------[ability]-------------------------------
+
+
+----------------------------------DisplayManagerService----------------------------------
+The arguments are illegal and you can enter '-h' for help.
+
+===== 2) 鼠标事件坐标 vs 屏幕坐标 =====
+10-08 23:29:32.626  1702  1702 I A0001b/Launcher_Default: AppItem --> tap action {"globalDisplayX":245.33333333333334,"globalDisplayY":202,"hand":0,"displayX":245.33333333333334,"displayY":202,"windowX":245.33333333333334,"windowY":202,"screenX":245.33333333333334,"screenY":202,"x":55.333333333333336,"y":46,"timestamp":603463897000,"source":1,"pressure":0,"deviceId":6,"tiltX":0,"tiltY":0,"rollAngle":0,"sourceTool":7,"axisVertical":0,"axisHorizontal":0,"axisPinch":0,"targetDisplayId":0,"target":{"area":{"position":{"x":0,"y":0},"globalPosition":{"x":190,"y":156},"width":80,"height":80}}}
+10-08 23:30:44.370   443   908 I C02804/PointerDrawingManager: [|1597]The screenId_:0
+10-08 23:30:44.370   443   908 I C02804/PointerDrawingManager: [|1615]AttachToDisplay screenId_:0
+10-08 23:30:53.942   443   908 I C02804/PointerDrawingManager: [P:M:9169|2546]Pointer window show success, mouseDisplayState_:true, displayId_:0
+10-08 23:31:14.199   720   942 I C02d13/HDC_LOG: [async_cmd.cpp:291] ExecuteCommand cmd:hilog -x 2>/dev/null | grep -aiE 'PointerDrawing|mouse.*position|InjectPointer|displayX|displayY' | tail -10 fd:39 pid:3258
+
+===== 3) launcher 布局实测值 =====
+10-08 23:29:58.936  1702  1702 I A0001b/Launcher_Default: GridSwiper --> swiper animation end to page 0
+10-08 23:29:59.150  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover true
+10-08 23:30:00.809  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover false
+10-08 23:30:01.070  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover true
+10-08 23:30:01.518  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover false
+10-08 23:30:01.718  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover true
+10-08 23:30:02.145  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover false
+10-08 23:30:03.508  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover true
+10-08 23:30:03.552  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover false
+10-08 23:30:03.987  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover true
+10-08 23:30:04.713  1702  1702 I A0001b/Launcher_Default: AppIcon --> onHover isHover false
+10-08 23:31:14.462   720   942 I C02d13/HDC_LOG: [async_cmd.cpp:291] ExecuteCommand cmd:hilog -x 2>/dev/null | grep -a 'Launcher_Default' | grep -aiE 'row|column|Grid|icon|size' | tail -12 fd:39 pid:3266

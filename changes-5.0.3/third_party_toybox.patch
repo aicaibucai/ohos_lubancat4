@@ -1,0 +1,166 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 706df70..1eef29a 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -634,6 +634,7 @@ if (defined(ohos_lite)) {
+       "toys/pending/mdev.c",
+       "toys/pending/more.c",
+       "toys/pending/route.c",
++      "toys/pending/tr.c",
+       "toys/pending/telnetd.c",
+       "toys/posix/basename.c",
+       "toys/posix/cal.c",
+@@ -878,6 +879,7 @@ if (defined(ohos_lite)) {
+       "mv",
+       "nbd-client",
+       "netcat",
++      "nc",
+       "netstat",
+       "nice",
+       "nl",
+@@ -915,6 +917,7 @@ if (defined(ohos_lite)) {
+       "rm",
+       "rmdir",
+       "rmmod",
++      "route",
+       "runcon",
+       "sed",
+       "sendevent",
+diff --git a/generated/config.h b/generated/config.h
+index e18bc21..4c77f77 100644
+--- a/generated/config.h
++++ b/generated/config.h
+@@ -233,8 +233,8 @@
+ #define USE_DHCPD(...)
+ #define CFG_DEBUG_DHCP 0
+ #define USE_DEBUG_DHCP(...)
+-#define CFG_DIFF 0
+-#define USE_DIFF(...)
++#define CFG_DIFF 1
++#define USE_DIFF(...) __VA_ARGS__
+ #define CFG_DUMPLEASES 0
+ #define USE_DUMPLEASES(...)
+ #define CFG_EXPR 0
+@@ -307,13 +307,8 @@
+ #define USE_OPENVT(...)
+ #define CFG_DEALLOCVT 0
+ #define USE_DEALLOCVT(...)
+-#ifdef WITH_SELINUX
+-# define CFG_ROUTE 0
+-# define USE_ROUTE(...)
+-#else
+-# define CFG_ROUTE 1
+-# define USE_ROUTE(...) __VA_ARGS__
+-#endif // WITH_SELINUX
++#define CFG_ROUTE 1
++#define USE_ROUTE(...) __VA_ARGS__
+ #define CFG_SH 0
+ #define USE_SH(...)
+ #define CFG_CD 0
+@@ -348,8 +343,8 @@
+ #define CFG_TRACEROUTE 0
+ #define USE_TRACEROUTE(...)
+ #endif
+-#define CFG_TR 0
+-#define USE_TR(...)
++#define CFG_TR 1
++#define USE_TR(...) __VA_ARGS__
+ #define CFG_USERADD 0
+ #define USE_USERADD(...)
+ #define CFG_USERDEL 0
+@@ -559,8 +554,8 @@
+ #define USE_IFCONFIG(...) __VA_ARGS__
+ #define CFG_MICROCOM 1
+ #define USE_MICROCOM(...) __VA_ARGS__
+-#define CFG_NETCAT 0
+-#define USE_NETCAT(...)
++#define CFG_NETCAT 1
++#define USE_NETCAT(...) __VA_ARGS__
+ #define CFG_NETCAT_LISTEN 0
+ #define USE_NETCAT_LISTEN(...)
+ #define CFG_NETSTAT 1
+diff --git a/generated/globals.h b/generated/globals.h
+index 607cb6d..05587e4 100644
+--- a/generated/globals.h
++++ b/generated/globals.h
+@@ -1009,24 +1009,64 @@ struct useradd_data {
+ // toys/pending/vi.c
+ 
+ struct vi_data {
+-    int cur_col;
+-    int cur_row;
+-    int scr_row;
+-    int drawn_row;
+-    int drawn_col;
+-    unsigned screen_height;
+-    unsigned screen_width;
+-    int vi_mode;
+-    int count0;
+-    int count1;
+-    int vi_mov_flag;
+-    int modified;
+-    char vi_reg;
+-    char *last_search;
+-    int tabstop;
+-    int list;
++  char *s;
++  int vi_mode, tabstop, list;
++  int cur_col, cur_row, scr_row;
++  int drawn_row, drawn_col;
++  int count0, count1, vi_mov_flag;
++  unsigned screen_height, screen_width;
++  char vi_reg, *last_search;
++  struct str_line {
++    int alloc;
++    int len;
++    char *data;
++  } *il;
++  size_t screen, cursor; //offsets
++  //yank buffer
++  struct yank_buf {
++    char reg;
++    int alloc;
++    char* data;
++  } yank;
++
++  int modified;
++  size_t filesize;
++// mem_block contains RO data that is either original file as mmap
++// or heap allocated inserted data
++//
++//
++//
++  struct block_list {
++    struct block_list *next, *prev;
++    struct mem_block {
++      size_t size;
++      size_t len;
++      enum alloc_flag {
++        MMAP,  //can be munmap() before exit()
++        HEAP,  //can be free() before exit()
++        STACK, //global or stack perhaps toybuf
++      } alloc;
++      const char *data;
++    } *node;
++  } *text;
++
++// slices do not contain actual allocated data but slices of data in mem_block
++// when file is first opened it has only one slice.
++// after inserting data into middle new mem_block is allocated for insert data
++// and 3 slices are created, where first and last slice are pointing to original
++// mem_block with offsets, and middle slice is pointing to newly allocated block
++// When deleting, data is not freed but mem_blocks are sliced more such way that
++// deleted data left between 2 slices
++  struct slice_list {
++    struct slice_list *next, *prev;
++    struct slice {
++      size_t len;
++      const char *data;
++    } *node;
++  } *slices;
+ };
+ 
++
+ // toys/pending/wget.c
+ 
+ struct wget_data {

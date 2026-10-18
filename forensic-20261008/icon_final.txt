@@ -1,0 +1,24 @@
+########## 1) AppIcon.ets（图标本体尺寸）##########
+17:import { BadgeManager } from '../manager/BadgeManager';
+27:  iconSize: number = 0;
+37:  private mBadgeManager = BadgeManager.getInstance();
+49:    this.mBadgeManager = BadgeManager.getInstance();
+51:    this.initBadge();
+69:  public initBadge() {
+70:    this.mBadgeManager.getBadgeByBundle(this.bundleName, this.badgeInitCallback);
+75:      Badge({
+
+########## 2) pad 的 DEFAULT_APP_LAYOUT_SIZE ##########
+
+########## 3) ★实测几何换算 ##########
+grid cell (GridItem) = [18,234][138,354] = 120x120 px = 80.0 vp
+icon image (Image)   = [37,238][118,319] =  81x 81 px = 54.0 vp
+icon/name gap, Text  = [60,325][ 96,343] =  36x 18 px
+
+phone 期望: icon 70vp(105px) in cell 80vp(120px)
+pad   期望: icon 54vp( 81px) in cell ?vp
+⇒ 实测 icon = 54vp = **pad 的值**，但 HAP 是 phone_launcher
+
+########## 4) 列/行数 ##########
+  GridLayoutInfo.json: row=6 column=19
+  Grid 区域 = 2524x788 px = 1683x525 vp → 每列 88.6vp, 每行 87.5vp

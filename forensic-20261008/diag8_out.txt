@@ -1,0 +1,22 @@
+===== 1) DisplayManagerConfig 从哪个文件读 dpi =====
+foundation/window/window_manager/dmserver/test/unittest/display_manager_service_test.cpp:117:        {"dpi", {320}},
+foundation/window/window_manager/dmserver/test/unittest/display_manager_config_test.cpp:168:        if (!xmlStrcmp(nodeName, reinterpret_cast<const xmlChar*>("dpi"))) {
+foundation/window/window_manager/dmserver/test/unittest/display_manager_config_test.cpp:215:        if (!xmlStrcmp(nodeName, reinterpret_cast<const xmlChar*>("dpi"))) {
+foundation/window/window_manager/dmserver/src/display_manager_config.cpp:110:        if (!xmlStrcmp(nodeName, reinterpret_cast<const xmlChar*>("dpi")) ||
+foundation/window/window_manager/dmserver/src/display_manager_config.cpp:201:const std::map<std::string, std::vector<int>>& DisplayManagerConfig::GetIntNumbersConfig()
+foundation/window/window_manager/dmserver/src/display_manager_service.cpp:85:    auto numbersConfig = DisplayManagerConfig::GetIntNumbersConfig();
+foundation/window/window_manager/dmserver/src/display_manager_service.cpp:113:    auto numbersConfig = DisplayManagerConfig::GetIntNumbersConfig();
+foundation/window/window_manager/dmserver/src/abstract_display.cpp:58:    auto numbersConfig = DisplayManagerConfig::GetIntNumbersConfig();
+
+===== 2) 找配置文件名 =====
+16:#include "display_manager_config.h"
+78:    auto configFilePath = GetConfigPath("etc/window/resources/display_manager_config.xml");
+
+===== 3) 板上是否有该配置文件 =====
+/system/etc/window/resources/display_manager_config.xml
+
+===== 4) baseline density 与阈值常量 =====
+foundation/window/window_manager/previewer/include/dm_common.h:41:constexpr int DOT_PER_INCH_MINIMUM_VALUE = 80;
+foundation/window/window_manager/previewer/include/dm_common.h:42:constexpr uint32_t BASELINE_DENSITY = 160;
+foundation/window/window_manager/interfaces/innerkits/dm/dm_common.h:45:constexpr int DOT_PER_INCH_MINIMUM_VALUE = 80;
+foundation/window/window_manager/interfaces/innerkits/dm/dm_common.h:53:constexpr uint32_t BASELINE_DENSITY = 160;

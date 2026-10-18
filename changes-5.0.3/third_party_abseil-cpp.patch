@@ -1,0 +1,19 @@
+diff --git a/install.sh b/install.sh
+index d7f4a72..e5bcfb6 100755
+--- a/install.sh
++++ b/install.sh
+@@ -8,6 +8,14 @@
+ 
+ set -e
+ cd $1
++# Incremental build: skip re-extraction when the sources are already unpacked.
++# Deleting and re-extracting ~1400 files on every gn gen is slow and gets
++# blocked by bulk-delete protection. Remove the abseil-cpp dir to force a
++# fresh extraction.
++if [ -d "abseil-cpp" ] && [ -f "abseil-cpp/CMakeLists.txt" ]; then
++    echo "abseil-cpp already unpacked, skip extraction"
++    exit 0
++fi
+ if [ -d "abseil-cpp" ];then
+     rm -rf abseil-cpp
+ fi

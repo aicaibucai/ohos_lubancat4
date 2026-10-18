@@ -1,0 +1,1048 @@
+544 ffffffc0
+[   15.640275] bcc0  03a86a00 ffffff80 0a480800 ffffff80 0a4808a8 ffffff80 00000
+001 00000000
+[   15.640288] bce0  0e97bcf0 ffffffc0 08738ba0 ffffffc0 0e97bd30 ffffffc0 08743
+320 ffffffc0
+[   15.640302] bd00  0e97bd30 ffffffc0 08743610 ffffffc0 03a86a00 ffffff80 0a480
+800 ffffff80
+[   15.640316] bd20  0a4808a8 ffffff80 7d571200 9e05ad04 0e97bde0 ffffffc0 08744
+a50 ffffffc0
+[   15.640330] bd40  00000000 00000000 0a480c00 ffffff80 0a480c88 ffffff80 00000
+000 00000000
+[   15.640344] bd60  0a436828 ffffff80 00000000 00000000 0e15b900 ffffff80 00000
+001 00000000
+[   15.640360]
+[   15.640360] X19: 0xffffff8003a86a00:
+[   15.640364] 6800  00000000 00000000 00000000 00000000 f5c76660 ffffff81 f6174
+cc0 ffffff81
+[   15.640378] 6820  f61b8e78 ffffff81 095a5940 ffffffc0 00000000 00000000 00000
+004 00000000
+[   15.640392] 6840  00020000 480a801d 00000000 00000000 00000000 00000000 03a86
+858 ffffff80
+[   15.640405] 6860  03a86858 ffffff80 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640419] 6880  00000000 00000000 00000000 00000000 f69913c0 ffffff81 00000
+000 00000000
+[   15.640433] 68a0  00000000 00000000 00000020 00000000 000003c0 00000000 00000
+000 00000000
+[   15.640446] 68c0  00000000 00000000 03a868c8 ffffff80 03a868c8 ffffff80 03a86
+8d8 ffffff80
+[   15.640461] 68e0  03a868d8 ffffff80 f61b8fe8 ffffff81 00000000 00000000 00000
+000 00000000
+[   15.640475] 6900  00000000 00000000 00000000 00000000 f5794020 ffffff81 f6049
+b40 ffffff81
+[   15.640488] 6920  f6046230 ffffff81 095a5940 ffffffc0 00000000 00000000 00000
+004 00000000
+[   15.640502] 6940  00020000 480a801d 00000000 00000000 00000000 00000000 03a86
+958 ffffff80
+[   15.640516] 6960  03a86958 ffffff80 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640530] 6980  00000000 00000000 00000000 00000000 f5f349c0 ffffff81 00000
+000 00000000
+[   15.640543] 69a0  00000000 00000000 00000020 00000000 000003c0 00000000 00000
+000 00000000
+[   15.640557] 69c0  00000000 00000000 03a869c8 ffffff80 03a869c8 ffffff80 03a86
+9d8 ffffff80
+[   15.640571] 69e0  03a869d8 ffffff80 f60463a0 ffffff81 00000000 00000000 00000
+000 00000000
+[   15.640585] 6a00* 03bb7500 ffffff80 00000000 00000000 0873a140 ffffffc0 f99a1
+700 ffffff81
+[   15.640599] 6a20  00000008 00000000 095a5940 ffffffc0 b7330358 0000007f 00000
+001 00000000
+[   15.640613] 6a40  00000000 00000000 00000001 00000200 0a480800 ffffff80 01000
+000 ffffff80
+[   15.640627] 6a60  0e15b900 ffffff80 b73301e0 0000007f 00000000 00000000 00000
+000 00000000
+[   15.640641] 6a80  00000000 00000000 00000000 00000000 0e2f6f00 ffffff80 00000
+000 00000000
+[   15.640655] 6aa0  00000000 00000000 00000020 00000000 000003c0 00000000 00000
+000 00000000
+[   15.640669] 6ac0  00000000 00000000 03a86ac8 ffffff80 00000000 00000000 03a86
+ad8 ffffff80
+[   15.640682] 6ae0  03a86ad8 ffffff80 f5165668 ffffff81 00000000 00000000 00000
+000 00000000
+[   15.640696] 6b00  00000000 00000000 00000000 00000000 f5c76660 ffffff81 f6154
+540 ffffff81
+[   15.640710] 6b20  f517eb00 ffffff81 095a5940 ffffffc0 00000000 00000000 00000
+004 00000000
+[   15.640724] 6b40  00020000 480a801d 00000000 00000000 00000000 00000000 03a86
+b58 ffffff80
+[   15.640738] 6b60  03a86b58 ffffff80 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640752] 6b80  00000000 00000000 00000000 00000000 038dbd80 ffffff80 00000
+000 00000000
+[   15.640766] 6ba0  00000000 00000000 00000020 00000000 000003c0 00000000 00000
+000 00000000
+[   15.640780] 6bc0  00000000 00000000 03a86bc8 ffffff80 03a86bc8 ffffff80 03a86
+bd8 ffffff80
+[   15.640794] 6be0  03a86bd8 ffffff80 f517ec70 ffffff81 00000000 00000000 00000
+000 00000000
+[   15.640809]
+[   15.640809] X20: 0xffffff800e15b900:
+[   15.640812] b700  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640826] b720  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640840] b740  00000000 00000000 00000000 00000000 00000005 00000000 00000
+000 00000000
+[   15.640854] b760  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640867] b780  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640881] b7a0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640894] b7c0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640908] b7e0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640922] b800  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640935] b820  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640949] b840  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640963] b860  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640976] b880  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.640990] b8a0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641004] b8c0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641017] b8e0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641031] b900* 00000028 00000000 ffffffff ffffffff 00000000 00000001 00000
+000 00000000
+[   15.641045] b920  0e978000 ffffffc0 00000403 04400050 00000000 00000001 00000
+000 00000000
+[   15.641059] b940  00000030 00000000 00000000 00000018 fffeb0ad 00000000 f0990
+e40 ffffff81
+[   15.641073] b960  00000007 00000000 00000001 00000078 00000078 00000078 00000
+000 00000000
+[   15.641087] b980  09bccfc0 ffffffc0 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641101] b9a0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641114] b9c0  00100000 00000000 00400000 00000000 00000001 00000000 00000
+000 00000000
+[   15.641128] b9e0  00000000 00000000 fad1cfd0 ffffff81 fad1cfd0 ffffff81 00000
+001 00000000
+[   15.641142] ba00  3c25618f 00000003 000046a3 00000000 79e7afa0 00000000 00004
+6a3 00000000
+[   15.641156] ba20  00000000 00000000 00000000 00000000 00000000 00000000 00000
+002 00000000
+[   15.641170] ba40  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641183] ba60  013c8811 00000000 013c8811 00000000 00000000 00000000 00000
+000 00000000
+[   15.641197] ba80  000046a3 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641211] baa0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+001 00000000
+[   15.641225] bac0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+001 00000000
+[   15.641239] bae0  00000000 00000000 00000001 00000000 00000000 00000000 00000
+000 00000000
+[   15.641253]
+[   15.641253] X21: 0xffffffc00e97bb40:
+[   15.641256] b940  ffffffff 0000007f 00000100 dead0000 0e97b970 ffffffc0 082fc
+b78 ffffffc0
+[   15.641270] b960  00000000 00000000 0874e670 ffffffc0 0e97b9b0 ffffffc0 08d81
+b44 ffffffc0
+[   15.641284] b980  f99a1700 ffffff81 03a86a00 ffffff80 0e97bb40 ffffffc0 0a480
+800 ffffff80
+[   15.641298] b9a0  f99a1700 ffffff81 fad1f9d0 ffffff81 0e97bac0 ffffffc0 08740
+0e4 ffffffc0
+[   15.641312] b9c0  03a86a00 ffffff80 00000001 00000000 0e97bb28 ffffffc0 08753
+854 ffffffc0
+[   15.641326] b9e0  03a86a00 ffffff80 0e97bb20 ffffffc0 00000000 00000000 0e97b
+b40 ffffffc0
+[   15.641341] ba00  00000001 00000000 00000000 00000000 0e97ba50 ffffffc0 08734
+248 ffffffc0
+[   15.641354] ba20  03a86a00 ffffff80 0e97bb20 ffffffc0 0e97bb40 ffffffc0 00000
+000 00000000
+[   15.641368] ba40  00000000 00000000 00000000 00000000 0e97bac0 ffffffc0 08740
+38c ffffffc0
+[   15.641382] ba60  03a86a00 ffffff80 00000001 00000000 00000000 00000000 0a480
+800 ffffff80
+[   15.641396] ba80  00000001 00000000 00000003 00000000 00000000 00000000 00000
+000 00000000
+[   15.641409] baa0  0e97bac0 ffffffc0 087401b4 ffffffc0 0e97bac0 ffffffc0 7d571
+200 9e05ad04
+[   15.641424] bac0  0e97bbf0 ffffffc0 087408ec ffffffc0 00000003 00000000 09611
+390 ffffffc0
+[   15.641437] bae0  4000010e 00000000 0a480800 ffffff80 00000001 00000000 00000
+001 00000000
+[   15.641451] bb00  00000122 dead0000 00000100 dead0000 03a86a00 ffffff80 01000
+000 00000000
+[   15.641465] bb20  00000000 00000000 00000000 00000000 00000200 00000000 00000
+001 00000000
+[   15.641479] bb40* 00000004 ffffffc0 00000000 00000000 00000200 00000000 0e97b
+b68 ffffffc0
+[   15.641493] bb60  00000001 00000000 36b3f260 0000007f 00000200 00000000 0e97b
+de0 ffffffc0
+[   15.641507] bb80  09631ef8 ffffffc0 ffffffd8 00000000 00000010 00000000 00000
+020 00000000
+[   15.641521] bba0  09a3faa0 ffffffc0 09a3faa0 ffffffc0 0e97bea0 ffffffc0 0e97b
+c20 ffffffc0
+[   15.641535] bbc0  087d19a4 ffffffc0 0e97bc20 ffffffc0 0e97bbf0 ffffffc0 0809c
+c74 ffffffc0
+[   15.641549] bbe0  fad1c600 ffffff81 7d571200 9e05ad04 0e97bcb0 ffffffc0 08742
+588 ffffffc0
+[   15.641563] bc00  03a86a00 ffffff80 09611390 ffffffc0 4000010e 00000000 40000
+04b 00000000
+[   15.641577] bc20  08744168 ffffffc0 00000000 00000000 0e15b900 ffffff80 0e15b
+9c0 ffffff80
+[   15.641591] bc40  00000000 00000000 01000000 00000000 0e97bcc0 ffffffc0 08271
+050 ffffffc0
+[   15.641605] bc60  08744168 ffffffc0 fad1c400 00000000 00000000 00000000 00000
+000 00000000
+[   15.641619] bc80  0e97bca0 ffffffc0 09551d7c ffffffc0 0e97bce0 ffffffc0 082b9
+f1c ffffffc0
+[   15.641633] bca0  03a86a00 ffffff80 7d571200 9e05ad04 0e97bd30 ffffffc0 08743
+544 ffffffc0
+[   15.641647] bcc0  03a86a00 ffffff80 0a480800 ffffff80 0a4808a8 ffffff80 00000
+001 00000000
+[   15.641661] bce0  0e97bcf0 ffffffc0 08738ba0 ffffffc0 0e97bd30 ffffffc0 08743
+320 ffffffc0
+[   15.641675] bd00  0e97bd30 ffffffc0 08743610 ffffffc0 03a86a00 ffffff80 0a480
+800 ffffff80
+[   15.641689] bd20  0a4808a8 ffffff80 7d571200 9e05ad04 0e97bde0 ffffffc0 08744
+a50 ffffffc0
+[   15.641703]
+[   15.641703] X22: 0xffffff8003a86a90:
+[   15.641707] 6890  f69913c0 ffffff81 00000000 00000000 00000000 00000000 00000
+020 00000000
+[   15.641721] 68b0  000003c0 00000000 00000000 00000000 00000000 00000000 03a86
+8c8 ffffff80
+[   15.641735] 68d0  03a868c8 ffffff80 03a868d8 ffffff80 03a868d8 ffffff80 f61b8
+fe8 ffffff81
+[   15.641749] 68f0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641762] 6910  f5794020 ffffff81 f6049b40 ffffff81 f6046230 ffffff81 095a5
+940 ffffffc0
+[   15.641777] 6930  00000000 00000000 00000004 00000000 00020000 480a801d 00000
+000 00000000
+[   15.641790] 6950  00000000 00000000 03a86958 ffffff80 03a86958 ffffff80 00000
+000 00000000
+[   15.641804] 6970  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641818] 6990  f5f349c0 ffffff81 00000000 00000000 00000000 00000000 00000
+020 00000000
+[   15.641831] 69b0  000003c0 00000000 00000000 00000000 00000000 00000000 03a86
+9c8 ffffff80
+[   15.641845] 69d0  03a869c8 ffffff80 03a869d8 ffffff80 03a869d8 ffffff80 f6046
+3a0 ffffff81
+[   15.641859] 69f0  00000000 00000000 00000000 00000000 03bb7500 ffffff80 00000
+000 00000000
+[   15.641873] 6a10  0873a140 ffffffc0 f99a1700 ffffff81 00000008 00000000 095a5
+940 ffffffc0
+[   15.641887] 6a30  b7330358 0000007f 00000001 00000000 00000000 00000000 00000
+001 00000200
+[   15.641901] 6a50  0a480800 ffffff80 01000000 ffffff80 0e15b900 ffffff80 b7330
+1e0 0000007f
+[   15.641915] 6a70  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641929] 6a90* 0e2f6f00 ffffff80 00000000 00000000 00000000 00000000 00000
+020 00000000
+[   15.641943] 6ab0  000003c0 00000000 00000000 00000000 00000000 00000000 03a86
+ac8 ffffff80
+[   15.641957] 6ad0  00000000 00000000 03a86ad8 ffffff80 03a86ad8 ffffff80 f5165
+668 ffffff81
+[   15.641971] 6af0  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.641984] 6b10  f5c76660 ffffff81 f6154540 ffffff81 f517eb00 ffffff81 095a5
+940 ffffffc0
+[   15.641999] 6b30  00000000 00000000 00000004 00000000 00020000 480a801d 00000
+000 00000000
+[   15.642013] 6b50  00000000 00000000 03a86b58 ffffff80 03a86b58 ffffff80 00000
+000 00000000
+[   15.642026] 6b70  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.642040] 6b90  038dbd80 ffffff80 00000000 00000000 00000000 00000000 00000
+020 00000000
+[   15.642055] 6bb0  000003c0 00000000 00000000 00000000 00000000 00000000 03a86
+bc8 ffffff80
+[   15.642068] 6bd0  03a86bc8 ffffff80 03a86bd8 ffffff80 03a86bd8 ffffff80 f517e
+c70 ffffff81
+[   15.642082] 6bf0  00000000 00000000 00000000 00000000 05104e30 ffffff80 00000
+000 00000000
+[   15.642096] 6c10  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.642110] 6c30  00000000 00000000 00000000 00000000 00020000 00000001 00000
+000 00000000
+[   15.642123] 6c50  00000000 00000000 03a86c58 ffffff80 03a86c58 ffffff80 00000
+000 00000000
+[   15.642137] 6c70  00000000 00000000 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.642152]
+[   15.642152] X25: 0xffffffc00e97bb68:
+[   15.642156] b968  0874e670 ffffffc0 0e97b9b0 ffffffc0 08d81b44 ffffffc0 f99a1
+700 ffffff81
+[   15.642170] b988  03a86a00 ffffff80 0e97bb40 ffffffc0 0a480800 ffffff80 f99a1
+700 ffffff81
+[   15.642184] b9a8  fad1f9d0 ffffff81 0e97bac0 ffffffc0 087400e4 ffffffc0 03a86
+a00 ffffff80
+[   15.642198] b9c8  00000001 00000000 0e97bb28 ffffffc0 08753854 ffffffc0 03a86
+a00 ffffff80
+[   15.642212] b9e8  0e97bb20 ffffffc0 00000000 00000000 0e97bb40 ffffffc0 00000
+001 00000000
+[   15.642226] ba08  00000000 00000000 0e97ba50 ffffffc0 08734248 ffffffc0 03a86
+a00 ffffff80
+[   15.642240] ba28  0e97bb20 ffffffc0 0e97bb40 ffffffc0 00000000 00000000 00000
+000 00000000
+[   15.642254] ba48  00000000 00000000 0e97bac0 ffffffc0 0874038c ffffffc0 03a86
+a00 ffffff80
+[   15.642268] ba68  00000001 00000000 00000000 00000000 0a480800 ffffff80 00000
+001 00000000
+[   15.642282] ba88  00000003 00000000 00000000 00000000 00000000 00000000 0e97b
+ac0 ffffffc0
+[   15.642295] baa8  087401b4 ffffffc0 0e97bac0 ffffffc0 7d571200 9e05ad04 0e97b
+bf0 ffffffc0
+[   15.642310] bac8  087408ec ffffffc0 00000003 00000000 09611390 ffffffc0 40000
+10e 00000000
+[   15.642324] bae8  0a480800 ffffff80 00000001 00000000 00000001 00000000 00000
+122 dead0000
+[   15.642338] bb08  00000100 dead0000 03a86a00 ffffff80 01000000 00000000 00000
+000 00000000
+[   15.642351] bb28  00000000 00000000 00000200 00000000 00000001 00000000 00000
+004 ffffffc0
+[   15.642365] bb48  00000000 00000000 00000200 00000000 0e97bb68 ffffffc0 00000
+001 00000000
+[   15.642379] bb68* 36b3f260 0000007f 00000200 00000000 0e97bde0 ffffffc0 09631
+ef8 ffffffc0
+[   15.642393] bb88  ffffffd8 00000000 00000010 00000000 00000020 00000000 09a3f
+aa0 ffffffc0
+[   15.642407] bba8  09a3faa0 ffffffc0 0e97bea0 ffffffc0 0e97bc20 ffffffc0 087d1
+9a4 ffffffc0
+[   15.642420] bbc8  0e97bc20 ffffffc0 0e97bbf0 ffffffc0 0809cc74 ffffffc0 fad1c
+600 ffffff81
+[   15.642435] bbe8  7d571200 9e05ad04 0e97bcb0 ffffffc0 08742588 ffffffc0 03a86
+a00 ffffff80
+[   15.642449] bc08  09611390 ffffffc0 4000010e 00000000 4000004b 00000000 08744
+168 ffffffc0
+[   15.642463] bc28  00000000 00000000 0e15b900 ffffff80 0e15b9c0 ffffff80 00000
+000 00000000
+[   15.642476] bc48  01000000 00000000 0e97bcc0 ffffffc0 08271050 ffffffc0 08744
+168 ffffffc0
+[   15.642490] bc68  fad1c400 00000000 00000000 00000000 00000000 00000000 0e97b
+ca0 ffffffc0
+[   15.642505] bc88  09551d7c ffffffc0 0e97bce0 ffffffc0 082b9f1c ffffffc0 03a86
+a00 ffffff80
+[   15.642519] bca8  7d571200 9e05ad04 0e97bd30 ffffffc0 08743544 ffffffc0 03a86
+a00 ffffff80
+[   15.642533] bcc8  0a480800 ffffff80 0a4808a8 ffffff80 00000001 00000000 0e97b
+cf0 ffffffc0
+[   15.642546] bce8  08738ba0 ffffffc0 0e97bd30 ffffffc0 08743320 ffffffc0 0e97b
+d30 ffffffc0
+[   15.642560] bd08  08743610 ffffffc0 03a86a00 ffffff80 0a480800 ffffff80 0a480
+8a8 ffffff80
+[   15.642574] bd28  7d571200 9e05ad04 0e97bde0 ffffffc0 08744a50 ffffffc0 00000
+000 00000000
+[   15.642588] bd48  0a480c00 ffffff80 0a480c88 ffffff80 00000000 00000000 0a436
+828 ffffff80
+[   15.642603]
+[   15.642603] X27: 0xffffff8003a86a00:
+[   15.642606] 6800  00000000 00000000 00000000 00000000 f5c76660 ffffff81 f6174
+cc0 ffffff81
+[   15.642620] 6820  f61b8e78 ffffff81 095a5940 ffffffc0 00000000 00000000 00000
+004 00000000
+[   15.642634] 6840  00020000 480a801d 00000000 00000000 00000000 00000000 03a86
+858 ffffff80
+[   15.642648] 6860  03a86858 ffffff80 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.642662] 6880  00000000 00000000 00000000 00000000 f69913c0 ffffff81 00000
+000 00000000
+[   15.642676] 68a0  00000000 00000000 00000020 00000000 000003c0 00000000 00000
+000 00000000
+[   15.642690] 68c0  00000000 00000000 03a868c8 ffffff80 03a868c8 ffffff80 03a86
+8d8 ffffff80
+[   15.642704] 68e0  03a868d8 ffffff80 f61b8fe8 ffffff81 00000000 00000000 00000
+000 00000000
+[   15.642718] 6900  00000000 00000000 00000000 00000000 f5794020 ffffff81 f6049
+b40 ffffff81
+[   15.642732] 6920  f6046230 ffffff81 095a5940 ffffffc0 00000000 00000000 00000
+004 00000000
+[   15.642745] 6940  00020000 480a801d 00000000 00000000 00000000 00000000 03a86
+958 ffffff80
+[   15.642759] 6960  03a86958 ffffff80 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.642773] 6980  00000000 00000000 00000000 00000000 f5f349c0 ffffff81 00000
+000 00000000
+[   15.642787] 69a0  00000000 00000000 00000020 00000000 000003c0 00000000 00000
+000 00000000
+[   15.642801] 69c0  00000000 00000000 03a869c8 ffffff80 03a869c8 ffffff80 03a86
+9d8 ffffff80
+[   15.642815] 69e0  03a869d8 ffffff80 f60463a0 ffffff81 00000000 00000000 00000
+000 00000000
+[   15.642829] 6a00* 03bb7500 ffffff80 00000000 00000000 0873a140 ffffffc0 f99a1
+700 ffffff81
+[   15.642843] 6a20  00000008 00000000 095a5940 ffffffc0 b7330358 0000007f 00000
+001 00000000
+[   15.642856] 6a40  00000000 00000000 00000001 00000200 0a480800 ffffff80 01000
+000 ffffff80
+[   15.642870] 6a60  0e15b900 ffffff80 b73301e0 0000007f 00000000 00000000 00000
+000 00000000
+[   15.642884] 6a80  00000000 00000000 00000000 00000000 0e2f6f00 ffffff80 00000
+000 00000000
+[   15.642898] 6aa0  00000000 00000000 00000020 00000000 000003c0 00000000 00000
+000 00000000
+[   15.642912] 6ac0  00000000 00000000 03a86ac8 ffffff80 00000000 00000000 03a86
+ad8 ffffff80
+[   15.642926] 6ae0  03a86ad8 ffffff80 f5165668 ffffff81 00000000 00000000 00000
+000 00000000
+[   15.642940] 6b00  00000000 00000000 00000000 00000000 f5c76660 ffffff81 f6154
+540 ffffff81
+[   15.642954] 6b20  f517eb00 ffffff81 095a5940 ffffffc0 00000000 00000000 00000
+004 00000000
+[   15.642967] 6b40  00020000 480a801d 00000000 00000000 00000000 00000000 03a86
+b58 ffffff80
+[   15.642982] 6b60  03a86b58 ffffff80 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.642995] 6b80  00000000 00000000 00000000 00000000 038dbd80 ffffff80 00000
+000 00000000
+[   15.643009] 6ba0  00000000 00000000 00000020 00000000 000003c0 00000000 00000
+000 00000000
+[   15.643023] 6bc0  00000000 00000000 03a86bc8 ffffff80 03a86bc8 ffffff80 03a86
+bd8 ffffff80
+[   15.643037] 6be0  03a86bd8 ffffff80 f517ec70 ffffff81 00000000 00000000 00000
+000 00000000
+[   15.643051]
+[   15.643051] X28: 0xffffffc00e97bb40:
+[   15.643055] b940  ffffffff 0000007f 00000100 dead0000 0e97b970 ffffffc0 082fc
+b78 ffffffc0
+[   15.643069] b960  00000000 00000000 0874e670 ffffffc0 0e97b9b0 ffffffc0 08d81
+b44 ffffffc0
+[   15.643083] b980  f99a1700 ffffff81 03a86a00 ffffff80 0e97bb40 ffffffc0 0a480
+800 ffffff80
+[   15.643097] b9a0  f99a1700 ffffff81 fad1f9d0 ffffff81 0e97bac0 ffffffc0 08740
+0e4 ffffffc0
+[   15.643111] b9c0  03a86a00 ffffff80 00000001 00000000 0e97bb28 ffffffc0 08753
+854 ffffffc0
+[   15.643125] b9e0  03a86a00 ffffff80 0e97bb20 ffffffc0 00000000 00000000 0e97b
+b40 ffffffc0
+[   15.643139] ba00  00000001 00000000 00000000 00000000 0e97ba50 ffffffc0 08734
+248 ffffffc0
+[   15.643152] ba20  03a86a00 ffffff80 0e97bb20 ffffffc0 0e97bb40 ffffffc0 00000
+000 00000000
+[   15.643166] ba40  00000000 00000000 00000000 00000000 0e97bac0 ffffffc0 08740
+38c ffffffc0
+[   15.643180] ba60  03a86a00 ffffff80 00000001 00000000 00000000 00000000 0a480
+800 ffffff80
+[   15.643194] ba80  00000001 00000000 00000003 00000000 00000000 00000000 00000
+000 00000000
+[   15.643208] baa0  0e97bac0 ffffffc0 087401b4 ffffffc0 0e97bac0 ffffffc0 7d571
+200 9e05ad04
+[   15.643222] bac0  0e97bbf0 ffffffc0 087408ec ffffffc0 00000003 00000000 09611
+390 ffffffc0
+[   15.643236] bae0  4000010e 00000000 0a480800 ffffff80 00000001 00000000 00000
+001 00000000
+[   15.643250] bb00  00000122 dead0000 00000100 dead0000 03a86a00 ffffff80 01000
+000 00000000
+[   15.643264] bb20  00000000 00000000 00000000 00000000 00000200 00000000 00000
+001 00000000
+[   15.643278] bb40* 00000004 ffffffc0 00000000 00000000 00000200 00000000 0e97b
+b68 ffffffc0
+[   15.643292] bb60  00000001 00000000 36b3f260 0000007f 00000200 00000000 0e97b
+de0 ffffffc0
+[   15.643306] bb80  09631ef8 ffffffc0 ffffffd8 00000000 00000010 00000000 00000
+020 00000000
+[   15.643320] bba0  09a3faa0 ffffffc0 09a3faa0 ffffffc0 0e97bea0 ffffffc0 0e97b
+c20 ffffffc0
+[   15.643334] bbc0  087d19a4 ffffffc0 0e97bc20 ffffffc0 0e97bbf0 ffffffc0 0809c
+c74 ffffffc0
+[   15.643348] bbe0  fad1c600 ffffff81 7d571200 9e05ad04 0e97bcb0 ffffffc0 08742
+588 ffffffc0
+[   15.643362] bc00  03a86a00 ffffff80 09611390 ffffffc0 4000010e 00000000 40000
+04b 00000000
+[   15.643376] bc20  08744168 ffffffc0 00000000 00000000 0e15b900 ffffff80 0e15b
+9c0 ffffff80
+[   15.643390] bc40  00000000 00000000 01000000 00000000 0e97bcc0 ffffffc0 08271
+050 ffffffc0
+[   15.643404] bc60  08744168 ffffffc0 fad1c400 00000000 00000000 00000000 00000
+000 00000000
+[   15.643418] bc80  0e97bca0 ffffffc0 09551d7c ffffffc0 0e97bce0 ffffffc0 082b9
+f1c ffffffc0
+[   15.643432] bca0  03a86a00 ffffff80 7d571200 9e05ad04 0e97bd30 ffffffc0 08743
+544 ffffffc0
+[   15.643446] bcc0  03a86a00 ffffff80 0a480800 ffffff80 0a4808a8 ffffff80 00000
+001 00000000
+[   15.643460] bce0  0e97bcf0 ffffffc0 08738ba0 ffffffc0 0e97bd30 ffffffc0 08743
+320 ffffffc0
+[   15.643474] bd00  0e97bd30 ffffffc0 08743610 ffffffc0 03a86a00 ffffff80 0a480
+800 ffffff80
+[   15.643488] bd20  0a4808a8 ffffff80 7d571200 9e05ad04 0e97bde0 ffffffc0 08744
+a50 ffffffc0
+[   15.643502]
+[   15.643502] X29: 0xffffffc00e97b970:
+[   15.643506] b770  0e97b820 ffffffc0 00000000 00000000 0e97b7a0 ffffffc0 0803b
+a58 ffffffc0
+[   15.643520] b790  0e97b820 ffffffc0 f2000800 00000000 0e97b7e0 ffffffc0 0954d
+c94 ffffffc0
+[   15.643534] b7b0  0e97b820 ffffffc0 f2000800 00000000 e7cc1a78 0000007f 082fc
+b78 ffffffc0
+[   15.643548] b7d0  0e97b7e0 ffffffc0 0954dc84 ffffffc0 0e97b810 ffffffc0 0954e
+35c ffffffc0
+[   15.643562] b7f0  03a86a00 ffffff80 ffffffff 0000007f 0e97b970 ffffffc0 00000
+000 00000000
+[   15.643576] b810  0e97b950 ffffffc0 08012408 ffffffc0 0e2f6f00 ffffff80 08d7f
+3e0 ffffffc0
+[   15.643590] b830  00000008 00000000 00000200 00000000 00000008 00000000 00000
+000 00000000
+[   15.643604] b850  0e11a310 ffffff80 00000000 00000000 f99a1800 ffffff81 08d81
+b44 ffffffc0
+[   15.643618] b870  0e15b900 ffffff80 00000008 00000000 0e97bb80 ffffffc0 36b3f
+260 0000007f
+[   15.643632] b890  7ffff000 00000000 b7330358 0000007f 00000000 00000000 00000
+000 00000000
+[   15.643645] b8b0  00000000 00000000 03a86a00 ffffff80 0e15b900 ffffff80 0e97b
+b40 ffffffc0
+[   15.643659] b8d0  03a86a90 ffffff80 00000000 00000000 00000003 00000000 0e97b
+b68 ffffffc0
+[   15.643673] b8f0  00000100 dead0000 03a86a00 ffffff80 0e97bb40 ffffffc0 0e97b
+970 ffffffc0
+[   15.643687] b910  08d81b44 ffffffc0 0e97b970 ffffffc0 082fcb78 ffffffc0 80400
+009 00000000
+[   15.643701] b930  00000000 00000000 00000003 00000000 ffffffff 0000007f 00000
+100 dead0000
+[   15.643715] b950  0e97b970 ffffffc0 082fcb78 ffffffc0 00000000 00000000 0874e
+670 ffffffc0
+[   15.643729] b970* 0e97b9b0 ffffffc0 08d81b44 ffffffc0 f99a1700 ffffff81 03a86
+a00 ffffff80
+[   15.643743] b990  0e97bb40 ffffffc0 0a480800 ffffff80 f99a1700 ffffff81 fad1f
+9d0 ffffff81
+[   15.643757] b9b0  0e97bac0 ffffffc0 087400e4 ffffffc0 03a86a00 ffffff80 00000
+001 00000000
+[   15.643772] b9d0  0e97bb28 ffffffc0 08753854 ffffffc0 03a86a00 ffffff80 0e97b
+b20 ffffffc0
+[   15.643786] b9f0  00000000 00000000 0e97bb40 ffffffc0 00000001 00000000 00000
+000 00000000
+[   15.643799] ba10  0e97ba50 ffffffc0 08734248 ffffffc0 03a86a00 ffffff80 0e97b
+b20 ffffffc0
+[   15.643813] ba30  0e97bb40 ffffffc0 00000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.643827] ba50  0e97bac0 ffffffc0 0874038c ffffffc0 03a86a00 ffffff80 00000
+001 00000000
+[   15.643841] ba70  00000000 00000000 0a480800 ffffff80 00000001 00000000 00000
+003 00000000
+[   15.643855] ba90  00000000 00000000 00000000 00000000 0e97bac0 ffffffc0 08740
+1b4 ffffffc0
+[   15.643868] bab0  0e97bac0 ffffffc0 7d571200 9e05ad04 0e97bbf0 ffffffc0 08740
+8ec ffffffc0
+[   15.643882] bad0  00000003 00000000 09611390 ffffffc0 4000010e 00000000 0a480
+800 ffffff80
+[   15.643896] baf0  00000001 00000000 00000001 00000000 00000122 dead0000 00000
+100 dead0000
+[   15.643910] bb10  03a86a00 ffffff80 01000000 00000000 00000000 00000000 00000
+000 00000000
+[   15.643924] bb30  00000200 00000000 00000001 00000000 00000004 ffffffc0 00000
+000 00000000
+[   15.643938] bb50  00000200 00000000 0e97bb68 ffffffc0 00000001 00000000 36b3f
+260 0000007f
+[   15.643953] ---[ end trace c4eef3615d833af3 ]---
+[   15.644207] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'write  /conf
+ig/usb_gadget/g1/configs/b.1/strings/0x409/configuration hdc' in sub init u:r:ch
+ipse
+[   15.644372] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f1' in sub init u:r:chipset_init:s0
+[   15.644384] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f1 err=2.
+[   15.644529] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f2' in sub init u:r:chipset_init:s0
+[   15.644538] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f2 err=2.
+[   15.644566] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f3' in sub init u:r:chipset_init:s0
+[   15.644574] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f3 err=2.
+[   15.644750] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f4' in sub init u:r:chipset_init:s0
+[   15.644786] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f4 err=2.
+[   15.644901] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f5' in sub init u:r:chipset_init:s0
+[   15.644929] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f5 err=2.
+[   15.645052] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f6' in sub init u:r:chipset_init:s0
+[   15.645080] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f6 err=2.
+[   15.645128] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f7' in sub init u:r:chipset_init:s0
+[   15.645154] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f7 err=2.
+[   15.645199] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f8' in sub init u:r:chipset_init:s0
+[   15.645227] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f8 err=2.
+[   15.645272] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f9' in sub init u:r:chipset_init:s0
+[   15.645299] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f9 err=2.
+[   15.645348] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f10' in sub init u:r:chipset_init:s0
+[   15.645376] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f10 err=2.
+[   15.645478] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'rm  /config/
+usb_gadget/g1/configs/b.1/f11' in sub init u:r:chipset_init:s0
+[   15.645507] [pid=244][Init][ERROR][init_common_cmds.c:570]Failed unlink /conf
+ig/usb_gadget/g1/configs/b.1/f11 err=2.
+[   15.645553] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'symlink  /co
+nfig/usb_gadget/g1/functions/ffs.hdc /config/usb_gadget/g1/configs/b.1/f1' in su
+b in
+[   15.645632] [pid=244][PLUGIN][INFO][init_context.c:203]Exec cmd 'write  /conf
+ig/usb_gadget/g1/UDC ${sys.usb.controller}' in sub init u:r:chipset_init:s0
+[   15.647552] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+4 pid 250 key: persist.samgr.cache.sa
+[   15.647743] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+5 pid 250 key: persist.samgr.cache.sa
+[   15.647959] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+6 pid 250 key: persist.samgr.cache.sa
+[   15.648137] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+7 pid 250 key: persist.samgr.cache.sa
+[   15.648316] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+8 pid 250 key: persist.samgr.cache.sa
+[   15.656937] SAMGR: insert SA:941_28
+[   15.657089] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+9 pid 250 key: persist.samgr.cache.sa
+[   15.691977] SAMGR: insert SA:1301_29
+[   15.692102] SAFWK: Publish SA:1301 result:0,spend:1ms
+[   15.692456] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+0 pid 250 key: persist.samgr.cache.sa
+[   15.693881] SAFWK: Start OnStart-SA:1301 finished, spend:525 ms
+[   15.694039] SAFWK: StartSystemAbilityTask distributeddata SA:1301 init finish
+ed, 946 ms
+[   15.809024] SAMGR: insert SA:1203_30
+[   15.809673] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+1 pid 250 key: persist.samgr.cache.sa
+[   15.849677] dwc3 fc000000.usb: device reset
+[   15.952337] android_work: sent uevent USB_STATE=CONNECTED
+[   15.968951] android_work: sent uevent USB_STATE=CONFIGURED
+[   16.146086] SAFWK: Start OnStart-SA:1151 finished, spend:1204 ms
+[   16.146424] SAMGR: insert SA:1151_31
+[   16.146671] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+2 pid 250 key: persist.samgr.cache.sa
+[   16.146725] SAFWK: Publish SA:1151 result:0,spend:0ms
+[   16.146776] SAFWK: StartSystemAbilityTask netmanager SA:1151 init finished, 1
+578 ms
+[   16.339591] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 694) exit with code : 0
+[   16.339614] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:694 uid:3023 status:0.
+[   16.349740] binder: release 444:444 transaction 504 in, still active
+[   16.349773] binder: release 444:444 transaction 253 out, still active
+[   16.349781] binder: send failed reply for transaction 504 to 247:568
+[   16.349985] binder: send failed reply for transaction 253, target dead
+[   16.350184] [pid=1][Init][WARNING][init_signal_handler.c:43]Child process usb
+_host(pid 444) exit with signal : 11
+[   16.350196] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning u
+sb_host, SIGCHLD received, pid:444 uid:3023 status:11.
+[   16.350209] [pid=1][Init][INFO][init_common_service.c:803]ServiceReap info us
+b_host pid 444.
+[   16.350334] [pid=1][Init][INFO][init_common_service.c:650]ServiceStart starti
+ng:usb_host
+[   16.350711] [pid=1][Init][INFO][init_common_service.c:676]ServiceStart starte
+d info usb_host(pid 967 uid 3023)
+[   16.350729] [pid=1][Init][INFO][init_common_service.c:679]starttime:160950595
+7-287059826, prefork:1609505957-287087243, startedtime:1609505957-287431993
+[   16.350861] [pid=967][PLUGIN][INFO][init_context_static.c:84]Set selinux cont
+ext 0 for usb_host
+[   16.350957] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 679) exit with code : 0
+[   16.350979] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:679 uid:3023 status:0.
+[   16.351030] [pid=967][Init][INFO][init_service.c:118]ServiceExec usb_host
+[   16.356092] SAMGR: insert SA:3301_32
+[   16.356378] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+3 pid 250 key: persist.samgr.cache.sa
+[   16.356938] SAFWK: Publish SA:3301 result:0,spend:1ms
+[   16.357144] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+ pid 462 key: bootevent.powermgr.ready
+[   16.357444] SAFWK: Start OnStart-SA:3301 finished, spend:1214 ms
+[   16.357589] SAFWK: StartSystemAbilityTask powermgr SA:3301 init finished, 174
+5 ms
+[   16.370152] [E/devmgr_service] device hdf_usb_pnp_notify_service not in confi
+ged device list
+[   16.741006] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+ pid 248 key: bootevent.appspawn.started
+[   17.116248] SAMGR: insert SA:1202_33
+[   17.117592] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+4 pid 250 key: persist.samgr.cache.sa
+[   17.690613] binder: release 967:967 transaction 2158 in, still active
+[   17.690659] binder: release 967:967 transaction 2142 out, still active
+[   17.690669] binder: send failed reply for transaction 2158 to 247:582
+[   17.690981] binder: send failed reply for transaction 2142, target dead
+[   17.691341] [pid=1][Init][WARNING][init_signal_handler.c:43]Child process usb
+_host(pid 967) exit with signal : 11
+[   17.691360] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning u
+sb_host, SIGCHLD received, pid:967 uid:3023 status:11.
+[   17.691385] [pid=1][Init][INFO][init_common_service.c:803]ServiceReap info us
+b_host pid 967.
+[   17.691535] [pid=1][Init][INFO][init_common_service.c:650]ServiceStart starti
+ng:usb_host
+[   17.692001] [pid=1][Init][INFO][init_common_service.c:676]ServiceStart starte
+d info usb_host(pid 992 uid 3023)
+[   17.692024] [pid=1][Init][INFO][init_common_service.c:679]starttime:160950595
+8-628258586, prefork:1609505958-628293294, startedtime:1609505958-628719127
+[   17.692232] [pid=992][PLUGIN][INFO][init_context_static.c:84]Set selinux cont
+ext 0 for usb_host
+[   17.692250] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 976) exit with code : 0
+[   17.692271] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:976 uid:3023 status:0.
+[   17.692444] [pid=992][Init][INFO][init_service.c:118]ServiceExec usb_host
+[   17.698274] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 974) exit with code : 0
+[   17.698299] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:974 uid:3023 status:0.
+[   17.713005] [E/devmgr_service] device hdf_usb_pnp_notify_service not in confi
+ged device list
+[   18.334188] SAMGR: insert SA:1215_34
+[   18.334972] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+5 pid 250 key: persist.samgr.cache.sa
+[   18.335144] SAMGR: insert SA:1201_35
+[   18.335676] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+6 pid 250 key: persist.samgr.cache.sa
+[   19.030465] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 999) exit with code : 0
+[   19.030497] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:999 uid:3023 status:0.
+[   19.031700] binder: release 992:992 transaction 2458 in, still active
+[   19.031718] binder: release 992:992 transaction 2442 out, still active
+[   19.031725] binder: send failed reply for transaction 2458 to 247:567
+[   19.031884] [pid=1][Init][WARNING][init_signal_handler.c:43]Child process usb
+_host(pid 992) exit with signal : 11
+[   19.031898] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning u
+sb_host, SIGCHLD received, pid:992 uid:3023 status:11.
+[   19.031917] [pid=1][Init][INFO][init_common_service.c:803]ServiceReap info us
+b_host pid 992.
+[   19.031927] binder: send failed reply for transaction 2442, target dead
+[   19.032052] [pid=1][Init][INFO][init_common_service.c:650]ServiceStart starti
+ng:usb_host
+[   19.032395] [pid=1][Init][INFO][init_common_service.c:676]ServiceStart starte
+d info usb_host(pid 1006 uid 3023)
+[   19.032411] [pid=1][Init][INFO][init_common_service.c:679]starttime:160950595
+9-968778595, prefork:1609505959-968800762, startedtime:1609505959-969117220
+[   19.032602] [pid=1006][PLUGIN][INFO][init_context_static.c:84]Set selinux con
+text 0 for usb_host
+[   19.032803] [pid=1006][Init][INFO][init_service.c:118]ServiceExec usb_host
+[   19.037917] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 996) exit with code : 0
+[   19.037937] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:996 uid:3023 status:0.
+[   19.052409] [E/devmgr_service] device hdf_usb_pnp_notify_service not in confi
+ged device list
+[   20.373819] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 1012) exit with code : 0
+[   20.373845] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:1012 uid:3023 status:0.
+[   20.374783] binder: release 1006:1006 transaction 2654 in, still active
+[   20.374797] binder: release 1006:1006 transaction 2638 out, still active
+[   20.374803] binder: send failed reply for transaction 2654 to 247:265
+[   20.374931] [pid=1][Init][WARNING][init_signal_handler.c:43]Child process usb
+_host(pid 1006) exit with signal : 11
+[   20.374941] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning u
+sb_host, SIGCHLD received, pid:1006 uid:3023 status:11.
+[   20.374955] [pid=1][Init][INFO][init_common_service.c:803]ServiceReap info us
+b_host pid 1006.
+[   20.375063] [pid=1][Init][INFO][init_common_service.c:859]ServiceReap start f
+ailed! will reStart -2114103328 second later
+[   20.375076] binder_transaction: 11 callbacks suppressed
+[   20.375084] binder: 247:265 transaction failed 29189/0, size 4-0 line 3093
+[   20.375109] binder: send failed reply for transaction 2638, target dead
+[   20.379879] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 1010) exit with code : 0
+[   20.379889] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:1010 uid:3023 status:0.
+[   24.994565] SAMGR: SA:4606 OpenSo 9721ms
+[   24.995047] SAMGR: SA:4607 OpenSo 0ms
+[   25.014634] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+ pid 449 key: bootevent.wms.ready
+[   25.017493] SAMGR: SA:3299 OpenSo 22ms
+[   25.018388] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+7 pid 250 key: ohos.ctl.start
+[   25.018522] [pid=1][Init][INFO][init_service_manager.c:1168]Service info inst
+alls start service bt ext parameter installs|511#0#load##-1#.
+[   25.018592] [pid=1][Init][INFO][init_common_service.c:650]ServiceStart starti
+ng:installs
+[   25.020245] SAMGR: insert SA:4606_36
+[   25.021188] SAFWK: Publish SA:4606 result:0,spend:2ms
+[   25.021233] SAFWK: Start OnStart-SA:4606 finished, spend:26 ms
+[   25.021336] SAFWK: StartSystemAbilityTask foundation SA:4606 init finished, 1
+0375 ms
+[   25.022563] [pid=1][Init][INFO][init_common_service.c:676]ServiceStart starte
+d info installs(pid 1033 uid 3060)
+[   25.022579] [pid=1][Init][INFO][init_common_service.c:679]starttime:160950596
+5-955302989, prefork:1609505965-955584155, startedtime:1609505965-959281906
+[   25.022940] [pid=1033][Init][INFO][init_service.c:118]ServiceExec installs
+[   25.022993] SAMGR: Start dynamic proc:installs,511,0_7ms
+[   25.023005] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+8 pid 250 key: persist.samgr.cache.sa
+[   25.026455] SAMGR: SA:3704 OpenSo 9ms
+[   25.037178] SAFWK: operator() Set process name to installs
+[   25.045541] SAMGR: SA:511 OpenSo 8ms
+[   25.048051] SAMGR: insert SA:511_37
+[   25.048266] SAFWK: Publish SA:511 result:0,spend:1ms
+[   25.048403] SAFWK: Start OnStart-SA:511 finished, spend:2 ms
+[   25.048503] SAFWK: StartSystemAbilityTask installs SA:511 init finished, 11 m
+s
+[   25.067430] SAMGR: SA:180 OpenSo 41ms
+[   25.069888] SAMGR: SA:182 OpenSo 2ms
+[   25.088496] SAMGR: SA:501 OpenSo 19ms
+[   25.104933] SAMGR: SA:403 OpenSo 16ms
+[   25.148288] SAFWK: Start OnStart-SA:401 finished, spend:139 ms
+[   25.148394] SAFWK: StartSystemAbilityTask foundation SA:401 init finished, 10
+502 ms
+[   25.177745] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+ pid 449 key: bootevent.bms.main.bundles.ready
+[   25.189848] SAMGR: insert SA:401_38
+[   25.190126] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+9 pid 250 key: persist.samgr.cache.sa
+[   25.732895] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+0 pid 250 key: ohos.ctl.start
+[   25.732996] [pid=1][Init][INFO][init_service_manager.c:1168]Service info devi
+ceprofile start service bt ext parameter deviceprofile|6001#0#load##-1#.
+[   25.733018] [pid=1][Init][INFO][init_common_service.c:650]ServiceStart starti
+ng:deviceprofile
+[   25.733479] [pid=1][Init][INFO][init_common_service.c:676]ServiceStart starte
+d info deviceprofile(pid 1062 uid 5522)
+[   25.733500] [pid=1][Init][INFO][init_common_service.c:679]starttime:160950596
+6-669742602, prefork:1609505966-669780810, startedtime:1609505966-670198477
+[   25.734163] SAMGR: Start dynamic proc:deviceprofile,6001,0_2ms
+[   25.734213] [pid=1062][Init][INFO][fscrypt_control.c:484]Fscrypt have not ena
+bled
+[   25.734554] [pid=1062][Init][INFO][fscrypt_control.c:484]Fscrypt have not ena
+bled
+[   25.734807] [pid=1062][Init][INFO][fscrypt_control.c:484]Fscrypt have not ena
+bled
+[   25.734825] [pid=1062][Init][INFO][init_common_service.c:432]Deal service dev
+iceprofile job end
+[   25.734927] [pid=1062][Init][INFO][init_service.c:118]ServiceExec deviceprofi
+le
+[   25.764791] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process dev
+iceprofile(pid 1062) exit with code : 0
+[   25.764843] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning d
+eviceprofile, SIGCHLD received, pid:1062 uid:5522 status:0.
+[   25.764861] [pid=1][Init][INFO][init_common_service.c:803]ServiceReap info de
+viceprofile pid 1062.
+[   29.842176] SAMGR: insert SA:4607_39
+[   29.842898] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+1 pid 250 key: persist.samgr.cache.sa
+[   29.844418] SAFWK: Publish SA:4607 result:0,spend:3ms
+[   33.029876] SAMGR: insert SA:3308_40
+[   33.030276] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+2 pid 250 key: persist.samgr.cache.sa
+[   33.030455] SAFWK: Publish SA:3308 result:0,spend:1ms
+[   34.679505] SAFWK: Start OnStart-SA:4607 finished, spend:9683 ms
+[   34.679957] SAFWK: StartSystemAbilityTask foundation SA:4607 init finished, 2
+0033 ms
+[   34.681218] SAMGR: insert SA:3704_41
+[   34.681554] SAMGR: insert SA:3299_42
+[   34.681934] SAMGR: insert SA:182_43
+[   34.682098] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+3 pid 250 key: persist.samgr.cache.sa
+[   34.683089] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+4 pid 250 key: persist.samgr.cache.sa
+[   34.684118] SAMGR: insert SA:403_44
+[   34.684171] SAFWK: Publish SA:182 result:0,spend:3ms
+[   34.684260] SAFWK: Start OnStart-SA:182 finished, spend:3 ms
+[   34.684422] SAFWK: Publish SA:3299 result:0,spend:3ms
+[   34.684441] SAFWK: StartSystemAbilityTask foundation SA:182 init finished, 20
+038 ms
+[   34.684455] SAFWK: Publish SA:403 result:0,spend:2ms
+[   34.684471] SAFWK: Start OnStart-SA:3299 finished, spend:4 ms
+[   34.684623] SAFWK: StartSystemAbilityTask foundation SA:3299 init finished, 2
+0038 ms
+[   34.684944] SAMGR: insert SA:501_45
+[   34.686233] SAFWK: Publish SA:501 result:0,spend:4ms
+[   34.686844] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+5 pid 250 key: persist.samgr.cache.sa
+[   34.687386] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+6 pid 250 key: persist.samgr.cache.sa
+[   34.688880] SAFWK: Start OnStart-SA:501 finished, spend:7 ms
+[   34.689050] SAFWK: StartSystemAbilityTask foundation SA:501 init finished, 20
+042 ms
+[   34.689949] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+7 pid 250 key: persist.samgr.cache.sa
+[   34.690400] SAFWK: Publish SA:3704 result:0,spend:10ms
+[   34.695964] SAFWK: Start OnStart-SA:3704 finished, spend:15 ms
+[   34.696032] SAFWK: StartSystemAbilityTask foundation SA:3704 init finished, 2
+0049 ms
+[   34.701412] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+ pid 455 key: persist.ace.darkmode
+[   34.701608] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+ pid 455 key: persist.sys.font_scale_for_user0
+[   34.701791] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+ pid 455 key: persist.sys.font_wght_scale_for_user0
+[   34.702469] SAMGR: insert SA:180_46
+[   34.702754] SAFWK: Publish SA:180 result:0,spend:0ms
+[   34.702819] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+8 pid 250 key: persist.samgr.cache.sa
+[   34.702890] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+ pid 449 key: bootevent.appfwk.ready
+[   34.703088] [pid=1][Init][INFO][init_common_service.c:650]ServiceStart starti
+ng:render_service
+[   34.703287] [pid=1][Init][INFO][init_common_service.c:676]ServiceStart starte
+d info render_service(pid 1112 uid 1003)
+[   34.703292] [pid=1][Init][INFO][init_common_service.c:679]starttime:160950597
+5-639818045, prefork:1609505975-639846045, startedtime:1609505975-640016670
+[   34.703610] [pid=1112][Init][ERROR][init_common_service.c:311]Failed to open
+realPath: (null)  /dev/memcg/perf_sensitive/cgroup.procs errno:2.
+[   34.703717] [pid=1112][Init][INFO][init_service.c:118]ServiceExec render_serv
+ice
+[   34.705010] StorageDaemon: [ActiveUserKey:710] userId 100, tok empty 1 sec em
+pty 1
+[   34.705059] StorageDaemon: [ActiveUserKeyAndPrepare:643] ActiveUserKey with t
+ype 3 enter
+[   34.705082] StorageDaemon: [ActiveUserKeyAndPrepare:643] ActiveUserKey with t
+ype 4 enter
+[   34.705103] StorageDaemon: [ActiveUserKeyAndPrepare:643] ActiveUserKey with t
+ype 5 enter
+[   34.705129] StorageDaemon: [IsUeceSupport:1689] uece does not support !
+[   34.705136] StorageDaemon: [IsUeceSupport:1691] open uece failed, errno : 2
+[   34.705142] StorageDaemon: [UnlockUserAppKeys:1407] E type is not support
+[   34.705234] SAFWK: Start OnStart-SA:180 finished, spend:25 ms
+[   34.705283] SAFWK: StartSystemAbilityTask foundation SA:180 init finished, 20
+059 ms
+[   34.705348] StorageDaemon: [ActiveAppCloneUserKey:63] ActiveAppCloneUserKey::
+Did not find app clone userId in valid range = {219 ~ 239}.
+[   34.705633] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+ pid 248 key: startup.appspawn.lockstatus_100
+[   34.706004] StorageDaemon: [StartUser:65] start user 100
+[   34.706051] StorageDaemon: [GetFileEncryptStatus:1731] Begin check encrypted
+status, userId is 100, needCheckDirMount is 0
+[   34.708865] StorageDaemon: [GetFileEncryptStatus:1758] This is unencrypted st
+atus
+[   34.722624] StorageDaemon: [SupportHmdfs:940] GetParameter hmdfsEnable , ret
+0
+[   34.722897] StorageDaemon: [SharefsMount:294] failed to mount sharefs, err 19
+[   34.722907] StorageDaemon: [MountByUser:1020] sharefs mount error
+[   34.730352] StorageDaemon: [MountAppdataAndSharefs:1497] mount currentUser/ot
+her
+[   34.730388] StorageDaemon: [BindAndRecMount:1397] path invalid, /mnt/user/100
+/currentUser/other
+[   34.730407] StorageDaemon: [MountAppdataAndSharefs:1503] mount currentUser/ot
+her/appdata
+[   34.730425] StorageDaemon: [BindAndRecMount:1393] path invalid, /mnt/user/100
+/nosharefs/appdata
+[   34.730431] StorageDaemon: [MountAppdataAndSharefs:1515] mount currentUser/fi
+lemgr
+[   34.730440] StorageDaemon: [BindAndRecMount:1397] path invalid, /mnt/user/100
+/currentUser/filemgr
+[   34.730445] StorageDaemon: [MountAppdataAndSharefs:1519] mount currentUser/fi
+lemgr/appdata
+[   34.730453] StorageDaemon: [HmSharefsMount:304] srcPath not exist, /mnt/user/
+100/nosharefs/appdata
+[   34.730458] StorageDaemon: [MountAppdataAndSharefs:1522] mount sharefs/docs/c
+urrentUser
+[   34.730467] StorageDaemon: [BindAndRecMount:1393] path invalid, /mnt/user/100
+/currentUser/other
+[   34.730472] StorageDaemon: [MountAppdataAndSharefs:1526] mount nosharefs/docs
+/currentUser
+[   34.730481] StorageDaemon: [BindAndRecMount:1393] path invalid, /mnt/user/100
+/currentUser/filemgr
+[   34.730488] StorageDaemon: [MountByUser:1028] MountByUser success, userId is
+100.
+[   34.731960] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+9 pid 250 key: ohos.ctl.start
+[   34.732019] [pid=1][Init][INFO][init_service_manager.c:1168]Service info back
+up_sa start service bt ext parameter backup_sa|5203#4#usual.event.USER_UNLOCKED#
+[   34.732043] [pid=1][Init][INFO][init_common_service.c:650]ServiceStart starti
+ng:backup_sa
+[   34.732391] [pid=1][Init][INFO][init_common_service.c:676]ServiceStart starte
+d info backup_sa(pid 1127 uid 1089)
+[   34.732410] [pid=1][Init][INFO][init_common_service.c:679]starttime:160950597
+5-668772381, prefork:1609505975-668790465, startedtime:1609505975-669113048
+[   34.732476] [pid=1127][Init][INFO][init_service.c:118]ServiceExec backup_sa
+[   34.732751] SAMGR: Start dynamic proc:backup_sa,5203,0_1ms
+[   34.746461] SAFWK: Start OnStart-SA:403 finished, spend:65 ms
+[   34.746598] SAFWK: StartSystemAbilityTask foundation SA:403 init finished, 20
+100 ms
+[   34.766685] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+ pid 453 key: bootevent.account.ready
+[   34.820226] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 8
+ pid 920 key: persist.hdc.jdwp
+[   34.821180] StorageDaemon: [MountCryptoPathAgain:905] begin to MountCryptoPat
+hAgain
+[   34.821223] StorageDaemon: [MountCryptoPathAgain:655] root path not exists, r
+ootDir is /mnt/sandbox/
+[   34.830025] SAMGR: insert SA:5203_47
+[   34.862805] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+ pid 1112 key: bootevent.renderservice.ready
+[   34.881047] dwhdmi-rockchip fde80000.hdmi: use tmds mode
+[   34.897848] [I/kevent] KeventFbNotifierFn:blank=0
+[   34.897850] [I/kevent] KeventFbNotifierFn:receive display on event
+[   34.897862] [I/devmgr_service] DevmgrServicePowerStateChange:wake state 0
+[   34.897885] [I/HDF_LOG_TAG] HdfTouchDriverDozeResume:called
+[   35.027376] mali fb000000.gpu: use 'driver built-in firmware' directly
+[   35.027387] mali fb000000.gpu: Loading Mali firmware 0x1010000
+[   35.028381] mali fb000000.gpu: Mali firmware git_sha: 8e5cfcfec20cc8aff8509d3
+7e72babc935d34a3b
+[   35.031132] mali fb000000.gpu: CSF_SCHED_PROTM_PROGRESS_TIMEOUT is capped fro
+m 8738ms to 4500ms
+[   35.035216] mali fb000000.gpu: Clearing BASE_MEM_UNCACHED_GPU flag to avoid M
+MA violation
+[   35.054889] SAMGR: insert SA:10_48
+[   35.055145] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 5
+0 pid 250 key: persist.samgr.cache.sa
+[   35.055328] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+ pid 1112 key: bootevent.renderservice.ready
+[   35.055355] [pid=1][PARAM][ERROR][param_manager.c:599]Read-only param was alr
+eady set ohos.boot.time.renderservice.ready
+[   35.055360] [pid=1][PARAM][ERROR][param_manager.c:512]Invalid param value par
+am: ohos.boot.time.renderservice.ready=33311277
+[   35.055365] [pid=1][PARAM][ERROR][param_service.c:153]Failed to set param 107
+ name ohos.boot.time.renderservice.ready 33311277
+[   35.065006] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 2
+ pid 293 key: persist.ffrt.interval.appRate
+[   35.213316] SAMGR: insert SA:1903_49
+[   35.214406] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 5
+1 pid 250 key: persist.samgr.cache.sa
+[   35.276749] SAMGR: SA:183 OpenSo 3ms
+[   35.504347] combophy_avdd0v85: disabling
+[   35.504385] combophy_avdd1v8: disabling
+[   37.213793] SAMGR: insert SA:1904_50
+[   37.215141] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 5
+2 pid 250 key: persist.samgr.cache.sa
+[   39.112215] SAMGR: insert SA:801_51
+[   39.112816] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 5
+3 pid 250 key: persist.samgr.cache.sa
+[   39.113185] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 3
+ pid 291 key: accessibility.config.ready
+[   39.317246] SAMGR: SA:183 OpenSo 1ms
+[   40.899475] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 6
+ pid 449 key: bootevent.wms.fullscreen.ready
+[   42.110357] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 4
+ pid 1250 key: bootevent.launcher.ready
+[   45.677751] [pid=244][PLUGIN][INFO][init_context.c:242]Poll sub init timeout,
+ sub init 0 exit
+[   45.679636] [pid=1][Init][WARNING][init_signal_handler.c:46]Child process Unk
+nown(pid 244) exit with code : 127
+[   45.679781] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:244 uid:0 status:32512.
+[   54.890122] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 5
+ pid 455 key: persist.ace.darkmode
+[   54.898017] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 6
+ pid 455 key: persist.sys.font_scale_for_user0
+[   54.899059] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 7
+ pid 455 key: persist.sys.font_wght_scale_for_user0
+[   64.840962] StorageDaemon: [UpdateMemoryPara:1024] StorageDaemon::UpdateMemor
+yPara
+[   64.841166] StorageDaemon: [ReadFileToString:1002] StorageDaemon::ReadFileToS
+tring 100
+[   64.841298] StorageDaemon: [SaveStringToFile:1015] StorageDaemon::SaveStringT
+oFile 100
+[   64.842880] SAMGR: rm SA:5203_50
+[   64.844121] [pid=1][PARAM][INFO][param_service.c:179]Handle set param msgId 5
+4 pid 250 key: ohos.ctl.stop
+[   64.844561] [pid=1][Init][INFO][init_common_service.c:719]stop service backup
+_sa, pid 1127.
+[   64.844896] SAMGR: Scheduler proc:backup_sa kill pid:1127,1089_0_1ms
+[   64.853218] [pid=1][Init][WARNING][init_signal_handler.c:43]Child process Unk
+nown(pid 1127) exit with signal : 9
+[   64.853232] [pid=1][Init][WARNING][init_signal_handler.c:54]Service warning U
+nknown, SIGCHLD received, pid:1127 uid:1089 status:9.
+[   74.483434] StorageDaemon: [StorageRadarThd:61] Storage statistic thread star
+t.
+[  155.531331] SAMGR: SA:183 OpenSo 1ms
+

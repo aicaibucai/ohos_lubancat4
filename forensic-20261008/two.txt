@@ -1,0 +1,11 @@
+########## A) 图标常量三方对照 ##########
+  ICON  70   <- applications/standard/launcher/common/src/main/ets/default/constants/StyleConstants.ts
+  ICON  70   <- applications/standard/launcher/product/phone/src/main/ets/common/constants/StyleConstants.ts
+  ICON  54   <- applications/standard/launcher/product/pad/src/main/ets/common/constants/StyleConstants.ts
+
+  CELL  96   <- applications/standard/launcher/common/src/main/ets/default/constants/PresetStyleConstants.ts
+  CELL  80   <- applications/standard/launcher/product/phone/src/main/ets/common/constants/PhonePresetStyleConstants.ts
+
+########## B) ★实测: cell=80vp, icon=54vp → 与【common 的 54】吻合 ##########
+
+########## C) 70Hz 疑点：hgm 配置文件 ##########

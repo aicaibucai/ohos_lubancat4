@@ -1,0 +1,36 @@
+============================================================
+三点 A/B 实验：DPR -> WMS 实测 SystemUI 窗口宽度
+方法: param set persist.display.densitydpi <dpi> + reboot
+      hidumper -s WindowManagerService -a '-a'
+============================================================
+
+======== DPR=1.5 (densitydpi=240) ========
+SystemUi_NavigationB 0 1692 1 2112 102 0 3 0 [ 0 1296 2560 144 ]
+SystemUi_StatusBar   0 1692 9 2108 102 0 1 0 [ 0    0 2560 144 ]
+EntryView            0 1705 2 2001 1   0 0 8 [ 0    0 2560 1440 ]
+densityDPI":240   densityPixels":1.5
+应用侧日志: StatusBarConfiguration realWidth 2560 realHeight 36
+=> 上限 1920*1.5 = 2880 > 2560  => 不裁剪, 窗口 2560 ✓
+
+======== DPR=1.2 (densitydpi=192) ========   [预测 2304]
+SystemUi_StatusBar   0 1698 9 2108 102 0 1 0 [ 0 0 2304 144 ]
+EntryView            0 1711 2 2001 1   0 0 8 [ 0 0 2560 1440 ]
+densityDPI":192   densityPixels":1.2000000476837158
+=> 上限 1920*1.2 = 2304 < 2560  => 裁剪为 2304 ✓ 预测命中
+
+======== DPR=1.0 (densitydpi=0 -> 160) ========   [预测 1920]
+SystemUi_StatusBar   0 1698 9 2108 102 0 1 0 [ 0    0 1920 144 ]
+SystemUi_NavigationB 0 3718 2 2112 102 0 3 0 [ 0 1296 1920 144 ]
+EntryView            0 3713 2 2001 1   0 0 8 [ 0    0 2560 1440 ]
+densityDPI":160   densityPixels":1
+应用侧日志: StatusBarConfiguration realWidth 2560 realHeight 36   <== 与 DPR1.5 完全相同!
+=> 上限 1920*1.0 = 1920 < 2560  => 裁剪为 1920 ✓ 预测命中
+=> 应用侧参数两档一致 => 差异只在 WMS 内部 (排除应用侧算法嫌疑)
+
+======== 关键对照 ========
+                    DPR=1.5    DPR=1.2    DPR=1.0
+应用传 realWidth      2560       2560       2560      <- 完全相同
+WMS 实际上限(px)      2880       2304       1920
+实测 SystemUI 窗口宽  2560       2304       1920      <- 与上限吻合
+launcher EntryView    2560       2560       2560      <- 不受浮动窗口上限约束
+                       ^^^^^^^^^^^^^^^^^^^^^^^^ 两套坐标系共存 -> 视觉错位

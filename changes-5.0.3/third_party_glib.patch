@@ -1,0 +1,24 @@
+diff --git a/install.sh b/install.sh
+index 444bbe6..ccfde05 100755
+--- a/install.sh
++++ b/install.sh
+@@ -2,6 +2,12 @@
+ # Copyright(c) 2023 Huawei Device Co., Ltd.
+ 
+ set -e
++# Incremental build guard: glib sources are already unpacked and patched.
++# Re-running this wipes and re-extracts thousands of files on every gn gen.
++if [ -f "$1/meson.build" ] && [ -f "$1/.ohos_install_done" ]; then
++    echo "glib already installed, skip"
++    exit 0
++fi
+ cd $1
+ find . ! -path "*/\.*" ! -path "./patch*" ! \( -name glib-2.72.2.tar.xz\
+     -o -name BUILD.gn\
+@@ -32,5 +38,6 @@ do
+     patch -p1 < patch/$line --fuzz=0 --no-backup-if-mismatch
+ done
+ echo "all file patch success!"
++touch "$1/.ohos_install_done"
+ exit 0
+ 
