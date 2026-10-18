@@ -16,3 +16,14 @@ Thumbs.db
 *.swp
 *~
 node_modules/
+
+# 图片与二进制产物（按仓库约定不发布）
+*.jpeg
+*.jpg
+*.png
+*.gif
+*.bmp
+*.webp
+*.img
+*.so
+*.a

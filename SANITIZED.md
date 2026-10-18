@@ -90,6 +90,7 @@ git config user.email "<your-github-noreply-email>"
 | `patches-2in1-dpi/window_manager_config.xml.orig-wmfix` | 5 KB | 同上 |
 | `forensic-20261008/desktop_unlocked_172418B.jpeg` | 172 KB | 与 `desktop_unlocked.jpeg` 字节完全相同（同尺寸副本） |
 | `forensic-20261008/lockscreen_124111B.jpeg` | 124 KB | 与 `lockscreen.jpeg` 字节完全相同（同尺寸副本） |
+| **全部图片**（10 个 `*.jpeg` / `*.png`，共 ~1.7 MB） | 1.7 MB | 用户要求不上传图片。已在 `docs/05` 开头统一说明，正文引用改为删除线标注 |
 
 ### 3.1 源码树改动导出时的排除项
 
@@ -120,8 +121,7 @@ git config user.email "<your-github-noreply-email>"
 
 | 文件 | 核查结论 |
 |---|---|
-| `Launcher_3745.db` | SQLite 数据库，仅含系统应用名（联系人/图库/信息）与网格配置，**无个人数据** |
-| `screenshots/*.jpeg/png`、`research-pc-2in1/*.jpeg/png` | 2560×1440 桌面/锁屏截图，无隐私内容 |
+| ~~`Launcher_3745.db`~~ | 已核查无个人数据（仅系统应用名与网格配置），但作为 SQLite 二进制**未随仓库发布** |
 | `patches/*.patch` | 纯代码 diff，无路径泄漏 |
 | `kernel-patches/**/*.patch` | 纯代码 diff，已全量扫描：无家目录路径、无 `D:\`、无内网 IP、无邮箱 |
 | `research-pc-2in1/*.txt` | 上游仓库调研记录（gitee API 查询结果），无敏感信息 |
@@ -209,8 +209,8 @@ REPLACEMENTS = [
 
 | 指标 | 脱敏前 | 脱敏后 |
 |---|---|---|
-| 文件数 | 1910 | 102 |
-| 总体积 | ~47 MB | ~5.6 MB |
+| 文件数 | 1910 | 92 |
+| 总体积 | ~47 MB | ~3.9 MB |
 | 硬件序列号 | 20 处 | 0 |
 | 家目录路径 | ~50 处 | 0 |
 | Windows 路径 | ~35 处 | 0 |

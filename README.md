@@ -53,8 +53,9 @@
 - `patches/` — libuv / napi 异步派发修复补丁（最新工作）
 - `patches-2in1-dpi/` — PC/2in1 界面 DPI 与窗口裁剪修复
 - `research-pc-2in1/` — 上游 PC/2in1 实现调研记录
-- `forensic-20261008/` — 2026-10-08 运行时取证数据（DPI/布局/锁屏）
-- `screenshots/` — 关键节点截图
+- `forensic-20261008/` — 2026-10-08 运行时取证数据（DPI/布局/锁屏，**仅文本/json**）
+
+> 📷 屏幕截图（`*.jpeg` / `*.png`）不随仓库发布；抓取命令见 [docs/05](docs/05-6.1进展与当前状态.md) 开头说明。
 
 ---
 
@@ -70,9 +71,8 @@ openharmony-lubancat/
 ├── patches/                     # libuv / napi 异步派发补丁
 ├── patches-2in1-dpi/            # PC/2in1 DPI + WMS 窗口裁剪
 ├── research-pc-2in1/            # 上游 PC 产品形态调研
-├── forensic-20261008/           # 运行时取证数据
+├── forensic-20261008/           # 运行时取证数据（文本/json）
 ├── logs/                        # 启动日志
-├── screenshots/                 # 截图
 ├── scripts/                     # patch 导出脚本（可复现）
 ├── sanitize.py                  # 本仓库的脱敏脚本（可复现）
 ├── SANITIZED.md                 # 脱敏说明
