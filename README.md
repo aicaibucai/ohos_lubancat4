@@ -6,7 +6,7 @@
 > 本仓库是**移植过程的知识归档**（排错记录 + 补丁 + 日志 + 取证数据），
 > 不是可编译的源码树。源码树涉及 OpenHarmony 与厂商 SDK 的多个 git 仓库，体积数百 GB。
 >
-> 🔒 本仓库已脱敏，敏感信息处理方式见 [SANITIZED.md](./SANITIZED.md)。
+> 🔒 本仓库已脱敏，敏感信息处理方式见 [SANITIZED.md](SANITIZED.md)。
 
 ---
 
